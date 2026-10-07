@@ -1,6 +1,10 @@
-import { CreateUserBody } from "./users.schema.js";
+import { UserRepository } from './repositories/user.repository.js'
+import { CreateUserBody } from './users.schema.js';
 
-export async function createUserService(userData: CreateUserBody) {
+export class UserService {
+    constructor(private readonly userRepository: UserRepository) {}
 
-    return userData
+    async createUser(data: CreateUserBody) {
+        return data
+    }
 }
