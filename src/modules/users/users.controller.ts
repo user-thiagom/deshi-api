@@ -3,7 +3,7 @@ import { CreateUserBody, createUserSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
 import { JsonUserRepository } from "./repositories/json-user.repository.js";
 
-const jsonUserRepository = new JsonUserRepository()
+const jsonUserRepository = new JsonUserRepository("data/users.json")
 const userService = new UserService(jsonUserRepository)
 
 export async function createUserController(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
