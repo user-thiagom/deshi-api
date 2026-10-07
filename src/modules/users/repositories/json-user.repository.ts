@@ -40,10 +40,14 @@ export class JsonUserRepository implements UserRepository {
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        throw new Error('Not implemented')
+        const users = await this.readUsers()
+        const user = users.find((user) => user.email === email)
+        return user ? user : null
     }
 
     async findById(id: string): Promise<User | null> {
-        throw new Error('Not implemented')
+        const users = await this.readUsers()
+        const user = users.find((user) => user.id === id)
+        return user ?? null
     }
 }
