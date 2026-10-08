@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "1d968482-bc7d-49f0-a5c5-1bcd1f9a755e",
+    "name": "Thiago",
+    "email": "thiago@gmail.com",
+    "passwordHash": "$2b$10$Cp9ZZiw.D9ZUpMoyxyIBguILGWBKITN0N9vVcF3i40AgqeCXNkeES",
+    "profile": "PROFESSIONAL",
+    "createdAt": "2026-10-08T01:12:33.318Z",
+    "updatedAt": "2026-10-08T01:12:33.318Z"
+  }
+]

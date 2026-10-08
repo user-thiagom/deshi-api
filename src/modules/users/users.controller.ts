@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUserBody, createUserSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
 import { JsonUserRepository } from "./repositories/json-user.repository.js";
+import { EmailAlreadyExistsError } from "./users.errors.js";
 
 const jsonUserRepository = new JsonUserRepository("data/users.json")
 const userService = new UserService(jsonUserRepository)
@@ -13,7 +14,12 @@ export async function createUserController(request: FastifyRequest<{ Body: Creat
         return reply.status(400).send("Formato de dados inválido!")
     }
 
-    const userDataRes = await userService.createUser(result.data)
-
-    return userDataRes
+    try {
+        const userDataRes = await userService.createUser(result.data)
+        return userDataRes
+    } catch (error) {
+        if(error instanceof EmailAlreadyExistsError)
+            reply.status(409).send(error.message)
+        throw error
+    }
 }

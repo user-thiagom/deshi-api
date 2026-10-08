@@ -2,7 +2,7 @@ import bcrypt from 'bcryptjs';
 import { UserRepository } from './repositories/user.repository.js'
 import { CreateUserBody } from './users.schema.js';
 import { CreateUserData } from './users.types.js';
-import { EmailAlreadyExistsError } from './users.erros.js';
+import { EmailAlreadyExistsError } from './users.errors.js';
 
 export class UserService {
     constructor(private readonly userRepository: UserRepository) { }
