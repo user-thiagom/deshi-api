@@ -1,11 +1,13 @@
 import bcrypt from 'bcryptjs';
 import { UserRepository } from './repositories/user.repository.js'
-import { CreateUserBody } from './users.schema.js';
-import { CreateUserData } from './users.types.js';
-import { EmailAlreadyExistsError } from './users.errors.js';
+import { CreateUserBody, LoginBody } from './users.schema.js';
+import { CreateUserData, LoginResponse } from './users.types.js';
+import { EmailAlreadyExistsError, InvalidCredentialsError } from './users.errors.js';
+import jwt from 'jsonwebtoken'
+import { toLoginResponse } from './users.mapper.js';
 
 export class UserService {
-    constructor(private readonly userRepository: UserRepository) { }
+    constructor(private readonly userRepository: UserRepository, private readonly jwtsecret: string) { }
 
     async createUser(data: CreateUserBody) {
         const userFound = await this.userRepository.findByEmail(data.email)
@@ -24,5 +26,30 @@ export class UserService {
         const user = await this.userRepository.create(userData)
 
         return user
+    }
+
+    async login(data: LoginBody){
+        const user = await this.userRepository.findByEmail(data.email)
+
+        if (!user) {
+            throw new InvalidCredentialsError()
+        }
+
+        const isValidPassword = await bcrypt.compare(data.password, user.passwordHash)
+
+        if (!isValidPassword) {
+            throw new InvalidCredentialsError()
+        }
+
+        const token = jwt.sign(
+            { userId: user.id },
+            this.jwtsecret,
+            {expiresIn: '1h'}
+        )
+
+        return {
+            token,
+            user
+        }
     }
 }

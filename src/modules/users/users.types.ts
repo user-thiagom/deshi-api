@@ -25,3 +25,13 @@ export type UserResponse = {
     createdAt: Date
     updatedAt: Date
 }
+
+export type LoginResponse = {
+    token: string
+    user: {
+        id: string
+        name: string
+        email: string
+        profile: UserProfile
+    }
+}
