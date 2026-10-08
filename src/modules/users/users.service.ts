@@ -1,10 +1,27 @@
+import bcrypt from 'bcryptjs';
 import { UserRepository } from './repositories/user.repository.js'
 import { CreateUserBody } from './users.schema.js';
+import { CreateUserData } from './users.types.js';
 
 export class UserService {
-    constructor(private readonly userRepository: UserRepository) {}
+    constructor(private readonly userRepository: UserRepository) { }
 
     async createUser(data: CreateUserBody) {
-        return data
+        const userFound = await this.userRepository.findByEmail(data.email)
+
+        if (userFound) {
+            return null
+        }
+
+        const userData: CreateUserData = {
+            name: data.name,
+            email: data.email,
+            passwordHash: await bcrypt.hash(data.password, 10),
+            profile: data.profile
+        }
+
+        const user = await this.userRepository.create(userData)
+
+        return user
     }
 }
