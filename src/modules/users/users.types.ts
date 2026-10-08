@@ -16,3 +16,12 @@ export type CreateUserData = {
     passwordHash: string
     profile: UserProfile
 }
+
+export type UserResponse = {
+    id: string
+    name: string
+    email: string
+    profile: UserProfile
+    createdAt: Date
+    updatedAt: Date
+}
