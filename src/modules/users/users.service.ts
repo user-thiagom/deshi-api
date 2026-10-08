@@ -5,6 +5,7 @@ import { CreateUserData, LoginResponse } from './users.types.js';
 import { EmailAlreadyExistsError, InvalidCredentialsError } from './users.errors.js';
 import jwt from 'jsonwebtoken'
 import { toLoginResponse } from './users.mapper.js';
+import { randomUUID } from 'node:crypto';
 
 export class UserService {
     constructor(private readonly userRepository: UserRepository, private readonly jwtsecret: string) { }
@@ -28,7 +29,7 @@ export class UserService {
         return user
     }
 
-    async login(data: LoginBody){
+    async login(data: LoginBody) {
         const user = await this.userRepository.findByEmail(data.email)
 
         if (!user) {
@@ -44,7 +45,10 @@ export class UserService {
         const token = jwt.sign(
             { userId: user.id },
             this.jwtsecret,
-            {expiresIn: '1h'}
+            {
+                expiresIn: '1h',
+                jwtid: randomUUID()
+            }
         )
 
         return {
