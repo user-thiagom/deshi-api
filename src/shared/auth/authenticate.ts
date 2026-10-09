@@ -43,8 +43,11 @@ export async function authenticate(request: FastifyRequest, reply: FastifyReply)
         }
 
         request.user = {
-            userId: payload.userId
+            userId: payload.userId,
+            jti: payload.jti,
+            exp: payload.exp
         }
+        
     } catch {
         return reply.status(401).send({
             message: 'Token inválido ou expirado.'

@@ -4,6 +4,8 @@ declare module 'fastify' {
     interface FastifyRequest {
         user: {
             userId: string
+            jti: string
+            exp: number
         }
     }
 }

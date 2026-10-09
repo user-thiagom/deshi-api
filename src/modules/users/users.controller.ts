@@ -5,9 +5,11 @@ import { JsonUserRepository } from "./repositories/json-user.repository.js";
 import { EmailAlreadyExistsError, InvalidCredentialsError } from "./users.errors.js";
 import { toLoginResponse, toUserResponse } from "./users.mapper.js";
 import { env } from "../../config/env.js";
+import { JsonTokenRevocationRepository } from "../../shared/auth/repositories/json-token-revocation.repository.js";
 
 const jsonUserRepository = new JsonUserRepository("data/users.json")
 const userService = new UserService(jsonUserRepository, env.jwtSecret)
+const tokenRevocationRepository = new JsonTokenRevocationRepository('data/revoked-tokens.json')
 
 export async function createUserController(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
     const result = createUserSchema.safeParse(request.body)
@@ -41,4 +43,15 @@ export async function loginController(request: FastifyRequest<{ Body: LoginBody 
             return reply.status(401).send(error.message)
         throw error
     }
+}
+
+export async function logoutController(request: FastifyRequest, reply: FastifyReply) {
+    const { jti, exp } = request.user
+
+    await tokenRevocationRepository.revoke(
+        jti,
+        new Date(exp * 1000)
+    )
+
+    return reply.status(204).send()
 }

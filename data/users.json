@@ -7,5 +7,14 @@
     "profile": "PROFESSIONAL",
     "createdAt": "2026-10-08T01:40:02.601Z",
     "updatedAt": "2026-10-08T01:40:02.601Z"
+  },
+  {
+    "id": "01001150-5e31-4f00-8d84-a57319305a22",
+    "name": "Mateus",
+    "email": "mateus@gmail.com",
+    "passwordHash": "$2b$10$a2GlEEx1u5GrVXjY/C.U/.nDWiL/ppN6hCkhihG7.a0vcSnHn6MUy",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-09T13:45:16.781Z",
+    "updatedAt": "2026-10-09T13:45:16.781Z"
   }
 ]

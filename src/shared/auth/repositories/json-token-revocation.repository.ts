@@ -39,6 +39,7 @@ export class JsonTokenRevocationRepository implements TokenRevocationRepository 
         )
 
         if (alreadyRevoked) {
+            await this.writeTokens(activeTokens)
             return
         }
 
