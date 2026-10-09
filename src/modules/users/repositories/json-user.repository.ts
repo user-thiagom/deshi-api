@@ -1,12 +1,7 @@
 import { promises as fs } from 'node:fs'
 import { UserRepository } from './user.repository.js'
 import { CreateUserData, User } from '../users.types.js'
-import { fileURLToPath } from 'node:url'
-import path from 'node:path'
 import { randomUUID } from 'node:crypto'
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
 
 export class JsonUserRepository implements UserRepository {
     constructor(private readonly filePath: string) { }
