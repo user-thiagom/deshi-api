@@ -7,5 +7,14 @@
     "profile": "PROFESSIONAL",
     "createdAt": "2026-10-08T01:40:02.601Z",
     "updatedAt": "2026-10-08T01:40:02.601Z"
+  },
+  {
+    "id": "00ffa476-56ee-46a5-ac4a-b8baf88d9b78",
+    "name": "Everton",
+    "email": "everton@gmail.com",
+    "passwordHash": "$2b$10$24NhaTx6xE9kimx8Kwm7auLCZKG2ChoKs6oRGGcgmVD1FWEZCLKWy",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-09T16:39:39.918Z",
+    "updatedAt": "2026-10-09T16:39:39.918Z"
   }
 ]

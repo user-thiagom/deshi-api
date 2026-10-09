@@ -1,5 +1,6 @@
 import fastify from 'fastify'
 import { userRoutes } from './modules/users/users.routes.js'
+import { sessionRoutes } from './modules/sessions/sessions.routes.js'
 
 const PORT = 3030
 
