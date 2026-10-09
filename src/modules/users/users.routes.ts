@@ -7,6 +7,8 @@ export async function userRoutes(server: FastifyInstance) {
     server.post('/users', createUserController)
     server.post('/login', loginController)
     server.post('/logout', { preHandler: authenticate }, logoutController)
+
+    //ROTAS DE TESTES DE AUTENTICAÇÃO E AUTORIZAÇÃO
     server.get('/professional-test',{ preHandler: [authenticate, authorizeProfile('PROFESSIONAL')]},
         async () => {
             return { message: 'Acesso profissional autorizado!' }
