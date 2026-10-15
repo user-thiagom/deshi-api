@@ -1,0 +1,392 @@
+[
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+    "campos": [
+      {
+        "chave": "series",
+        "tipo": "inteiro",
+        "unidade": "series",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "repeticoes",
+        "tipo": "inteiro",
+        "unidade": "repeticoes",
+        "min": 1,
+        "max": 1000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "cargaKg",
+        "tipo": "decimal",
+        "unidade": "kg",
+        "min": 0,
+        "max": 1000,
+        "obrigatorio": false
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+    "campos": [
+      {
+        "chave": "series",
+        "tipo": "inteiro",
+        "unidade": "series",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "repeticoes",
+        "tipo": "inteiro",
+        "unidade": "repeticoes",
+        "min": 1,
+        "max": 1000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "cargaKg",
+        "tipo": "decimal",
+        "unidade": "kg",
+        "min": 0,
+        "max": 1000,
+        "obrigatorio": false
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000003",
+    "campos": [
+      {
+        "chave": "duracaoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 86400,
+        "obrigatorio": true
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000004",
+    "campos": [
+      {
+        "chave": "duracaoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 86400,
+        "obrigatorio": true
+      },
+      {
+        "chave": "quantidade",
+        "tipo": "inteiro",
+        "unidade": "unidades",
+        "min": 1,
+        "max": 10000,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000005",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "unidade": "rounds",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 3600,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000006",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "unidade": "rounds",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 3600,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000007",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "unidade": "rounds",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 3600,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000008",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "unidade": "rounds",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 3600,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000009",
+    "campos": [
+      {
+        "chave": "quantidade",
+        "tipo": "inteiro",
+        "unidade": "unidades",
+        "min": 1,
+        "max": 10000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000010",
+    "campos": [
+      {
+        "chave": "quantidade",
+        "tipo": "inteiro",
+        "unidade": "unidades",
+        "min": 1,
+        "max": 10000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "duracaoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 1,
+        "max": 86400,
+        "obrigatorio": false
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000011",
+    "campos": [
+      {
+        "chave": "distanciaMetros",
+        "tipo": "decimal",
+        "unidade": "m",
+        "min": 0.01,
+        "max": 100000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "quantidade",
+        "tipo": "inteiro",
+        "unidade": "unidades",
+        "min": 1,
+        "max": 10000,
+        "obrigatorio": false
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000012",
+    "campos": [
+      {
+        "chave": "distanciaMetros",
+        "tipo": "decimal",
+        "unidade": "m",
+        "min": 0.01,
+        "max": 100000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "quantidade",
+        "tipo": "inteiro",
+        "unidade": "unidades",
+        "min": 1,
+        "max": 10000,
+        "obrigatorio": false
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000013",
+    "campos": [
+      {
+        "chave": "series",
+        "tipo": "inteiro",
+        "unidade": "series",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "repeticoes",
+        "tipo": "inteiro",
+        "unidade": "repeticoes",
+        "min": 1,
+        "max": 1000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  },
+  {
+    "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000014",
+    "campos": [
+      {
+        "chave": "series",
+        "tipo": "inteiro",
+        "unidade": "series",
+        "min": 1,
+        "max": 100,
+        "obrigatorio": true
+      },
+      {
+        "chave": "repeticoes",
+        "tipo": "inteiro",
+        "unidade": "repeticoes",
+        "min": 1,
+        "max": 1000,
+        "obrigatorio": true
+      },
+      {
+        "chave": "descansoSegundos",
+        "tipo": "duracao",
+        "unidade": "s",
+        "min": 0,
+        "max": 86400,
+        "obrigatorio": false
+      }
+    ]
+  }
+]
