@@ -44,6 +44,21 @@ export class VinculoService {
         return alunos
     }
 
+    async listarProfissionaisVinculados(alunoId: string): Promise<UserResponse[]> {
+        const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)
+        const profissionais: UserResponse[] = []
+
+        for (const vinculo of vinculos) {
+            const profissional = await this.userRepository.findById(vinculo.profissionalId)
+
+            if (profissional?.profile === 'PROFESSIONAL') {
+                profissionais.push(toUserResponse(profissional))
+            }
+        }
+
+        return profissionais
+    }
+
     async criarSolicitacao(profissionalId: string, dados: CriarVinculoBody): Promise<Vinculo> {
         return this.executarEmSequencia(async () => {
             if (profissionalId === dados.alunoId) {
