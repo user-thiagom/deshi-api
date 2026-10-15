@@ -38,6 +38,11 @@ function responderErroVinculo(error: unknown, reply: FastifyReply) {
     throw error
 }
 
+export async function listarAlunosVinculadosController(request: FastifyRequest, reply: FastifyReply) {
+    const alunos = await vinculoService.listarAlunosVinculados(request.user.userId)
+    return reply.status(200).send(alunos)
+}
+
 export async function criarVinculoController(request: FastifyRequest<{ Body: CriarVinculoBody }>, reply: FastifyReply) {
     const resultado = criarVinculoSchema.safeParse(request.body)
 
