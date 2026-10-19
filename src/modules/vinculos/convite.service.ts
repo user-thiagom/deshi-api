@@ -1,4 +1,13 @@
-
+import { executarOperacaoVinculo } from './vinculos.concorrencia.js'
+import {
+    ConviteNaoEncontradoError, ProfissionalNaoEncontradoError,
+    ConviteNaoPertenceAoAlunoError, ConviteIndisponivelError,
+    ConviteExpiradoError, ConvitePendenteJaExistenteError, FalhaRollbackConviteError
+} from './convite.errors.js'
+import {
+    AlunoNaoEncontradoError, UsuarioNaoEhAlunoError,
+    VinculoConsigoMesmoError, VinculoJaExistenteError
+} from './vinculos.errors.js'
 import { randomInt } from 'node:crypto'
 import { UserRepository } from '../users/repositories/user.repository.js'
 import { toUserResponse } from '../users/users.mapper.js'
@@ -19,41 +28,37 @@ function gerarCodigoConvite(): string {
 }
 
 export class ConviteService {
-    private operacoesPendentes: Promise<void> = Promise.resolve()
-
     constructor(
         private readonly conviteRepository: ConviteRepository,
         private readonly vinculoRepository: VinculoRepository,
         private readonly userRepository: UserRepository
     ) { }
 
-    private executarEmSequencia<T>(operacao: () => Promise<T>): Promise<T> {
-        const resultado = this.operacoesPendentes.then(operacao)
-
-        this.operacoesPendentes = resultado.then(
-            () => undefined,
-            () => undefined
-        )
-
-        return resultado
-    }
-
     async criarConvite(
         profissionalId: string,
         alunoId: string
     ): Promise<Convite> {
-        return this.executarEmSequencia(async () => {
+        return executarOperacaoVinculo(async () => {
+            if (profissionalId === alunoId) throw new VinculoConsigoMesmoError()
+
             const profissional = await this.userRepository.findById(profissionalId)
 
             if (!profissional || profissional.profile !== 'PROFESSIONAL') {
-                throw new Error('Profissional não encontrado.')
+                throw new ProfissionalNaoEncontradoError()
             }
 
             const aluno = await this.userRepository.findById(alunoId)
 
-            if (!aluno || aluno.profile !== 'STUDENT') {
-                throw new Error('Aluno não encontrado.')
+            if (!aluno) throw new AlunoNaoEncontradoError()
+            if (aluno.profile !== 'STUDENT') throw new UsuarioNaoEhAlunoError()
+
+            const vinculos = await this.vinculoRepository.buscarEntreProfissionalEAluno(profissionalId, alunoId)
+            if (vinculos.some((vinculo) => vinculo.status === 'PENDENTE' || vinculo.status === 'ATIVO')) {
+                throw new VinculoJaExistenteError()
             }
+
+            const pendente = await this.conviteRepository.buscarPendenteEntreProfissionalEAluno(profissionalId, alunoId)
+            if (pendente) throw new ConvitePendenteJaExistenteError()
 
             let codigo = gerarCodigoConvite()
 
@@ -79,19 +84,21 @@ export class ConviteService {
         const convite = await this.conviteRepository.buscarPorCodigo(codigo)
 
         if (!convite) {
-            throw new Error('Convite não encontrado.')
+            throw new ConviteNaoEncontradoError()
         }
 
         if (convite.alunoId !== alunoId) {
-            throw new Error('Este convite não pertence a este aluno.')
+            throw new ConviteNaoPertenceAoAlunoError()
         }
 
+        if (convite.status === 'EXPIRADO') throw new ConviteExpiradoError()
+
         if (convite.status !== 'PENDENTE') {
-            throw new Error('Este convite não está mais disponível.')
+            throw new ConviteIndisponivelError()
         }
 
         if (convite.expiraEm.getTime() <= Date.now()) {
-            throw new Error('Este convite expirou.')
+            throw new ConviteExpiradoError()
         }
 
         const profissional = await this.userRepository.findById(
@@ -99,7 +106,7 @@ export class ConviteService {
         )
 
         if (!profissional || profissional.profile !== 'PROFESSIONAL') {
-            throw new Error('Profissional não encontrado.')
+            throw new ProfissionalNaoEncontradoError()
         }
 
         return {
@@ -115,7 +122,7 @@ export class ConviteService {
         convite: Convite
         profissional: UserResponse
     }> {
-        return this.buscarConviteValido(codigo, alunoId)
+        return executarOperacaoVinculo(() => this.buscarConviteValido(codigo, alunoId))
     }
 
     private async buscarConviteParaAlteracao(
@@ -125,15 +132,17 @@ export class ConviteService {
         const convite = await this.conviteRepository.buscarPorCodigo(codigo)
 
         if (!convite) {
-            throw new Error('Convite não encontrado.')
+            throw new ConviteNaoEncontradoError()
         }
 
         if (convite.alunoId !== alunoId) {
-            throw new Error('Este convite não pertence a este aluno.')
+            throw new ConviteNaoPertenceAoAlunoError()
         }
 
+        if (convite.status === 'EXPIRADO') throw new ConviteExpiradoError()
+
         if (convite.status !== 'PENDENTE') {
-            throw new Error('Este convite não está mais disponível.')
+            throw new ConviteIndisponivelError()
         }
 
         if (convite.expiraEm.getTime() <= Date.now()) {
@@ -146,24 +155,28 @@ export class ConviteService {
                 throw new Error('Não foi possível atualizar o convite.')
             }
 
-            throw new Error('Este convite expirou.')
+            throw new ConviteExpiradoError()
         }
 
         return convite
     }
 
     async aceitarConvite(codigo: string, alunoId: string): Promise<Convite> {
-        return this.executarEmSequencia(async () => {
+        return executarOperacaoVinculo(async () => {
             const convite = await this.buscarConviteParaAlteracao(codigo, alunoId)
+
+            const profissional = await this.userRepository.findById(convite.profissionalId)
+            if (!profissional || profissional.profile !== 'PROFESSIONAL') {
+                throw new ProfissionalNaoEncontradoError()
+            }
 
             const aluno = await this.userRepository.findById(alunoId)
 
-            if (!aluno || aluno.profile !== 'STUDENT') {
-                throw new Error('Aluno não encontrado.')
-            }
+            if (!aluno) throw new AlunoNaoEncontradoError()
+            if (aluno.profile !== 'STUDENT') throw new UsuarioNaoEhAlunoError()
 
             if (convite.profissionalId === alunoId) {
-                throw new Error('Não é possível criar vínculo consigo mesmo.')
+                throw new VinculoConsigoMesmoError()
             }
 
             const vinculos = await this.vinculoRepository.buscarEntreProfissionalEAluno(
@@ -174,7 +187,7 @@ export class ConviteService {
             if (vinculos.some((vinculo) =>
                 vinculo.status === 'PENDENTE' || vinculo.status === 'ATIVO'
             )) {
-                throw new Error('Já existe uma solicitação ou vínculo para este aluno.')
+                throw new VinculoJaExistenteError()
             }
 
 
@@ -206,10 +219,8 @@ export class ConviteService {
                             'O vínculo criado não foi encontrado para remoção.'
                         )
                     }
-                } catch {
-                    throw new Error(
-                        'Não foi possível atualizar o convite nem desfazer a criação do vínculo. É necessária uma verificação manual.'
-                    )
+                } catch (erroRollback) {
+                    throw new FalhaRollbackConviteError(new AggregateError([erro, erroRollback]))
                 }
 
                 throw erro
@@ -219,14 +230,13 @@ export class ConviteService {
     }
 
     async recusarConvite(codigo: string, alunoId: string): Promise<Convite> {
-        return this.executarEmSequencia(async () => {
+        return executarOperacaoVinculo(async () => {
             const convite = await this.buscarConviteParaAlteracao(codigo, alunoId)
 
             const aluno = await this.userRepository.findById(alunoId)
 
-            if (!aluno || aluno.profile !== 'STUDENT') {
-                throw new Error('Aluno não encontrado.')
-            }
+            if (!aluno) throw new AlunoNaoEncontradoError()
+            if (aluno.profile !== 'STUDENT') throw new UsuarioNaoEhAlunoError()
 
             const conviteAtualizado = await this.conviteRepository.atualizar({
                 ...convite,
