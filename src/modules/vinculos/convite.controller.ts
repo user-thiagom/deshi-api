@@ -18,12 +18,23 @@ type ParametrosConvite = {
     codigo: string
 }
 
+
+type CorpoCriacaoConvite = {
+    alunoId: string
+}
+
+
 export async function criarConviteController(
     request: FastifyRequest,
     reply: FastifyReply
 ) {
     try {
-        const convite = await conviteService.criarConvite(request.user.userId)
+        const { alunoId } = request.body as CorpoCriacaoConvite
+
+        const convite = await conviteService.criarConvite(
+            request.user.userId,
+            alunoId
+        )
 
         return reply.status(201).send(convite)
     } catch (error) {
@@ -41,7 +52,8 @@ export async function buscarConviteController(
 ) {
     try {
         const resultado = await conviteService.buscarConvite(
-            request.params.codigo
+            request.params.codigo,
+            request.user.userId
         )
 
         return reply.status(200).send(resultado)

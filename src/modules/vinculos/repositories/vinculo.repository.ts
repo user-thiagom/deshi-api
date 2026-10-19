@@ -7,4 +7,5 @@ export interface VinculoRepository {
     buscarAtivosPorAluno(alunoId: string): Promise<Vinculo[]>
     buscarEntreProfissionalEAluno(profissionalId: string, alunoId: string): Promise<Vinculo[]>
     atualizar(vinculo: Vinculo): Promise<Vinculo | null>
+    remover(id: string): Promise<boolean>
 }
