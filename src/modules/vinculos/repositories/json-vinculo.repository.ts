@@ -1,25 +1,16 @@
-
+import { executarGravacaoJson } from '../vinculos.concorrencia.js'
 import { promises as fs } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { VinculoRepository } from './vinculo.repository.js'
 import { DadosCriacaoVinculo, Vinculo } from '../vinculos.types.js'
 
 export class JsonVinculoRepository implements VinculoRepository {
-    private operacoesPendentes: Promise<void> = Promise.resolve()
-
     constructor(private readonly filePath: string) {}
 
     private executarEmSequencia<T>(
         operacao: () => Promise<T>
     ): Promise<T> {
-        const resultado = this.operacoesPendentes.then(operacao)
-
-        this.operacoesPendentes = resultado.then(
-            () => undefined,
-            () => undefined
-        )
-
-        return resultado
+        return executarGravacaoJson(this.filePath, operacao)
     }
 
     private async lerVinculos(): Promise<Vinculo[]> {

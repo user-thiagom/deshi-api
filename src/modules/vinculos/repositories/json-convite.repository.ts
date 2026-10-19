@@ -1,4 +1,4 @@
-
+import { executarGravacaoJson } from '../vinculos.concorrencia.js'
 import { randomUUID } from 'node:crypto'
 import {
     readFile,
@@ -10,21 +10,12 @@ import { Convite, DadosCriacaoConvite } from '../convite.types.js'
 import { ConviteRepository } from './convite.repository.js'
 
 export class JsonConviteRepository implements ConviteRepository {
-    private operacoesPendentes: Promise<void> = Promise.resolve()
-
     constructor(private readonly caminhoArquivo: string) { }
 
     private executarEmSequencia<T>(
         operacao: () => Promise<T>
     ): Promise<T> {
-        const resultado = this.operacoesPendentes.then(operacao)
-
-        this.operacoesPendentes = resultado.then(
-            () => undefined,
-            () => undefined
-        )
-
-        return resultado
+        return executarGravacaoJson(this.caminhoArquivo, operacao)
     }
 
     private async lerArquivo(): Promise<Convite[]> {
@@ -98,6 +89,14 @@ export class JsonConviteRepository implements ConviteRepository {
         const convites = await this.lerArquivo()
 
         return convites.find((convite) => convite.codigo === codigo) ?? null
+    }
+
+    async buscarPendenteEntreProfissionalEAluno(profissionalId: string, alunoId: string): Promise<Convite | null> {
+        const convites = await this.lerArquivo()
+        return convites.find((convite) =>
+            convite.profissionalId === profissionalId && convite.alunoId === alunoId &&
+            convite.status === 'PENDENTE' && convite.expiraEm.getTime() > Date.now()
+        ) ?? null
     }
 
     async atualizar(conviteAtualizado: Convite): Promise<Convite | null> {
