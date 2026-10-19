@@ -65,7 +65,9 @@ O build compila `src/` para `dist/`. O comando `npm start` executa `dist/server.
 Os dados são persistidos localmente nos seguintes arquivos:
 
 - `data/users.json`: usuários, incluindo o hash da senha;
-- `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração.
+- `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
+- `data/vinculos.json`, `data/modalidades.json`, `data/profissional-modalidades.json`, `data/atividades.json` e `data/atividades-personalizadas.json`: fontes oficiais usadas para validar vínculo, modalidades selecionadas e atividades;
+- `data/programs.json`: programas criados.
 
 Senhas nunca são gravadas em texto puro: o cadastro usa `bcrypt` com custo 10. A lista de tokens revogados remove tokens expirados ao consultar ou registrar uma revogação.
 
@@ -163,6 +165,25 @@ POST /logout
 Authorization: Bearer <token>
 ```
 
+### Criar programa — `POST /programs`
+
+Requer Bearer JWT de um usuário com perfil `PROFESSIONAL`. O profissional responsável é sempre obtido do token autenticado.
+
+```json
+{
+  "studentId": "uuid-do-aluno",
+  "name": "Programa individual",
+  "modalityId": "id-da-modalidade-no-catalogo",
+  "activityIds": ["id-da-atividade-1", "id-da-atividade-2"]
+}
+```
+
+`studentId` deve identificar um usuário `STUDENT` com vínculo `ATIVO` ao profissional. A modalidade deve existir no catálogo e estar selecionada pelo profissional. Todos os IDs de atividade devem existir no catálogo de HU08, pertencer à modalidade escolhida e, se a atividade for personalizada, pertencer ao profissional autenticado. `activityIds` não pode ser vazio; a resposta converte-os para `activities: [{ "activityId": "...", "order": 1 }]`, compatível com o modelo usado pelas histórias de sessão, preservando a ordem. A resposta de sucesso é `201 Created` e inclui o identificador UUID, os dados da criação e `createdAt`.
+
+Erros: `400` para corpo inválido ou sem atividades, `401` para autenticação inválida/ausente, `403` para perfil não autorizado ou aluno sem vínculo, e `404` para aluno, modalidade ou atividade inexistente.
+
+O endpoint lê os arquivos e modelos existentes das histórias de vínculos, modalidades e atividades, sem manter um catálogo paralelo. O arquivo de programas usa `activities` com `activityId` e `order`, formato esperado pelo fluxo de início de sessão.
+
 ### Rotas temporárias de demonstração
 
 Estas rotas foram mantidas intencionalmente para demonstrar autenticação e autorização na próxima reunião. Não são rotas funcionais definitivas da aplicação.
@@ -186,6 +207,7 @@ Em rotas autenticadas, a API pode responder com:
 | `npm run dev` | Executa `tsx watch src/server.ts` em desenvolvimento. |
 | `npm run build` | Compila o projeto com `tsc`. |
 | `npm start` | Executa a versão compilada com Node.js. |
+| `npm test` | Executa os testes de integração da criação de programa. |
 
 ## Estrutura principal
 
@@ -199,6 +221,12 @@ src/
 │   ├── users.routes.ts
 │   ├── users.schema.ts
 │   └── users.service.ts
+├── modules/programs/
+│   ├── repositories/
+│   ├── program.controller.ts
+│   ├── program.routes.ts
+│   ├── program.schema.ts
+│   └── program.service.ts
 ├── shared/auth/
 │   ├── repositories/
 │   ├── authenticate.ts
