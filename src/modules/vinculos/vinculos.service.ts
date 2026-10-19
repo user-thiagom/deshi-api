@@ -1,3 +1,4 @@
+import { executarOperacaoVinculo } from './vinculos.concorrencia.js'
 import { UserRepository } from '../users/repositories/user.repository.js'
 import { toUserResponse } from '../users/users.mapper.js'
 import { UserResponse } from '../users/users.types.js'
@@ -15,52 +16,47 @@ import { CriarVinculoBody } from './vinculos.schema.js'
 import { Vinculo } from './vinculos.types.js'
 
 export class VinculoService {
-    private operacoesPendentes: Promise<void> = Promise.resolve()
-
     constructor(
         private readonly vinculoRepository: VinculoRepository,
         private readonly userRepository: UserRepository
     ) { }
 
-    // Serializa a consulta e a gravação para evitar conflitos nesta instância da aplicação.
-    private executarEmSequencia<T>(operacao: () => Promise<T>): Promise<T> {
-        const resultado = this.operacoesPendentes.then(operacao)
-        this.operacoesPendentes = resultado.then(() => undefined, () => undefined)
-        return resultado
-    }
-
     async listarAlunosVinculados(profissionalId: string): Promise<UserResponse[]> {
-        const vinculos = await this.vinculoRepository.buscarAtivosPorProfissional(profissionalId)
-        const alunos: UserResponse[] = []
+        return executarOperacaoVinculo(async () => {
+            const vinculos = await this.vinculoRepository.buscarAtivosPorProfissional(profissionalId)
+            const alunos: UserResponse[] = []
 
-        for (const vinculo of vinculos) {
-            const aluno = await this.userRepository.findById(vinculo.alunoId)
+            for (const vinculo of vinculos) {
+                const aluno = await this.userRepository.findById(vinculo.alunoId)
 
-            if (aluno?.profile === 'STUDENT') {
-                alunos.push(toUserResponse(aluno))
+                if (aluno?.profile === 'STUDENT') {
+                    alunos.push(toUserResponse(aluno))
+                }
             }
-        }
 
-        return alunos
+            return alunos
+        })
     }
 
     async listarProfissionaisVinculados(alunoId: string): Promise<UserResponse[]> {
-        const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)
-        const profissionais: UserResponse[] = []
+        return executarOperacaoVinculo(async () => {
+            const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)
+            const profissionais: UserResponse[] = []
 
-        for (const vinculo of vinculos) {
-            const profissional = await this.userRepository.findById(vinculo.profissionalId)
+            for (const vinculo of vinculos) {
+                const profissional = await this.userRepository.findById(vinculo.profissionalId)
 
-            if (profissional?.profile === 'PROFESSIONAL') {
-                profissionais.push(toUserResponse(profissional))
+                if (profissional?.profile === 'PROFESSIONAL') {
+                    profissionais.push(toUserResponse(profissional))
+                }
             }
-        }
 
-        return profissionais
+            return profissionais
+        })
     }
 
     async criarSolicitacao(profissionalId: string, dados: CriarVinculoBody): Promise<Vinculo> {
-        return this.executarEmSequencia(async () => {
+        return executarOperacaoVinculo(async () => {
             if (profissionalId === dados.alunoId) {
                 throw new VinculoConsigoMesmoError()
             }
@@ -101,7 +97,7 @@ export class VinculoService {
     }
 
     private async responderSolicitacao(id: string, alunoId: string, status: 'ATIVO' | 'RECUSADO'): Promise<Vinculo> {
-        return this.executarEmSequencia(async () => {
+        return executarOperacaoVinculo(async () => {
             const vinculo = await this.vinculoRepository.buscarPorId(id)
 
             if (!vinculo) {
