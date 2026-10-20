@@ -13,16 +13,11 @@ export class ProgramService {
     ) { }
 
     async createProgram(professionalId: string, data: CreateProgramBody): Promise<Program> {
-        const student = await this.userRepository.findById(data.studentId)
-        if (!student || student.profile !== 'STUDENT') {
-            throw new ProgramResourceNotFoundError('Aluno não encontrado.')
-        }
-
-        const isLinked = await this.catalogRepository.isStudentLinkedToProfessional(
+        const link = await this.catalogRepository.findActiveStudentLink(
             professionalId,
-            data.studentId
+            data.vinculoId
         )
-        if (!isLinked) {
+        if (!link) {
             throw new StudentNotLinkedError()
         }
 
@@ -30,22 +25,20 @@ export class ProgramService {
             throw new ProgramResourceNotFoundError('Modalidade não encontrada ou não habilitada para este profissional.')
         }
 
-        const activities = []
-        for (const [index, activityId] of data.activityIds.entries()) {
-            const activity = await this.catalogRepository.findActivity(activityId)
+        for (const item of data.activities) {
+            const activity = await this.catalogRepository.findActivity(item.activityId)
             if (!activity || activity.modalidadeId !== data.modalityId ||
                 (activity.origem === 'PERSONALIZADA' && activity.profissionalId !== professionalId)) {
-                throw new ProgramResourceNotFoundError(`Atividade '${activityId}' não encontrada.`)
+                throw new ProgramResourceNotFoundError(`Atividade '${item.activityId}' não encontrada.`)
             }
-            activities.push({ activityId, order: index + 1 })
         }
 
         return this.programRepository.create({
             professionalId,
-            studentId: data.studentId,
+            studentId: link.studentId,
             name: data.name,
             modalityId: data.modalityId,
-            activities
+            activities: [...data.activities].sort((left, right) => left.order - right.order)
         })
     }
 }

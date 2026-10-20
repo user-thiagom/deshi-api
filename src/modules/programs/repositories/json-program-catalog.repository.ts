@@ -3,6 +3,7 @@ import { CatalogActivity } from '../program.types.js'
 import { ProgramCatalogRepository } from './program-catalog.repository.js'
 
 interface VinculoRecord {
+    id: string
     profissionalId: string
     alunoId: string
     status: string
@@ -32,12 +33,13 @@ export class JsonProgramCatalogRepository implements ProgramCatalogRepository {
         return JSON.parse(content) as T
     }
 
-    async isStudentLinkedToProfessional(professionalId: string, studentId: string): Promise<boolean> {
+    async findActiveStudentLink(professionalId: string, linkId: string) {
         const vinculos = await this.readJson<VinculoRecord[]>(this.vinculosPath)
-        return vinculos.some(
-            (vinculo) => vinculo.profissionalId === professionalId &&
-                vinculo.alunoId === studentId && vinculo.status === 'ATIVO'
+        const vinculo = vinculos.find(
+            (item) => item.id === linkId &&
+                item.profissionalId === professionalId && item.status === 'ATIVO'
         )
+        return vinculo ? { studentId: vinculo.alunoId } : null
     }
 
     async hasProfessionalModality(professionalId: string, modalityId: string): Promise<boolean> {
