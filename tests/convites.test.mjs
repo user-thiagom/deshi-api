@@ -31,8 +31,30 @@ const ler = async (arquivo) => JSON.parse(await readFile(arquivo, 'utf8'))
 const gravar = (arquivo, dados) => writeFile(arquivo, JSON.stringify(dados))
 
 async function contexto(t) {
+    const cwdOriginal = process.cwd()
     const diretorio = await mkdtemp(path.join(tmpdir(), 'deshi-convites-test-'))
-    t.after(() => rm(diretorio, { recursive: true, force: true }))
+
+
+        t.after(async () => {
+        const atual = process.cwd()
+
+        if (
+            atual === diretorio ||
+            atual.startsWith(diretorio + path.sep)
+        ) {
+            process.chdir(cwdOriginal)
+        }
+
+        await rm(diretorio, {
+            recursive: true,
+            force: true,
+            maxRetries: 10,
+            retryDelay: 200
+        })
+    })
+
+
+
     const data = path.join(diretorio, 'data')
     await mkdir(data)
     const arquivoConvites = path.join(data, 'convites.json')
@@ -50,8 +72,10 @@ async function contexto(t) {
     const users = new JsonUserRepository(arquivoUsuarios)
     const service = new ConviteService(convites, vinculos, users)
     const vinculoService = new VinculoService(vinculos, users)
-    return { diretorio, data, arquivoConvites, arquivoVinculos, arquivoUsuarios, reset,
-        convites, vinculos, users, service, vinculoService }
+    return {
+        diretorio, data, arquivoConvites, arquivoVinculos, arquivoUsuarios, reset,
+        convites, vinculos, users, service, vinculoService
+    }
 }
 
 function token(userId, opcoes = {}) {
@@ -66,12 +90,25 @@ test('convites e regressão dos vínculos — HTTP', async (t) => {
     process.env.JWT_SECRET = segredo
     process.chdir(c.diretorio)
     const app = Fastify()
+
+
     t.after(async () => {
-        await app.close()
-        process.chdir(cwd)
-        if (segredoAnterior === undefined) delete process.env.JWT_SECRET
-        else process.env.JWT_SECRET = segredoAnterior
+        try {
+            await app.close()
+        } finally {
+            process.chdir(cwd)
+
+            if (segredoAnterior === undefined) {
+                delete process.env.JWT_SECRET
+            } else {
+                process.env.JWT_SECRET = segredoAnterior
+            }
+
+            await rm(c.diretorio, { recursive: true, force: true })
+        }
     })
+
+
     const { conviteRoutes } = await import('../dist/modules/vinculos/convite.routes.js')
     const { vinculoRoutes } = await import('../dist/modules/vinculos/vinculos.routes.js')
     app.register(conviteRoutes)
