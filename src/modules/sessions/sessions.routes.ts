@@ -1,5 +1,8 @@
-import { FastifyInstance } from 'fastify'
+import type { FastifyInstance } from 'fastify'
+
+import { authenticate } from '../../shared/auth/authenticate.js'
+import { startSessionController } from './sessions.controller.js'
 
 export async function sessionRoutes(server: FastifyInstance) {
-    // A rota POST /sessions será registrada aqui.
+    server.post( '/sessions', { preHandler: authenticate }, startSessionController )
 }

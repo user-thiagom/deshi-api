@@ -7,6 +7,7 @@ const PORT = 3030
 const server = fastify()
 
 server.register(userRoutes)
+server.register(sessionRoutes)
 
 server.get('/', async (request, reply) => {
   return 'API do DESHI funcionando!';

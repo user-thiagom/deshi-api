@@ -25,5 +25,14 @@
     "profile": "STUDENT",
     "createdAt": "2026-10-09T13:45:16.781Z",
     "updatedAt": "2026-10-09T13:45:16.781Z"
+  },
+  {
+    "id": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "name": "Lucas",
+    "email": "lucas@gmail.com",
+    "passwordHash": "$2b$10$81sz7PGDOe7CdwmcOiOBo.8zoEKYtkvJhUIMmzy4dq7/BZa8vlAUm",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-11T15:49:30.839Z",
+    "updatedAt": "2026-10-11T15:49:30.839Z"
   }
 ]

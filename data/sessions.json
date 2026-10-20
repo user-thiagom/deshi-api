@@ -1,1 +1,27 @@
-[]
+[
+  {
+    "id": "6153edd7-242e-46ea-88f3-dd94f34a696c",
+    "programId": "program-001",
+    "studentId": "00ffa476-56ee-46a5-ac4a-b8baf88d9b78",
+    "professionalId": "S0de8e5e9-163a-4daa-943b-e3851e4c70ba",
+    "startedAt": "2026-10-11T04:20:04.624Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "activity-001",
+        "order": 1,
+        "status": "PENDING"
+      },
+      {
+        "activityId": "activity-002",
+        "order": 2,
+        "status": "PENDING"
+      },
+      {
+        "activityId": "activity-003",
+        "order": 3,
+        "status": "PENDING"
+      }
+    ]
+  }
+]
