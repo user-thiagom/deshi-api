@@ -16,5 +16,14 @@
     "profile": "STUDENT",
     "createdAt": "2026-10-09T13:45:16.781Z",
     "updatedAt": "2026-10-09T13:45:16.781Z"
+  },
+  {
+    "id": "28faa0e5-c1f2-412e-b756-9dcb35c86819",
+    "name": "Thiago Mateus Costa Fernandes de Lima",
+    "email": "teste@gmail.com",
+    "passwordHash": "$2b$10$Xqtu69ESy3iedrSXPfgeU.X8WCtn8Hx8bmrokBPc.Vqfdprs.kMtO",
+    "profile": "PROFESSIONAL",
+    "createdAt": "2026-10-22T14:11:20.669Z",
+    "updatedAt": "2026-10-22T14:11:20.669Z"
   }
 ]
