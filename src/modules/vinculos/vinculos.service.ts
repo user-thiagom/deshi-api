@@ -1,4 +1,6 @@
 import { UserRepository } from '../users/repositories/user.repository.js'
+import { toUserResponse } from '../users/users.mapper.js'
+import { UserResponse } from '../users/users.types.js'
 import { VinculoRepository } from './repositories/vinculo.repository.js'
 import {
     AlunoNaoEncontradoError,
@@ -25,6 +27,21 @@ export class VinculoService {
         const resultado = this.operacoesPendentes.then(operacao)
         this.operacoesPendentes = resultado.then(() => undefined, () => undefined)
         return resultado
+    }
+
+    async listarAlunosVinculados(profissionalId: string): Promise<UserResponse[]> {
+        const vinculos = await this.vinculoRepository.buscarAtivosPorProfissional(profissionalId)
+        const alunos: UserResponse[] = []
+
+        for (const vinculo of vinculos) {
+            const aluno = await this.userRepository.findById(vinculo.alunoId)
+
+            if (aluno?.profile === 'STUDENT') {
+                alunos.push(toUserResponse(aluno))
+            }
+        }
+
+        return alunos
     }
 
     async criarSolicitacao(profissionalId: string, dados: CriarVinculoBody): Promise<Vinculo> {
