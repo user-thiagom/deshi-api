@@ -118,15 +118,22 @@ test('HU10 — criação de programas, HTTP real e JSONs isolados', { timeout: 6
             await fs.writeFile(path.join(data, arquivo), '[]\n')
         }
 
-        const profissionalId = randomUUID()
-        const alunoId = randomUUID()
-        const musculacaoId = 'd1b10e90-8d5c-4ad3-9d68-000000000001'
-        const atividadeId = 'a7101d90-8d5c-4ad3-9d68-000000000001'
+        
+const profissionalId = randomUUID()
+const outroProfissionalId = randomUUID()
+const alunoId = randomUUID()
+const outroAlunoId = randomUUID()
+const musculacaoId = 'd1b10e90-8d5c-4ad3-9d68-000000000001'
+const atividadeId = 'a7101d90-8d5c-4ad3-9d68-000000000001'
 
-        await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
-            { id: profissionalId, profile: 'PROFESSIONAL' },
-            { id: alunoId, profile: 'STUDENT' }
-        ]))
+        
+await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
+    { id: profissionalId, profile: 'PROFESSIONAL' },
+    { id: outroProfissionalId, profile: 'PROFESSIONAL' },
+    { id: alunoId, profile: 'STUDENT' },
+    { id: outroAlunoId, profile: 'STUDENT' }
+]))
+
 
         await fs.writeFile(path.join(data, 'vinculos.json'), JSON.stringify([{
             id: randomUUID(),
@@ -188,8 +195,77 @@ test('HU10 — criação de programas, HTTP real e JSONs isolados', { timeout: 6
             const resposta = await requisitar('POST', '/programas', token(alunoId), body)
             assert.equal(resposta.status, 403)
         })
+        await t.test('rejeita aluno sem vínculo ativo', async () => {
+            const programaSemVinculo = {
+                ...body,
+                alunoId: outroAlunoId
+            }
+
+            const resposta = await requisitar(
+                'POST',
+                '/programas',
+                credencial,
+                programaSemVinculo
+            )
+
+            assert.equal(resposta.status, 403)
+
+            const persistidos = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            assert.equal(persistidos.length, 1)
+        })
+
+        await t.test('aluno consulta somente os próprios programas', async () => {
+            const respostaAluno = await requisitar(
+                'GET',
+                '/programas',
+                token(alunoId)
+            )
+
+            assert.equal(respostaAluno.status, 200)
+            assert.equal(respostaAluno.body.length, 1)
+            assert.equal(respostaAluno.body[0].alunoId, alunoId)
+
+            const respostaOutroAluno = await requisitar(
+                'GET',
+                '/programas',
+                token(outroAlunoId)
+            )
+
+            assert.equal(respostaOutroAluno.status, 200)
+            assert.deepEqual(respostaOutroAluno.body, [])
+        })
+
+        await t.test('profissional consulta somente os próprios programas', async () => {
+            const resposta = await requisitar(
+                'GET',
+                '/programas',
+                token(profissionalId)
+            )
+
+            assert.equal(resposta.status, 200)
+            assert.equal(resposta.body.length, 1)
+            assert.equal(resposta.body[0].profissionalId, profissionalId)
+
+            const respostaOutroProfissional = await requisitar(
+                'GET',
+                '/programas',
+                token(outroProfissionalId)
+            )
+
+            assert.equal(respostaOutroProfissional.status, 200)
+            assert.deepEqual(respostaOutroProfissional.body, [])
+        })
+
+        await t.test('consulta de programas sem token retorna 401', async () => {
+            const resposta = await requisitar('GET', '/programas')
+
+            assert.equal(resposta.status, 401)
+        })
     } finally {
         await pararServidor(processo)
         await fs.rm(temporario, { recursive: true, force: true })
     }
 })
+

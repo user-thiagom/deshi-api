@@ -7,6 +7,7 @@ import { JsonProgramaRepository } from './repositories/json-programa.repository.
 import { ProgramaService } from './programas.service.js'
 import { ProgramaError } from './programas.errors.js'
 import { CriarProgramaBody, criarProgramaSchema } from './programas.schema.js'
+import { JsonUserRepository } from '../users/repositories/json-user.repository.js'
 
 const programaService = new ProgramaService(
     new JsonProgramaRepository('data/programas.json'),
@@ -49,4 +50,32 @@ export async function criarProgramaController(
 
         throw error
     }
+}
+
+
+export async function listarProgramasController(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    const userRepository = new JsonUserRepository('data/users.json')
+    const usuario = await userRepository.findById(request.user.userId)
+
+    if (!usuario) {
+        return reply.status(401).send({
+            message: 'Usuário não encontrado.'
+        })
+    }
+
+    if (usuario.profile !== 'PROFESSIONAL' && usuario.profile !== 'STUDENT') {
+        return reply.status(403).send({
+            message: 'Você não tem permissão para acessar este recurso.'
+        })
+    }
+
+    const programas = await programaService.listarPorUsuario(
+        request.user.userId,
+        usuario.profile
+    )
+
+    return reply.status(200).send(programas)
 }

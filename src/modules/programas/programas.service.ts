@@ -137,4 +137,21 @@ return programa
 
 }
 
+async listarPorUsuario(
+    usuarioId: string,
+    perfil: 'PROFESSIONAL' | 'STUDENT'
+): Promise<Programa[]> {
+    const programas = await this.programas.listar()
+
+    if (perfil === 'STUDENT') {
+        return programas.filter(
+            (programa) => programa.alunoId === usuarioId
+        )
+    }
+
+    return programas.filter(
+        (programa) => programa.profissionalId === usuarioId
+    )
+}
+
 }
