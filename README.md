@@ -60,17 +60,17 @@ npm start
 
 O build compila `src/` para `dist/`. O comando `npm start` executa `dist/server.js`.
 
-## Funcionalidades implementadas
+## Funcionalidades disponíveis
 
-As histórias de usuário implementadas até a **US05** abrangem, conforme os fluxos presentes no código:
+- Cadastro e login de usuários com perfil `PROFESSIONAL` ou `STUDENT`.
+- Autenticação JWT, logout com revogação do token e autorização por perfil.
+- Solicitações diretas de vínculo entre profissional e aluno, com aceite ou recusa pelo aluno.
+- Convites de vínculo com código de oito caracteres e validade de sete dias.
+- Consulta de alunos e profissionais ligados por vínculos ativos.
+- Catálogo de modalidades e seleção de uma ou mais modalidades pelo profissional.
+- Biblioteca de atividades padrão e atividades personalizadas do profissional, com busca por nome e filtro por modalidade.
 
-- cadastro e login de usuários com perfil `PROFESSIONAL` ou `STUDENT`;
-- autenticação JWT, logout com revogação do token e autorização por perfil;
-- solicitação direta de vínculo criada pelo profissional e aceita ou recusada pelo aluno;
-- convite de vínculo criado pelo profissional e consultado, aceito ou recusado pelo aluno destinatário; o convite expira em sete dias;
-- consulta dos alunos vinculados ao profissional e dos profissionais vinculados ao aluno, considerando apenas vínculos ativos.
-
-A validação identificada como **US05** cobre a listagem de alunos com vínculo ativo isolada por profissional: cada profissional recebe somente seus próprios alunos, sem expor o hash da senha. Os títulos e a distribuição exata das demais funcionalidades entre US01–US04 não estão especificados no repositório.
+As operações de programas, sessões, resultados e histórico não fazem parte das rotas atualmente disponíveis nesta API.
 
 ## Persistência
 
@@ -80,6 +80,10 @@ Os dados são mantidos localmente nos seguintes arquivos:
 - `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
 - `data/vinculos.json`: solicitações e vínculos, com os estados `PENDENTE`, `ATIVO` ou `RECUSADO`;
 - `data/convites.json`: convites e seus estados `PENDENTE`, `ACEITO`, `RECUSADO` ou `EXPIRADO`.
+- `data/modalidades.json`: catálogo de modalidades disponíveis.
+- `data/profissional-modalidades.json`: modalidades selecionadas por cada profissional.
+- `data/atividades.json`: catálogo padrão de atividades.
+- `data/atividades-personalizadas.json`: atividades criadas por profissionais, isoladas por proprietário.
 
 As senhas são armazenadas com hash bcrypt (custo 10), nunca em texto puro. Os arquivos JSON são a persistência de protótipo e não um banco de dados compartilhado para múltiplas instâncias.
 
@@ -136,6 +140,33 @@ As respostas de listagem contêm dados públicos dos usuários, sem o hash da se
 
 O código do convite tem oito caracteres. Convites expiram após sete dias e somente o aluno destinatário pode consultá-los ou responder. Códigos inválidos retornam `400`, convites inexistentes retornam `404` e convites expirados retornam `410`.
 
+### Modalidades
+
+| Método | Rota | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/modalidades` | `PROFESSIONAL` | Lista o catálogo de modalidades. |
+| `GET` | `/modalidades/minhas` | `PROFESSIONAL` | Lista as modalidades associadas ao profissional autenticado. |
+| `PUT` | `/modalidades/minhas` | `PROFESSIONAL` | Substitui sua seleção de modalidades. |
+
+O corpo do `PUT` contém `modalidadeIds`, uma lista não vazia de UUIDs sem repetição, todos existentes no catálogo. Exemplo:
+
+```json
+{
+  "modalidadeIds": ["uuid-da-modalidade"]
+}
+```
+
+### Biblioteca de atividades
+
+| Método | Rota | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/atividades` | `PROFESSIONAL` | Lista atividades padrão e as personalizadas do profissional autenticado. |
+| `POST` | `/atividades` | `PROFESSIONAL` | Cria uma atividade personalizada associada a uma modalidade existente. |
+
+O `GET` aceita `busca` (busca parcial pelo nome) e `modalidadeId` (UUID da modalidade) como filtros opcionais. Os filtros podem ser combinados. Atividades personalizadas de outros profissionais não são retornadas.
+
+O `POST` exige `nome` e `modalidadeId`; `descricao` e `midiaUrl` são opcionais. A mídia deve ser uma URL HTTP ou HTTPS. O proprietário e a origem da atividade são determinados pelo servidor.
+
 ### Rotas de teste de perfil
 
 Estas rotas existem para demonstrar autenticação e autorização e não são funcionalidades de negócio:
@@ -155,7 +186,7 @@ Execute a suíte automatizada com:
 npm test
 ```
 
-O script compila o projeto e executa os testes Node.js em sequência (`--test-concurrency=1`), incluindo os fluxos HTTP de convites e vínculos e a listagem isolada de alunos ativos por profissional (US05).
+O script compila o projeto e executa os arquivos `tests/*.test.mjs` em sequência. Os testes cobrem a biblioteca de atividades e os fluxos de convites e vínculos. As verificações específicas de seleção e persistência das modalidades ficam em `tests/modalidades.test.mjs`.
 
 ## Scripts
 
@@ -164,7 +195,7 @@ O script compila o projeto e executa os testes Node.js em sequência (`--test-co
 | `npm run dev` | Executa `tsx watch src/server.ts` em desenvolvimento. |
 | `npm run build` | Compila o projeto com `tsc`. |
 | `npm start` | Executa a versão compilada com Node.js. |
-| `npm test` | Compila o projeto e executa os testes automatizados. |
+| `npm test` | Compila o projeto e executa todos os testes automatizados em sequência. |
 
 ## Estrutura principal
 
@@ -173,6 +204,12 @@ src/
 ├── config/
 │   └── env.ts
 ├── modules/
+│   ├── atividades/
+│   │   ├── repositories/
+│   │   └── atividades.*
+│   ├── modalidades/
+│   │   ├── repositories/
+│   │   └── modalidades.*
 │   ├── users/
 │   │   ├── repositories/
 │   │   └── users.*
