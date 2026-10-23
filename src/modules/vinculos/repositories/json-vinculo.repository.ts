@@ -49,6 +49,13 @@ export class JsonVinculoRepository implements VinculoRepository {
         )
     }
 
+    async buscarAtivosPorAluno(alunoId: string): Promise<Vinculo[]> {
+        const vinculos = await this.lerVinculos()
+        return vinculos.filter((vinculo) =>
+            vinculo.alunoId === alunoId && vinculo.status === 'ATIVO'
+        )
+    }
+
     async buscarEntreProfissionalEAluno(profissionalId: string, alunoId: string): Promise<Vinculo[]> {
         const vinculos = await this.lerVinculos()
         return vinculos.filter((vinculo) =>
