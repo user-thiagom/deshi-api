@@ -1,10 +1,17 @@
+import { executarGravacaoJson } from '../vinculos.concorrencia.js'
 import { promises as fs } from 'node:fs'
 import { randomUUID } from 'node:crypto'
 import { VinculoRepository } from './vinculo.repository.js'
 import { DadosCriacaoVinculo, Vinculo } from '../vinculos.types.js'
 
 export class JsonVinculoRepository implements VinculoRepository {
-    constructor(private readonly filePath: string) { }
+    constructor(private readonly filePath: string) {}
+
+    private executarEmSequencia<T>(
+        operacao: () => Promise<T>
+    ): Promise<T> {
+        return executarGravacaoJson(this.filePath, operacao)
+    }
 
     private async lerVinculos(): Promise<Vinculo[]> {
         const conteudo = await fs.readFile(this.filePath, 'utf-8')
@@ -18,23 +25,40 @@ export class JsonVinculoRepository implements VinculoRepository {
     }
 
     private async escreverVinculos(vinculos: Vinculo[]): Promise<void> {
-        await fs.writeFile(this.filePath, JSON.stringify(vinculos, null, 2))
+        const arquivoTemporario = `${this.filePath}.${randomUUID()}.tmp`
+
+        try {
+            await fs.writeFile(
+                arquivoTemporario,
+                JSON.stringify(vinculos, null, 2),
+                'utf-8'
+            )
+
+            await fs.rename(arquivoTemporario, this.filePath)
+        } catch (erro) {
+            await fs.unlink(arquivoTemporario).catch(() => undefined)
+            throw erro
+        }
     }
 
     async criar(dados: DadosCriacaoVinculo): Promise<Vinculo> {
-        const agora = new Date()
-        const vinculo: Vinculo = {
-            id: randomUUID(),
-            ...dados,
-            criadoEm: agora,
-            atualizadoEm: agora
-        }
+        return this.executarEmSequencia(async () => {
+            const agora = new Date()
 
-        const vinculos = await this.lerVinculos()
-        vinculos.push(vinculo)
-        await this.escreverVinculos(vinculos)
+            const vinculo: Vinculo = {
+                id: randomUUID(),
+                ...dados,
+                criadoEm: agora,
+                atualizadoEm: agora
+            }
 
-        return vinculo
+            const vinculos = await this.lerVinculos()
+            vinculos.push(vinculo)
+
+            await this.escreverVinculos(vinculos)
+
+            return vinculo
+        })
     }
 
     async buscarPorId(id: string): Promise<Vinculo | null> {
@@ -42,31 +66,80 @@ export class JsonVinculoRepository implements VinculoRepository {
         return vinculos.find((vinculo) => vinculo.id === id) ?? null
     }
 
-    async buscarAtivosPorProfissional(profissionalId: string): Promise<Vinculo[]> {
+    async buscarAtivosPorProfissional(
+        profissionalId: string
+    ): Promise<Vinculo[]> {
         const vinculos = await this.lerVinculos()
-        return vinculos.filter((vinculo) =>
-            vinculo.profissionalId === profissionalId && vinculo.status === 'ATIVO'
+
+        return vinculos.filter(
+            (vinculo) =>
+                vinculo.profissionalId === profissionalId &&
+                vinculo.status === 'ATIVO'
         )
     }
 
-    async buscarEntreProfissionalEAluno(profissionalId: string, alunoId: string): Promise<Vinculo[]> {
+    async buscarAtivosPorAluno(alunoId: string): Promise<Vinculo[]> {
         const vinculos = await this.lerVinculos()
-        return vinculos.filter((vinculo) =>
-            vinculo.profissionalId === profissionalId && vinculo.alunoId === alunoId
+
+        return vinculos.filter(
+            (vinculo) =>
+                vinculo.alunoId === alunoId &&
+                vinculo.status === 'ATIVO'
+        )
+    }
+
+    async buscarEntreProfissionalEAluno(
+        profissionalId: string,
+        alunoId: string
+    ): Promise<Vinculo[]> {
+        const vinculos = await this.lerVinculos()
+
+        return vinculos.filter(
+            (vinculo) =>
+                vinculo.profissionalId === profissionalId &&
+                vinculo.alunoId === alunoId
         )
     }
 
     async atualizar(vinculo: Vinculo): Promise<Vinculo | null> {
-        const vinculos = await this.lerVinculos()
-        const indice = vinculos.findIndex((registro) => registro.id === vinculo.id)
+        return this.executarEmSequencia(async () => {
+            const vinculos = await this.lerVinculos()
 
-        if (indice === -1) {
-            return null
-        }
+            const indice = vinculos.findIndex(
+                (registro) => registro.id === vinculo.id
+            )
 
-        vinculos[indice] = vinculo
-        await this.escreverVinculos(vinculos)
+            if (indice === -1) {
+                return null
+            }
 
-        return vinculo
+            vinculos[indice] = {
+                ...vinculo,
+                atualizadoEm: new Date()
+            }
+
+            await this.escreverVinculos(vinculos)
+
+            return vinculos[indice]
+        })
+    }
+
+    async remover(id: string): Promise<boolean> {
+        return this.executarEmSequencia(async () => {
+            const vinculos = await this.lerVinculos()
+            const indice = vinculos.findIndex(
+                (vinculo) => vinculo.id === id
+            )
+
+            if (indice === -1) {
+                return false
+            }
+
+            vinculos.splice(indice, 1)
+
+            await this.escreverVinculos(vinculos)
+
+            return true
+        })
     }
 }

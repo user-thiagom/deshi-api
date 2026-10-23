@@ -43,6 +43,11 @@ export async function listarAlunosVinculadosController(request: FastifyRequest, 
     return reply.status(200).send(alunos)
 }
 
+export async function listarProfissionaisVinculadosController(request: FastifyRequest, reply: FastifyReply) {
+    const profissionais = await vinculoService.listarProfissionaisVinculados(request.user.userId)
+    return reply.status(200).send(profissionais)
+}
+
 export async function criarVinculoController(request: FastifyRequest<{ Body: CriarVinculoBody }>, reply: FastifyReply) {
     const resultado = criarVinculoSchema.safeParse(request.body)
 
