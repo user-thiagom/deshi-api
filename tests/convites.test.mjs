@@ -404,6 +404,41 @@ test('convites e regressão dos vínculos — HTTP', async (t) => {
         assert.equal((await requisitar('GET', '/vinculos/profissionais', profissional)).statusCode, 403)
     })
 
+    await t.test('US05: listagem de alunos ativos isolada por profissional', async () => {
+        const terceiroProfissional = randomUUID()
+        const segundoAlunoA = randomUUID()
+        const alunoProfissionalB = randomUUID()
+        const alunosAdicionais = [segundoAlunoA, alunoProfissionalB].map((id) => ({
+            id, profile: 'STUDENT', name: `Usuário ${id}`, email: `${id}@teste.local`,
+            passwordHash: 'hash-que-nao-pode-vazar', createdAt: new Date(), updatedAt: new Date()
+        }))
+        await gravar(c.arquivoUsuarios, [
+            ...usuarios,
+            { id: terceiroProfissional, profile: 'PROFESSIONAL', name: `Usuário ${terceiroProfissional}`,
+                email: `${terceiroProfissional}@teste.local`, passwordHash: 'hash-que-nao-pode-vazar',
+                createdAt: new Date(), updatedAt: new Date() },
+            ...alunosAdicionais
+        ])
+        await c.vinculos.criar({ profissionalId: profissional, alunoId: aluno, status: 'ATIVO' })
+        await c.vinculos.criar({ profissionalId: profissional, alunoId: segundoAlunoA, status: 'ATIVO' })
+        await c.vinculos.criar({ profissionalId: profissional, alunoId: outroAluno, status: 'PENDENTE' })
+        await c.vinculos.criar({ profissionalId: outroProfissional, alunoId: alunoProfissionalB, status: 'ATIVO' })
+
+        const alunosA = await requisitar('GET', '/vinculos/alunos', profissional)
+        assert.equal(alunosA.statusCode, 200)
+        assert.deepEqual(new Set(alunosA.json().map((u) => u.id)), new Set([aluno, segundoAlunoA]))
+        assert.ok(alunosA.json().every((u) => !('passwordHash' in u)))
+
+        const alunosB = await requisitar('GET', '/vinculos/alunos', outroProfissional)
+        assert.equal(alunosB.statusCode, 200)
+        assert.deepEqual(alunosB.json().map((u) => u.id), [alunoProfissionalB])
+        assert.ok(alunosB.json().every((u) => !('passwordHash' in u)))
+
+        const semVinculos = await requisitar('GET', '/vinculos/alunos', terceiroProfissional)
+        assert.equal(semVinculos.statusCode, 200)
+        assert.deepEqual(semVinculos.json(), [])
+    })
+
     await t.test('criações e aceites simultâneos têm um único vencedor', async () => {
         const criacoes = await Promise.all(Array.from({ length: 12 }, () => criar()))
         assert.equal(criacoes.filter((r) => r.statusCode === 201).length, 1)
