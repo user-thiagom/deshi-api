@@ -186,6 +186,58 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(persistidos[0].id, resposta.body.id)
         })
 
+        await t.test('ordena atividades antes de retornar e persistir', async () => {
+            const bodyOrdenacao = {
+                ...body,
+                nome: 'Programa com ordem definida',
+                atividades: [
+                    {
+                        atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000002',
+                        ordem: 2,
+                        valores: { series: 3, repeticoes: 10 }
+                    },
+                    {
+                        atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000001',
+                        ordem: 1,
+                        valores: { series: 3, repeticoes: 12 }
+                    }
+                ]
+            }
+
+            const resposta = await requisitar(
+                'POST',
+                '/programas',
+                credencial,
+                bodyOrdenacao
+            )
+
+            assert.equal(resposta.status, 201)
+            assert.deepEqual(
+                resposta.body.atividades.map((atividade) => atividade.ordem),
+                [1, 2]
+            )
+            assert.deepEqual(
+                resposta.body.atividades.map((atividade) => atividade.atividadeId),
+                [
+                    'a7101d90-8d5c-4ad3-9d68-000000000001',
+                    'a7101d90-8d5c-4ad3-9d68-000000000002'
+                ]
+            )
+
+            const persistidos = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const salvo = persistidos.find(
+                (programa) => programa.id === resposta.body.id
+            )
+
+            assert.ok(salvo)
+            assert.deepEqual(
+                salvo.atividades.map((atividade) => atividade.ordem),
+                [1, 2]
+            )
+        })
+
         await t.test('sem token retorna 401', async () => {
             const resposta = await requisitar('POST', '/programas', undefined, body)
             assert.equal(resposta.status, 401)
@@ -213,7 +265,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             const persistidos = JSON.parse(
                 await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
             )
-            assert.equal(persistidos.length, 1)
+            assert.equal(persistidos.length, 2)
         })
 
         await t.test('aluno consulta somente os próprios programas', async () => {
@@ -224,7 +276,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
 
             assert.equal(respostaAluno.status, 200)
-            assert.equal(respostaAluno.body.length, 1)
+            assert.equal(respostaAluno.body.length, 2)
             assert.equal(respostaAluno.body[0].alunoId, alunoId)
 
             const respostaOutroAluno = await requisitar(
@@ -245,7 +297,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
 
             assert.equal(resposta.status, 200)
-            assert.equal(resposta.body.length, 1)
+            assert.equal(resposta.body.length, 2)
             assert.equal(resposta.body[0].profissionalId, profissionalId)
 
             const respostaOutroProfissional = await requisitar(
