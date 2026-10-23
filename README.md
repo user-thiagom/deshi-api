@@ -2,13 +2,13 @@
 
 Backend da plataforma **DESHI**, desenvolvido com **Fastify** e **TypeScript** durante a Residência de Software.
 
-Nesta etapa, a API implementa cadastro, login, logout com revogação de token no servidor e controle de acesso por perfil. A persistência é local, em arquivos JSON, e poderá ser substituída futuramente por um banco de dados por meio dos repositórios da aplicação.
+A API oferece cadastro e autenticação de usuários, solicitações diretas de vínculo entre profissionais e alunos, convites para vínculo e consulta dos vínculos ativos. A persistência do protótipo usa arquivos JSON locais, por meio de repositórios que podem ser substituídos futuramente.
 
 ## Tecnologias
 
 - Node.js 22
 - TypeScript
-- Fastify
+- Fastify e `@fastify/cors`
 - Zod
 - bcryptjs
 - jsonwebtoken
@@ -27,7 +27,7 @@ Instale as dependências:
 npm install
 ```
 
-Crie o arquivo `.env` a partir de `.env.example` e informe uma chave de assinatura forte:
+Crie o arquivo `.env` a partir de `.env.example` e defina uma chave de assinatura forte:
 
 ```env
 JWT_SECRET=uma_chave_secreta_longa_e_aleatoria
@@ -60,18 +60,37 @@ npm start
 
 O build compila `src/` para `dist/`. O comando `npm start` executa `dist/server.js`.
 
+## Funcionalidades implementadas
+
+As histórias de usuário implementadas até a **US05** abrangem, conforme os fluxos presentes no código:
+
+- cadastro e login de usuários com perfil `PROFESSIONAL` ou `STUDENT`;
+- autenticação JWT, logout com revogação do token e autorização por perfil;
+- solicitação direta de vínculo criada pelo profissional e aceita ou recusada pelo aluno;
+- convite de vínculo criado pelo profissional e consultado, aceito ou recusado pelo aluno destinatário; o convite expira em sete dias;
+- consulta dos alunos vinculados ao profissional e dos profissionais vinculados ao aluno, considerando apenas vínculos ativos.
+
+A validação identificada como **US05** cobre a listagem de alunos com vínculo ativo isolada por profissional: cada profissional recebe somente seus próprios alunos, sem expor o hash da senha. Os títulos e a distribuição exata das demais funcionalidades entre US01–US04 não estão especificados no repositório.
+
 ## Persistência
 
-Os dados são persistidos localmente nos seguintes arquivos:
+Os dados são mantidos localmente nos seguintes arquivos:
 
+<<<<<<< HEAD
 - `data/users.json`: usuários, incluindo o hash da senha;
 - `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
 - `data/vinculos.json`, `data/modalidades.json`, `data/profissional-modalidades.json`, `data/atividades.json` e `data/atividades-personalizadas.json`: fontes oficiais usadas para validar vínculo, modalidades selecionadas e atividades;
 - `data/programs.json`: programas criados.
+=======
+- `data/users.json`: usuários e hashes de senha;
+- `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
+- `data/vinculos.json`: solicitações e vínculos, com os estados `PENDENTE`, `ATIVO` ou `RECUSADO`;
+- `data/convites.json`: convites e seus estados `PENDENTE`, `ACEITO`, `RECUSADO` ou `EXPIRADO`.
+>>>>>>> origin/develop
 
-Senhas nunca são gravadas em texto puro: o cadastro usa `bcrypt` com custo 10. A lista de tokens revogados remove tokens expirados ao consultar ou registrar uma revogação.
+As senhas são armazenadas com hash bcrypt (custo 10), nunca em texto puro. Os arquivos JSON são a persistência de protótipo e não um banco de dados compartilhado para múltiplas instâncias.
 
-## Autenticação e autorização
+## Autenticação e perfis
 
 O login produz um JWT válido por uma hora, associado a um `jti` único. Rotas autenticadas exigem o cabeçalho:
 
@@ -79,126 +98,71 @@ O login produz um JWT válido por uma hora, associado a um `jti` único. Rotas a
 Authorization: Bearer <token>
 ```
 
-O middleware de autenticação valida a assinatura e expiração do JWT, verifica se o token foi revogado e disponibiliza o identificador do usuário autenticado para a rota. O logout registra o `jti` do token em `data/revoked-tokens.json`, impedindo seu uso posterior.
-
-As rotas de demonstração também usam autorização por perfil:
-
-- `PROFESSIONAL`
-- `STUDENT`
+A autenticação valida a assinatura e a expiração do token, verifica sua revogação e identifica o usuário. O logout registra o `jti` em `data/revoked-tokens.json`. Os perfis aceitos são `PROFESSIONAL` e `STUDENT`; as rotas de vínculos e convites também restringem as operações ao perfil correspondente.
 
 ## Rotas
 
-### Cadastro — `POST /users`
+### Usuários
 
-Cria um usuário. Todos os campos são obrigatórios.
+| Método | Rota | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/users` | Público | Cadastra usuário com nome, e-mail, senha e perfil. |
+| `POST` | `/login` | Público | Autentica por e-mail e senha e retorna token e usuário. |
+| `POST` | `/logout` | Autenticado | Revoga o token apresentado; retorna `204 No Content`. |
 
-```json
-{
-  "name": "Nome do usuário",
-  "email": "usuario@email.com",
-  "password": "senha-com-ao-menos-8-caracteres",
-  "profile": "PROFESSIONAL"
-}
-```
+Regras do cadastro: nome com pelo menos 3 caracteres, e-mail válido, senha com pelo menos 8 caracteres e perfil `PROFESSIONAL` ou `STUDENT`. E-mail já cadastrado retorna `409`.
 
-Regras de validação:
+### Solicitações diretas e vínculos
 
-- `name`: texto com, no mínimo, 3 caracteres;
-- `email`: e-mail válido;
-- `password`: texto com, no mínimo, 8 caracteres;
-- `profile`: `PROFESSIONAL` ou `STUDENT`.
+| Método | Rota | Perfil exigido | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/vinculos` | `PROFESSIONAL` | Cria uma solicitação pendente para o aluno informado em `alunoId`. |
+| `PATCH` | `/vinculos/:id/aceitar` | `STUDENT` | O aluno destinatário aceita a solicitação pendente, ativando o vínculo. |
+| `PATCH` | `/vinculos/:id/recusar` | `STUDENT` | O aluno destinatário recusa a solicitação pendente. |
+| `GET` | `/vinculos/alunos` | `PROFESSIONAL` | Lista os alunos com vínculo ativo do profissional autenticado. |
+| `GET` | `/vinculos/profissionais` | `STUDENT` | Lista os profissionais com vínculo ativo do aluno autenticado. |
 
-Resposta de sucesso (`200`):
-
-```json
-{
-  "id": "uuid",
-  "name": "Nome do usuário",
-  "email": "usuario@email.com",
-  "profile": "PROFESSIONAL",
-  "createdAt": "2026-10-09T00:00:00.000Z",
-  "updatedAt": "2026-10-09T00:00:00.000Z"
-}
-```
-
-Erros conhecidos:
-
-- `400`: `Formato de dados inválido!`;
-- `409`: `E-mail já cadastrado.`
-
-### Login — `POST /login`
-
-Autentica um usuário por e-mail e senha.
+Exemplo de corpo para criar solicitação:
 
 ```json
 {
-  "email": "usuario@email.com",
-  "password": "senha-com-ao-menos-8-caracteres"
+  "alunoId": "uuid-do-aluno"
 }
 ```
 
-Resposta de sucesso (`200`):
+As respostas de listagem contêm dados públicos dos usuários, sem o hash da senha. Solicitações pendentes ou recusadas não aparecem como vínculos ativos.
 
-```json
-{
-  "token": "jwt",
-  "user": {
-    "id": "uuid",
-    "name": "Nome do usuário",
-    "email": "usuario@email.com",
-    "profile": "PROFESSIONAL"
-  }
-}
-```
+### Convites
 
-Erros conhecidos:
+| Método | Rota | Perfil exigido | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/vinculos/convites` | `PROFESSIONAL` | Cria convite para o aluno indicado em `alunoId` e retorna um código. |
+| `GET` | `/vinculos/convites/:codigo` | `STUDENT` | Consulta convite destinado ao aluno autenticado. |
+| `POST` | `/vinculos/convites/:codigo/aceitar` | `STUDENT` | Aceita convite válido do aluno autenticado e cria vínculo ativo. |
+| `POST` | `/vinculos/convites/:codigo/recusar` | `STUDENT` | Recusa convite válido do aluno autenticado. |
 
-- `400`: `Formato de dados inválido!`;
-- `401`: `E-mail ou senha inválidos.`
+O código do convite tem oito caracteres. Convites expiram após sete dias e somente o aluno destinatário pode consultá-los ou responder. Códigos inválidos retornam `400`, convites inexistentes retornam `404` e convites expirados retornam `410`.
 
-### Logout — `POST /logout`
+### Rotas de teste de perfil
 
-Requer Bearer JWT. Revoga o token apresentado no servidor e retorna `204 No Content`.
-
-```http
-POST /logout
-Authorization: Bearer <token>
-```
-
-### Criar programa — `POST /programs`
-
-Requer Bearer JWT de um usuário com perfil `PROFESSIONAL`. O profissional responsável é sempre obtido do token autenticado.
-
-```json
-{
-  "studentId": "uuid-do-aluno",
-  "name": "Programa individual",
-  "modalityId": "id-da-modalidade-no-catalogo",
-  "activityIds": ["id-da-atividade-1", "id-da-atividade-2"]
-}
-```
-
-`studentId` deve identificar um usuário `STUDENT` com vínculo `ATIVO` ao profissional. A modalidade deve existir no catálogo e estar selecionada pelo profissional. Todos os IDs de atividade devem existir no catálogo de HU08, pertencer à modalidade escolhida e, se a atividade for personalizada, pertencer ao profissional autenticado. `activityIds` não pode ser vazio; a resposta converte-os para `activities: [{ "activityId": "...", "order": 1 }]`, compatível com o modelo usado pelas histórias de sessão, preservando a ordem. A resposta de sucesso é `201 Created` e inclui o identificador UUID, os dados da criação e `createdAt`.
-
-Erros: `400` para corpo inválido ou sem atividades, `401` para autenticação inválida/ausente, `403` para perfil não autorizado ou aluno sem vínculo, e `404` para aluno, modalidade ou atividade inexistente.
-
-O endpoint lê os arquivos e modelos existentes das histórias de vínculos, modalidades e atividades, sem manter um catálogo paralelo. O arquivo de programas usa `activities` com `activityId` e `order`, formato esperado pelo fluxo de início de sessão.
-
-### Rotas temporárias de demonstração
-
-Estas rotas foram mantidas intencionalmente para demonstrar autenticação e autorização na próxima reunião. Não são rotas funcionais definitivas da aplicação.
+Estas rotas existem para demonstrar autenticação e autorização e não são funcionalidades de negócio:
 
 | Método | Rota | Requisito | Resposta de sucesso |
 | --- | --- | --- | --- |
-| `GET` | `/professional-test` | Bearer JWT de usuário `PROFESSIONAL` | `{ "message": "Acesso profissional autorizado!" }` |
-| `GET` | `/student-test` | Bearer JWT de usuário `STUDENT` | `{ "message": "Acesso estudante autorizado!" }` |
+| `GET` | `/professional-test` | JWT de usuário `PROFESSIONAL` | `{ "message": "Acesso profissional autorizado!" }` |
+| `GET` | `/student-test` | JWT de usuário `STUDENT` | `{ "message": "Acesso estudante autorizado!" }` |
 
-Em rotas autenticadas, a API pode responder com:
+Em rotas autenticadas, a API pode responder com `401` para token ausente, inválido, expirado ou revogado, ou usuário não encontrado; `403` indica perfil sem autorização para a operação.
 
-- `401` quando o token estiver ausente, inválido, expirado, revogado ou o usuário não for encontrado;
-- `403` quando o usuário autenticado não tiver o perfil exigido.
+## Testes
 
-> A rota `/protected-test` não está registrada no código atual. Caso ela seja necessária para a demonstração, deve ser implementada antes de ser adicionada a esta documentação.
+Execute a suíte automatizada com:
+
+```bash
+npm test
+```
+
+O script compila o projeto e executa os testes Node.js em sequência (`--test-concurrency=1`), incluindo os fluxos HTTP de convites e vínculos e a listagem isolada de alunos ativos por profissional (US05).
 
 ## Scripts
 
@@ -207,7 +171,11 @@ Em rotas autenticadas, a API pode responder com:
 | `npm run dev` | Executa `tsx watch src/server.ts` em desenvolvimento. |
 | `npm run build` | Compila o projeto com `tsc`. |
 | `npm start` | Executa a versão compilada com Node.js. |
+<<<<<<< HEAD
 | `npm test` | Executa os testes de integração da criação de programa. |
+=======
+| `npm test` | Compila o projeto e executa os testes automatizados. |
+>>>>>>> origin/develop
 
 ## Estrutura principal
 
@@ -215,6 +183,7 @@ Em rotas autenticadas, a API pode responder com:
 src/
 ├── config/
 │   └── env.ts
+<<<<<<< HEAD
 ├── modules/users/
 │   ├── repositories/
 │   ├── users.controller.ts
@@ -227,6 +196,16 @@ src/
 │   ├── program.routes.ts
 │   ├── program.schema.ts
 │   └── program.service.ts
+=======
+├── modules/
+│   ├── users/
+│   │   ├── repositories/
+│   │   └── users.*
+│   └── vinculos/
+│       ├── repositories/
+│       ├── convite.*
+│       └── vinculos.*
+>>>>>>> origin/develop
 ├── shared/auth/
 │   ├── repositories/
 │   ├── authenticate.ts
