@@ -7,7 +7,7 @@ const atividadeDoProgramaSchema = z.object({
     valores: z.record(z.string(), z.number()).default({})
 }).strict()
 
-export const criarProgramaSchema = z.object({
+const dadosProgramaSchema = z.object({
     alunoId: z.uuid(),
     modalidadeId: z.uuid(),
     nome: z.string().trim().min(1).max(100),
@@ -34,4 +34,8 @@ export const criarProgramaSchema = z.object({
     }
 })
 
+export const criarProgramaSchema = dadosProgramaSchema
+export const editarProgramaSchema = dadosProgramaSchema
+
 export type CriarProgramaBody = z.infer<typeof criarProgramaSchema>
+export type EditarProgramaBody = z.infer<typeof editarProgramaSchema>

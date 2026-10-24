@@ -13,12 +13,20 @@ export class JsonProgramaRepository implements ProgramaRepository {
         return JSON.parse(conteudo) as Programa[]
     }
 
-    async criar(programa: Programa): Promise<void> {
+    async buscarPorId(id: string): Promise<Programa | null> {
+        const programas = await this.listar()
+        return programas.find((programa) => programa.id === id) ?? null
+    }
+
+    private enfileirarGravacao(
+        operacao: (programas: Programa[]) => Promise<void>
+    ): Promise<void> {
         const gravacao = this.gravacoesPendentes.then(async () => {
             const programas = await this.listar()
-            programas.push(programa)
+            await operacao(programas)
 
             const temporario = `${this.caminho}.tmp`
+
             try {
                 await fs.writeFile(
                     temporario,
@@ -32,5 +40,25 @@ export class JsonProgramaRepository implements ProgramaRepository {
 
         this.gravacoesPendentes = gravacao.catch(() => undefined)
         return gravacao
+    }
+
+    async criar(programa: Programa): Promise<void> {
+        return this.enfileirarGravacao(async (programas) => {
+            programas.push(programa)
+        })
+    }
+
+    async atualizar(programaAtualizado: Programa): Promise<void> {
+        return this.enfileirarGravacao(async (programas) => {
+            const indice = programas.findIndex(
+                (programa) => programa.id === programaAtualizado.id
+            )
+
+            if (indice === -1) {
+                throw new Error('Programa não encontrado para atualização.')
+            }
+
+            programas[indice] = programaAtualizado
+        })
     }
 }

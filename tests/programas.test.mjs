@@ -238,6 +238,132 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
         })
 
+        
+        await t.test('profissional responsável edita programa e suas atividades', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+
+            const bodyEdicao = {
+                alunoId,
+                modalidadeId: musculacaoId,
+                nome: 'Programa atualizado',
+                atividades: [
+                    {
+                        atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000002',
+                        ordem: 1,
+                        valores: {
+                            series: 4,
+                            repeticoes: 10
+                        }
+                    },
+                    {
+                        atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000001',
+                        ordem: 2,
+                        valores: {
+                            series: 3,
+                            repeticoes: 15,
+                            cargaKg: 25
+                        }
+                    }
+                ]
+            }
+
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                bodyEdicao
+            )
+
+            assert.equal(resposta.status, 200)
+            assert.equal(resposta.body.id, programaOriginal.id)
+            assert.equal(resposta.body.nome, 'Programa atualizado')
+            assert.equal(resposta.body.criadoEm, programaOriginal.criadoEm)
+            assert.equal(resposta.body.profissionalId, profissionalId)
+            assert.equal(resposta.body.atividades.length, 2)
+            assert.deepEqual(
+                resposta.body.atividades.map((atividade) => atividade.ordem),
+                [1, 2]
+            )
+
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaSalvo = programasDepois.find(
+                (programa) => programa.id === programaOriginal.id
+            )
+
+            assert.equal(programaSalvo.nome, 'Programa atualizado')
+            assert.equal(programaSalvo.atividades.length, 2)
+            assert.equal(programaSalvo.criadoEm, programaOriginal.criadoEm)
+        })
+        
+        await t.test('outro profissional não pode editar o programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                token(outroProfissionalId),
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: 'Tentativa de alteração',
+                    atividades: [{
+                        atividadeId,
+                        ordem: 1,
+                        valores: {
+                            series: 3,
+                            repeticoes: 12
+                        }
+                    }]
+                }
+            )
+
+            assert.equal(resposta.status, 403)
+
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaDepois = programasDepois.find(
+                (programa) => programa.id === programaOriginal.id
+            )
+
+            assert.equal(programaDepois.nome, programaOriginal.nome)
+            assert.deepEqual(
+                programaDepois.atividades,
+                programaOriginal.atividades
+            )
+        })
+        
+        await t.test('editar programa inexistente retorna 404', async () => {
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${randomUUID()}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: 'Programa inexistente',
+                    atividades: [{
+                        atividadeId,
+                        ordem: 1,
+                        valores: {
+                            series: 3,
+                            repeticoes: 12
+                        }
+                    }]
+                }
+            )
+
+            assert.equal(resposta.status, 404)
+        })
+
         await t.test('sem token retorna 401', async () => {
             const resposta = await requisitar('POST', '/programas', undefined, body)
             assert.equal(resposta.status, 401)
