@@ -299,6 +299,42 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(programaSalvo.atividades.length, 2)
             assert.equal(programaSalvo.criadoEm, programaOriginal.criadoEm)
         })
+                await t.test('nome vazio rejeita edição sem alterar programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: '   ',
+                    atividades: [{
+                        atividadeId,
+                        ordem: 1,
+                        valores: {
+                            series: 3,
+                            repeticoes: 12
+                        }
+                    }]
+                }
+            )
+
+            assert.equal(resposta.status, 400)
+
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaDepois = programasDepois.find(
+                (programa) => programa.id === programaOriginal.id
+            )
+
+            assert.deepEqual(programaDepois, programaOriginal)
+        })
         
         await t.test('outro profissional não pode editar o programa', async () => {
             const programasAntes = JSON.parse(
