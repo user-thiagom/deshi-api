@@ -299,7 +299,71 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(programaSalvo.atividades.length, 2)
             assert.equal(programaSalvo.criadoEm, programaOriginal.criadoEm)
         })
-                await t.test('nome vazio rejeita edição sem alterar programa', async () => {
+
+        await t.test('adiciona e remove atividades ao editar programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+
+            const respostaAdicao = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: programaOriginal.nome,
+                    atividades: [
+                        {
+                            atividadeId,
+                            ordem: 1,
+                            valores: {
+                            series: 3,
+                            repeticoes: 12
+                            }
+                        },
+                        {
+                            atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000002',
+                            ordem: 2,
+                            valores: {
+                                series: 3,
+                                repeticoes: 10
+                            }
+                        }
+                    ]
+                }
+            )
+
+            assert.equal(respostaAdicao.status, 200)
+            assert.equal(respostaAdicao.body.atividades.length, 2)
+
+            const respostaRemocao = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: programaOriginal.nome,
+                    atividades: [
+                        {
+                            atividadeId,
+                            ordem: 1,
+                            valores: {
+                            series: 3,
+                            repeticoes: 12
+                            }
+                        }
+                    ]
+                }
+            )
+
+            assert.equal(respostaRemocao.status, 200)
+            assert.equal(respostaRemocao.body.atividades.length, 1)
+            assert.equal(respostaRemocao.body.atividades[0].atividadeId, atividadeId)
+        })
+        await t.test('nome vazio rejeita edição sem alterar programa', async () => {
             const programasAntes = JSON.parse(
                 await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
             )
@@ -326,6 +390,40 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
             assert.equal(resposta.status, 400)
 
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaDepois = programasDepois.find(
+                (programa) => programa.id === programaOriginal.id
+            )
+
+            assert.deepEqual(programaDepois, programaOriginal)
+        })
+        await t.test('rejeita atividade de outra modalidade sem alterar programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: 'Programa que não deve ser salvo',
+                    atividades: [
+                        {
+                            atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000003',
+                            ordem: 1,
+                            valores: {}
+                        }
+                    ]
+                }
+            )
+
+            assert.equal(resposta.status, 400)
             const programasDepois = JSON.parse(
                 await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
             )
