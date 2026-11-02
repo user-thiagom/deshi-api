@@ -29,7 +29,8 @@ const programaService = new ProgramaService(
     new JsonCamposRepository(
         'data/campos-configuracao-atividades.json',
         'data/campos-configuracao-personalizadas.json'
-    )
+    ),
+    new JsonUserRepository('data/users.json')
 )
 
 export async function criarProgramaController(
@@ -86,7 +87,43 @@ export async function listarProgramasController(
     return reply.status(200).send(programas)
 }
 
+export async function buscarProgramaController(
+    request: FastifyRequest<{
+        Params: { id: string }
+    }>,
+    reply: FastifyReply
+) {
+    const userRepository = new JsonUserRepository('data/users.json')
+    const usuario = await userRepository.findById(request.user.userId)
 
+    if (!usuario) {
+        return reply.status(401).send({
+            message: 'Usuário não encontrado.'
+        })
+    }
+
+    if (usuario.profile !== 'PROFESSIONAL' && usuario.profile !== 'STUDENT') {
+        return reply.status(403).send({
+            message: 'Você não tem permissão para acessar este recurso.'
+        })
+    }
+
+    try {
+        const programa = await programaService.buscarPorUsuario(
+            request.params.id,
+            request.user.userId,
+            usuario.profile
+        )
+
+        return reply.status(200).send(programa)
+    } catch (error) {
+        if (error instanceof ProgramaError) {
+            return reply.status(error.statusCode).send(error.message)
+        }
+
+        throw error
+    }
+}
 export async function editarProgramaController(
     request: FastifyRequest<{
         Params: { id: string }

@@ -8,6 +8,14 @@ import { ProgramaRepository } from './repositories/programa.repository.js'
 import { ProgramaError } from './programas.errors.js'
 import { CriarProgramaBody } from './programas.schema.js'
 import { Programa } from './programas.types.js'
+import { UserRepository } from '../users/repositories/user.repository.js'
+
+export interface ProgramaComProfissional extends Programa {
+    profissional: {
+        id: string
+        name: string
+    }
+}
 
 export class ProgramaService {
     constructor(
@@ -15,7 +23,8 @@ export class ProgramaService {
         private readonly vinculos: Pick<VinculoRepository, 'buscarEntreProfissionalEAluno'>,
         private readonly atividades: Pick<AtividadeRepository, 'listar'>,
         private readonly modalidades: Pick<ModalidadeRepository, 'buscarIdsPorProfissional'>,
-        private readonly campos: CamposRepository
+        private readonly campos: CamposRepository,
+	private readonly usuarios: Pick<UserRepository, 'findById'>
     ) {}
 
     async criar(
@@ -213,17 +222,78 @@ export class ProgramaService {
     async listarPorUsuario(
         usuarioId: string,
         perfil: 'PROFESSIONAL' | 'STUDENT'
-    ): Promise<Programa[]> {
+    ): Promise<ProgramaComProfissional[]> {
         const programas = await this.programas.listar()
 
-        if (perfil === 'STUDENT') {
-            return programas.filter(
-                (programa) => programa.alunoId === usuarioId
-            )
+        const programasDoUsuario = programas.filter((programa) =>
+            perfil === 'STUDENT'
+                ? programa.alunoId === usuarioId
+                : programa.profissionalId === usuarioId
+        )
+
+        return Promise.all(
+            programasDoUsuario.map(async (programa) => {
+                const profissional = await this.usuarios.findById(
+                    programa.profissionalId
+                )
+
+                if (!profissional) {
+                    throw new ProgramaError(
+                        404,
+                        'Profissional responsável não encontrado'
+                    )
+                }
+
+                return {
+                    ...programa,
+                    atividades: [...programa.atividades].sort(
+                        (a, b) => a.ordem - b.ordem
+                    ),
+                    profissional: {
+                        id: profissional.id,
+                        name: profissional.name
+                    }
+                }
+            })
+        )
+    }
+	async buscarPorUsuario(
+        programaId: string,
+        usuarioId: string,
+        perfil: 'PROFESSIONAL' | 'STUDENT'
+    ): Promise<ProgramaComProfissional> {
+        const programa = await this.programas.buscarPorId(programaId)
+
+        if (!programa) {
+            throw new ProgramaError(404, 'Programa não encontrado.')
         }
 
-        return programas.filter(
-            (programa) => programa.profissionalId === usuarioId
+        const pertenceAoUsuario =
+            perfil === 'STUDENT'
+                ? programa.alunoId === usuarioId
+                : programa.profissionalId === usuarioId
+
+        if (!pertenceAoUsuario) {
+            throw new ProgramaError(404, 'Programa não encontrado.')
+        }
+
+        const profissional = await this.usuarios.findById(
+            programa.profissionalId
         )
+
+        if (!profissional) {
+            throw new ProgramaError(404, 'Profissional responsável não encontrado.')
+        }
+
+        return {
+            ...programa,
+            atividades: [...programa.atividades].sort(
+                (a, b) => a.ordem - b.ordem
+            ),
+            profissional: {
+                id: profissional.id,
+                name: profissional.name
+            }
+        }
     }
 }

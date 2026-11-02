@@ -5,6 +5,7 @@ import { authorizeProfile } from '../../shared/auth/authorize-profile.js'
 import {
     criarProgramaController,
     listarProgramasController,
+    buscarProgramaController,
     editarProgramaController
 } from './programas.controller.js'
 import {
@@ -20,6 +21,10 @@ export async function programaRoutes(server: FastifyInstance) {
     server.get('/programas', {
         preHandler: [authenticate]
     }, listarProgramasController)
+
+    server.get<{ Params: { id: string } }>('/programas/:id', {
+        preHandler: [authenticate]
+    }, buscarProgramaController)
 
     server.put<{ Params: { id: string }; Body: EditarProgramaBody }>(
         '/programas/:id',
