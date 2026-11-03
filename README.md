@@ -76,17 +76,10 @@ A validação identificada como **US05** cobre a listagem de alunos com vínculo
 
 Os dados são mantidos localmente nos seguintes arquivos:
 
-<<<<<<< HEAD
-- `data/users.json`: usuários, incluindo o hash da senha;
-- `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
-- `data/vinculos.json`, `data/modalidades.json`, `data/profissional-modalidades.json`, `data/atividades.json` e `data/atividades-personalizadas.json`: fontes oficiais usadas para validar vínculo, modalidades selecionadas e atividades;
-- `data/programs.json`: programas criados.
-=======
 - `data/users.json`: usuários e hashes de senha;
 - `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
 - `data/vinculos.json`: solicitações e vínculos, com os estados `PENDENTE`, `ATIVO` ou `RECUSADO`;
 - `data/convites.json`: convites e seus estados `PENDENTE`, `ACEITO`, `RECUSADO` ou `EXPIRADO`.
->>>>>>> origin/develop
 
 As senhas são armazenadas com hash bcrypt (custo 10), nunca em texto puro. Os arquivos JSON são a persistência de protótipo e não um banco de dados compartilhado para múltiplas instâncias.
 
@@ -171,11 +164,7 @@ O script compila o projeto e executa os testes Node.js em sequência (`--test-co
 | `npm run dev` | Executa `tsx watch src/server.ts` em desenvolvimento. |
 | `npm run build` | Compila o projeto com `tsc`. |
 | `npm start` | Executa a versão compilada com Node.js. |
-<<<<<<< HEAD
-| `npm test` | Executa os testes de integração da criação de programa. |
-=======
 | `npm test` | Compila o projeto e executa os testes automatizados. |
->>>>>>> origin/develop
 
 ## Estrutura principal
 
@@ -183,20 +172,6 @@ O script compila o projeto e executa os testes Node.js em sequência (`--test-co
 src/
 ├── config/
 │   └── env.ts
-<<<<<<< HEAD
-├── modules/users/
-│   ├── repositories/
-│   ├── users.controller.ts
-│   ├── users.routes.ts
-│   ├── users.schema.ts
-│   └── users.service.ts
-├── modules/programs/
-│   ├── repositories/
-│   ├── program.controller.ts
-│   ├── program.routes.ts
-│   ├── program.schema.ts
-│   └── program.service.ts
-=======
 ├── modules/
 │   ├── users/
 │   │   ├── repositories/
@@ -205,7 +180,6 @@ src/
 │       ├── repositories/
 │       ├── convite.*
 │       └── vinculos.*
->>>>>>> origin/develop
 ├── shared/auth/
 │   ├── repositories/
 │   ├── authenticate.ts

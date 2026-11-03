@@ -34,5 +34,14 @@
     "profile": "PROFESSIONAL",
     "createdAt": "2026-10-23T18:54:00.687Z",
     "updatedAt": "2026-10-23T18:54:00.687Z"
+  },
+  {
+    "id": "b9ca9054-7300-4f50-8b3f-ee9c468bc746",
+    "name": "joao",
+    "email": "joao@gmail.com",
+    "passwordHash": "$2b$10$Pu/3Mwma.DQufw3hHZci9.3OqC1FQ0rBmRR8NWiyPqTpMDFMjqQ0u",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-23T20:20:11.294Z",
+    "updatedAt": "2026-10-23T20:20:11.294Z"
   }
 ]
