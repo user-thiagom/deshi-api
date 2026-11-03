@@ -8,7 +8,6 @@ import { configuracaoAtividadeRoutes } from './modules/configuracoes-atividades/
 import { programRoutes } from './modules/programs/program.routes.js'
 import { vinculoRoutes } from './modules/vinculos/vinculos.routes.js'
 import { conviteRoutes } from './modules/vinculos/convite.routes.js'
-import { programaRoutes } from './modules/programas/programas.routes.js'
 
 const PORT = 3030
 

@@ -5,6 +5,7 @@ import {
     ProgramNotOwnedByStudentError,
     SessionNotFoundError,
     SessionNotOwnedByStudentError,
+    SessionNotOwnedByProfessionalError,
     SessionActivityNotFoundError,
     InvalidActivityStateError
 } from './sessions.errors.js'
@@ -646,6 +647,23 @@ export class SessionsService {
         session.finishedAt = now
 
         return this.sessionRepository.update(session)
+    }
+
+    async getSessionResult(
+        sessionId: string,
+        professionalId: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.professionalId !== professionalId) {
+            throw new SessionNotOwnedByProfessionalError()
+        }
+
+        return session
     }
 
     async getStudentSessions(

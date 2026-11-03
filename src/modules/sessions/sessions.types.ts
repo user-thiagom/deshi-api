@@ -33,6 +33,7 @@ export interface SessionActivity {
   order: number
   status: SessionActivityStatus
   timeTracking?: ActivityTimeTracking
+  observations?: string[]
 
   execution?: {
     values: Record<string, number>

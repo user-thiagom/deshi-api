@@ -13,6 +13,7 @@ import { interruptSessionController } from './interrupt-session.controller.js'
 import { listSessionsController } from './list-sessions.controller.js'
 
 import {
+  getSessionResultController,
   startSessionController,
   sessionsService
 } from './sessions.controller.js'
@@ -89,6 +90,20 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, interruptSessionController(sessionsService))
+
+  server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getSessionResultController)
+
+  server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId/result', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getSessionResultController)
 
   server.get('/sessions/history', {
     preHandler: [

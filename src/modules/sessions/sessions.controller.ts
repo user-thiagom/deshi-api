@@ -5,7 +5,12 @@ import { JsonProgramRepository } from '../programs/repositories/json-program.rep
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
 import { SessionsService } from './sessions.service.js'
 import { startSessionSchema } from './sessions.schema.js'
-import { ProgramNotFoundError, ProgramNotOwnedByStudentError } from './sessions.errors.js'
+import {
+    ProgramNotFoundError,
+    ProgramNotOwnedByStudentError,
+    SessionNotFoundError,
+    SessionNotOwnedByProfessionalError
+} from './sessions.errors.js'
 
 const programRepository = new JsonProgramRepository(
     path.resolve(process.cwd(), 'data', 'programs.json')
@@ -19,6 +24,38 @@ export const sessionsService = new SessionsService(
     programRepository,
     sessionRepository
 )
+
+export async function getSessionResultController(
+    request: FastifyRequest<{ Params: { sessionId: string } }>,
+    reply: FastifyReply
+) {
+    try {
+        const session = await sessionsService.getSessionResult(
+            request.params.sessionId,
+            request.user.userId
+        )
+
+        return reply.code(200).send(session)
+    } catch (error) {
+        if (error instanceof SessionNotFoundError) {
+            return reply.code(404).send({
+                message: error.message
+            })
+        }
+
+        if (error instanceof SessionNotOwnedByProfessionalError) {
+            return reply.code(403).send({
+                message: error.message
+            })
+        }
+
+        request.log.error(error)
+
+        return reply.code(500).send({
+            message: 'Erro interno ao consultar a sessão.'
+        })
+    }
+}
 
 export async function startSessionController(
     request: FastifyRequest,
