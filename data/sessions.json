@@ -23,5 +23,35 @@
         "status": "PENDING"
       }
     ]
+  },
+  {
+    "id": "e3f8529a-27eb-4ca2-9204-65f7847da687",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-03T13:09:33.489Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING"
+      }
+    ]
+  },
+  {
+    "id": "8a5a8e0c-ede4-4954-83d3-034805215187",
+    "programId": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-03T13:11:57.914Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING"
+      }
+    ]
   }
 ]

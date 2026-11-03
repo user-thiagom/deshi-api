@@ -29,6 +29,10 @@ class MemoryProgramRepository implements ProgramRepository {
         this.created.push(program)
         return program
     }
+
+    async findById(id: string): Promise<Program | null> {
+        return this.created.find((program) => program.id === id) ?? null
+    }
 }
 
 class MemoryCatalogRepository implements ProgramCatalogRepository {

@@ -20,43 +20,49 @@ const sessionsService = new SessionsService(
     sessionRepository
 )
 
-export async function startSessionController(
-    request: FastifyRequest,
-    reply: FastifyReply
+export function createStartSessionController(
+    service: SessionsService = sessionsService
 ) {
-    const result = startSessionSchema.safeParse(request.body)
+    return async function startSessionController(
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        const result = startSessionSchema.safeParse(request.body)
 
-    if (!result.success) {
-        return reply.code(400).send({
-            message: 'Dados inválidos.',
-            errors: result.error.flatten()
-        })
-    }
-
-    try {
-        const session = await sessionsService.startSession(
-            result.data.programId,
-            request.user.userId
-        )
-
-        return reply.code(201).send(session)
-    } catch (error) {
-        if (error instanceof ProgramNotFoundError) {
-            return reply.code(404).send({
-                message: error.message
+        if (!result.success) {
+            return reply.code(400).send({
+                message: 'Dados inválidos.',
+                errors: result.error.flatten()
             })
         }
 
-        if (error instanceof ProgramNotOwnedByStudentError) {
-            return reply.code(403).send({
-                message: error.message
+        try {
+            const session = await service.startSession(
+                result.data.programId,
+                request.user.userId
+            )
+
+            return reply.code(201).send(session)
+        } catch (error) {
+            if (error instanceof ProgramNotFoundError) {
+                return reply.code(404).send({
+                    message: error.message
+                })
+            }
+
+            if (error instanceof ProgramNotOwnedByStudentError) {
+                return reply.code(403).send({
+                    message: error.message
+                })
+            }
+
+            request.log.error(error)
+
+            return reply.code(500).send({
+                message: 'Erro interno ao iniciar a sessão.'
             })
         }
-
-        request.log.error(error)
-
-        return reply.code(500).send({
-            message: 'Erro interno ao iniciar a sessão.'
-        })
     }
 }
+
+export const startSessionController = createStartSessionController()

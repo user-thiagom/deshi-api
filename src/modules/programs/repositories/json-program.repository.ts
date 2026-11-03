@@ -11,6 +11,11 @@ export class JsonProgramRepository implements ProgramRepository {
         return JSON.parse(content) as Program[]
     }
 
+    async findById(id: string): Promise<Program | null> {
+        const programs = await this.readPrograms()
+        return programs.find((program) => program.id === id) ?? null
+    }
+
     async create(data: CreateProgramData): Promise<Program> {
         const program: Program = {
             id: randomUUID(),
@@ -23,4 +28,17 @@ export class JsonProgramRepository implements ProgramRepository {
         await fs.writeFile(this.filePath, JSON.stringify(programs, null, 2))
         return program
     }
+
+    async findByStudentId(studentId: string): Promise<Program[]> {
+    const programs = await this.readPrograms()
+
+    return programs
+        .filter((program) => program.studentId === studentId)
+        .map((program) => ({
+        ...program,
+        activities: [...program.activities].sort(
+            (a, b) => a.order - b.order
+        )
+    }))
+}
 }

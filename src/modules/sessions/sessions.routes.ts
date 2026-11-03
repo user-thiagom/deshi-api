@@ -1,8 +1,19 @@
-import type { FastifyInstance } from 'fastify'
+import type { FastifyInstance, preHandlerHookHandler } from 'fastify'
 
 import { authenticate } from '../../shared/auth/authenticate.js'
-import { startSessionController } from './sessions.controller.js'
+import { createStartSessionController } from './sessions.controller.js'
+import type { SessionsService } from './sessions.service.js'
 
-export async function sessionRoutes(server: FastifyInstance) {
-    server.post( '/sessions', { preHandler: authenticate }, startSessionController )
+export interface SessionRouteDependencies {
+    sessionsService?: SessionsService
+    authenticate?: preHandlerHookHandler
+}
+
+export async function sessionRoutes(
+    server: FastifyInstance,
+    dependencies: SessionRouteDependencies = {}
+) {
+    server.post('/sessions', {
+        preHandler: dependencies.authenticate ?? authenticate
+    }, createStartSessionController(dependencies.sessionsService))
 }
