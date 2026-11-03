@@ -128,10 +128,10 @@ const atividadeId = 'a7101d90-8d5c-4ad3-9d68-000000000001'
 
         
 await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
-    { id: profissionalId, profile: 'PROFESSIONAL' },
-    { id: outroProfissionalId, profile: 'PROFESSIONAL' },
-    { id: alunoId, profile: 'STUDENT' },
-    { id: outroAlunoId, profile: 'STUDENT' }
+    { id: profissionalId, name: 'Profissional Principal', profile: 'PROFESSIONAL' },
+    { id: outroProfissionalId, name: 'Outro Profissional', profile: 'PROFESSIONAL' },
+    { id: alunoId, name: 'Aluno Principal', profile: 'STUDENT' },
+    { id: outroAlunoId, name: 'Outro Aluno', profile: 'STUDENT' }
 ]))
 
 
@@ -238,6 +238,34 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
         })
 
+        await t.test('aluno consulta atividades na ordem definida pelo profissional', async () => {
+            const resposta = await requisitar(
+                'GET',
+                '/programas',
+                token(alunoId)
+            )
+
+            assert.equal(resposta.status, 200)
+
+            const programa = resposta.body.find(
+                (item) => item.nome === 'Programa com ordem definida'
+            )
+
+            assert.ok(programa)
+
+            assert.deepEqual(
+                programa.atividades.map((atividade) => atividade.ordem),
+                [1, 2]
+            )
+
+            assert.deepEqual(
+                programa.atividades.map((atividade) => atividade.atividadeId),
+                [
+                    'a7101d90-8d5c-4ad3-9d68-000000000001',
+                    'a7101d90-8d5c-4ad3-9d68-000000000002'
+                ]
+            )
+        })
         
         await t.test('profissional responsável edita programa e suas atividades', async () => {
             const programasAntes = JSON.parse(
@@ -529,22 +557,16 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         })
 
         await t.test('aluno consulta somente os próprios programas', async () => {
-            const respostaAluno = await requisitar(
-                'GET',
-                '/programas',
-                token(alunoId)
-            )
-
+            const respostaAluno = await requisitar('GET', '/programas', token(alunoId))
             assert.equal(respostaAluno.status, 200)
             assert.equal(respostaAluno.body.length, 2)
             assert.equal(respostaAluno.body[0].alunoId, alunoId)
 
-            const respostaOutroAluno = await requisitar(
-                'GET',
-                '/programas',
-                token(outroAlunoId)
-            )
+            // Verifica o profissional responsável pelo programa
+            assert.equal(respostaAluno.body[0].profissional.id, profissionalId)
+            assert.equal(respostaAluno.body[0].profissional.name, 'Profissional Principal')
 
+            const respostaOutroAluno = await requisitar('GET', '/programas', token(outroAlunoId))
             assert.equal(respostaOutroAluno.status, 200)
             assert.deepEqual(respostaOutroAluno.body, [])
         })
@@ -572,6 +594,79 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
         await t.test('consulta de programas sem token retorna 401', async () => {
             const resposta = await requisitar('GET', '/programas')
+
+            assert.equal(resposta.status, 401)
+        })
+                await t.test('aluno visualiza seu próprio programa', async () => {
+            const programas = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programa = programas[0]
+
+            const resposta = await requisitar(
+                'GET',
+                `/programas/${programa.id}`,
+                token(alunoId)
+            )
+
+            assert.equal(resposta.status, 200)
+            assert.equal(resposta.body.id, programa.id)
+            assert.equal(resposta.body.alunoId, alunoId)
+            assert.equal(resposta.body.profissional.id, profissionalId)
+            assert.equal(resposta.body.profissional.name, 'Profissional Principal')
+        })
+
+        await t.test('aluno não visualiza programa de outro aluno', async () => {
+            const programas = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programa = programas[0]
+
+            const resposta = await requisitar(
+                'GET',
+                `/programas/${programa.id}`,
+                token(outroAlunoId)
+            )
+
+            assert.equal(resposta.status, 404)
+        })
+
+        await t.test('profissional visualiza seu próprio programa', async () => {
+            const programas = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programa = programas[0]
+
+            const resposta = await requisitar(
+                'GET',
+                `/programas/${programa.id}`,
+                token(profissionalId)
+            )
+
+            assert.equal(resposta.status, 200)
+            assert.equal(resposta.body.profissional.id, profissionalId)
+        })
+
+        await t.test('programa inexistente retorna 404 na visualização', async () => {
+            const resposta = await requisitar(
+                'GET',
+                `/programas/${randomUUID()}`,
+                token(alunoId)
+            )
+
+            assert.equal(resposta.status, 404)
+        })
+
+        await t.test('visualização individual sem token retorna 401', async () => {
+            const programas = JSON.parse(
+                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+            )
+            const programa = programas[0]
+
+            const resposta = await requisitar(
+                'GET',
+                `/programas/${programa.id}`
+            )
 
             assert.equal(resposta.status, 401)
         })
