@@ -690,6 +690,41 @@ export class SessionsService {
         return session
     }
 
+    async recordActivityObservation(
+        sessionId: string,
+        studentId: string,
+        activityId: string,
+        observation: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.studentId !== studentId) {
+            throw new SessionNotOwnedByStudentError()
+        }
+
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError(
+                'Não é possível registrar observações em uma sessão finalizada.'
+            )
+        }
+
+        const activity = session.activities.find(
+            (item) => item.activityId === activityId
+        )
+
+        if (!activity) {
+            throw new SessionActivityNotFoundError()
+        }
+
+        activity.observations = [...(activity.observations ?? []), observation]
+
+        return this.sessionRepository.update(session)
+    }
+
     async getStudentSessions(
         studentId: string
     ): Promise<Session[]> {

@@ -14,6 +14,7 @@ import { listSessionsController } from './list-sessions.controller.js'
 
 import {
   getSessionResultController,
+  recordActivityObservationController,
   startSessionController,
   sessionsService
 } from './sessions.controller.js'
@@ -34,6 +35,16 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, startActivityController(sessionsService))
+
+  server.post<{
+    Params: { sessionId: string; activityId: string }
+    Body: { observation: string }
+  }>('/sessions/:sessionId/activities/:activityId/observations', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, recordActivityObservationController(sessionsService))
 
   server.post('/sessions/:sessionId/executions', {
     preHandler: [
@@ -96,14 +107,14 @@ export async function sessionRoutes(server: FastifyInstance) {
       authenticate,
       authorizeProfile('PROFESSIONAL')
     ]
-  }, getSessionResultController)
+  }, getSessionResultController(sessionsService))
 
   server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId/result', {
     preHandler: [
       authenticate,
       authorizeProfile('PROFESSIONAL')
     ]
-  }, getSessionResultController)
+  }, getSessionResultController(sessionsService))
 
   server.get('/sessions/history', {
     preHandler: [

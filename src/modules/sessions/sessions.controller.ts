@@ -5,12 +5,19 @@ import { JsonProgramRepository } from '../programs/repositories/json-program.rep
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
 import { JsonConfiguracaoRepository } from '../configuracoes-atividades/repositories/json-configuracao.repository.js'
 import { SessionsService } from './sessions.service.js'
-import { startSessionSchema } from './sessions.schema.js'
+import {
+    recordActivityObservationSchema,
+    startSessionSchema
+} from './sessions.schema.js'
+import { toSessionResult } from './sessions.mapper.js'
 import {
     ProgramNotFoundError,
     ProgramNotOwnedByStudentError,
     SessionNotFoundError,
-    SessionNotOwnedByProfessionalError
+    SessionNotOwnedByProfessionalError,
+    SessionNotOwnedByStudentError,
+    SessionActivityNotFoundError,
+    InvalidActivityStateError
 } from './sessions.errors.js'
 
 const programRepository = new JsonProgramRepository(
@@ -31,35 +38,95 @@ export const sessionsService = new SessionsService(
     configuracaoRepository
 )
 
-export async function getSessionResultController(
-    request: FastifyRequest<{ Params: { sessionId: string } }>,
-    reply: FastifyReply
+export function getSessionResultController(service: SessionsService) {
+    return async function (
+        request: FastifyRequest<{ Params: { sessionId: string } }>,
+        reply: FastifyReply
+    ) {
+        try {
+            const session = await service.getSessionResult(
+                request.params.sessionId,
+                request.user.userId
+            )
+
+            return reply.code(200).send(toSessionResult(session))
+        } catch (error) {
+            if (error instanceof SessionNotFoundError) {
+                return reply.code(404).send({
+                    message: error.message
+                })
+            }
+
+            if (error instanceof SessionNotOwnedByProfessionalError) {
+                return reply.code(403).send({
+                    message: error.message
+                })
+            }
+
+            request.log.error(error)
+
+            return reply.code(500).send({
+                message: 'Erro interno ao consultar a sessão.'
+            })
+        }
+    }
+}
+
+export function recordActivityObservationController(
+    service: SessionsService
 ) {
-    try {
-        const session = await sessionsService.getSessionResult(
-            request.params.sessionId,
-            request.user.userId
-        )
+    return async function (
+        request: FastifyRequest<{
+            Params: { sessionId: string; activityId: string }
+        }>,
+        reply: FastifyReply
+    ) {
+        const result = recordActivityObservationSchema.safeParse(request.body)
 
-        return reply.code(200).send(session)
-    } catch (error) {
-        if (error instanceof SessionNotFoundError) {
-            return reply.code(404).send({
-                message: error.message
+        if (!result.success) {
+            return reply.code(400).send({
+                message: 'Dados inválidos.',
+                errors: result.error.flatten()
             })
         }
 
-        if (error instanceof SessionNotOwnedByProfessionalError) {
-            return reply.code(403).send({
-                message: error.message
+        try {
+            const session = await service.recordActivityObservation(
+                request.params.sessionId,
+                request.user.userId,
+                request.params.activityId,
+                result.data.observation
+            )
+
+            return reply.code(200).send(session)
+        } catch (error) {
+            if (error instanceof SessionNotFoundError) {
+                return reply.code(404).send({
+                    message: error.message
+                })
+            }
+
+            if (
+                error instanceof SessionNotOwnedByStudentError ||
+                error instanceof SessionActivityNotFoundError
+            ) {
+                return reply.code(403).send({
+                    message: error.message
+                })
+            }
+
+            if (error instanceof InvalidActivityStateError) {
+                return reply.code(409).send({
+                    message: error.message
+                })
+            }
+
+            request.log.error(error)
+
+            return reply.code(500).send({
+                message: 'Erro interno ao registrar observação da atividade.'
             })
         }
-
-        request.log.error(error)
-
-        return reply.code(500).send({
-            message: 'Erro interno ao consultar a sessão.'
-        })
     }
 }
 
