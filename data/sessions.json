@@ -2,25 +2,54 @@
   {
     "id": "6153edd7-242e-46ea-88f3-dd94f34a696c",
     "programId": "program-001",
-    "studentId": "00ffa476-56ee-46a5-ac4a-b8baf88d9b78",
-    "professionalId": "S0de8e5e9-163a-4daa-943b-e3851e4c70ba",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
     "startedAt": "2026-10-11T04:20:04.624Z",
     "status": "IN_PROGRESS",
     "activities": [
       {
-        "activityId": "activity-001",
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
         "order": 1,
-        "status": "PENDING"
-      },
-      {
-        "activityId": "activity-002",
-        "order": 2,
-        "status": "PENDING"
-      },
-      {
-        "activityId": "activity-003",
-        "order": 3,
-        "status": "PENDING"
+        "status": "COMPLETED",
+        "execution": {
+          "values": {
+            "series": 2,
+            "repetitions": 8,
+            "weight": 15
+          },
+          "executedAt": "2026-11-03T15:28:20.763Z"
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-03T16:13:50.302Z",
+              "endedAt": "2026-11-03T16:27:46.589Z"
+            },
+            {
+              "startedAt": "2026-11-03T16:34:21.187Z",
+              "endedAt": "2026-11-03T16:52:00.891Z"
+            },
+            {
+              "startedAt": "2026-11-03T16:52:51.689Z",
+              "endedAt": "2026-11-03T16:57:59.182Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-03T16:27:46.589Z",
+              "endedAt": "2026-11-03T16:34:21.187Z"
+            }
+          ],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-03T16:52:00.891Z",
+              "endedAt": "2026-11-03T16:52:51.689Z"
+            }
+          ],
+          "activeTimeMs": 2203484,
+          "pauseTimeMs": 394598,
+          "restTimeMs": 50798
+        }
       }
     ]
   }

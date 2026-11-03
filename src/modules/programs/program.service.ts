@@ -48,4 +48,8 @@ export class ProgramService {
             activities
         })
     }
+
+    async findProgramsByStudent(studentId: string): Promise<Program[]> {
+        return this.programRepository.findByStudentId(studentId)
+    }
 }

@@ -15,7 +15,7 @@ const sessionRepository = new JsonSessionRepository(
     path.resolve(process.cwd(), 'data', 'sessions.json')
 )
 
-const sessionsService = new SessionsService(
+export const sessionsService = new SessionsService(
     programRepository,
     sessionRepository
 )

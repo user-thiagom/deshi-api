@@ -11,3 +11,31 @@ export class ProgramNotOwnedByStudentError extends Error {
         this.name = 'ProgramNotOwnedByStudentError'
     }
 }
+
+export class SessionNotFoundError extends Error {
+  constructor() {
+    super('Sessão não encontrada.')
+    this.name = 'SessionNotFoundError'
+  }
+}
+
+export class SessionNotOwnedByStudentError extends Error {
+  constructor() {
+    super('Esta sessão não pertence ao aluno autenticado.')
+    this.name = 'SessionNotOwnedByStudentError'
+  }
+}
+
+export class SessionActivityNotFoundError extends Error {
+  constructor() {
+    super('Atividade não encontrada nesta sessão.')
+    this.name = 'SessionActivityNotFoundError'
+  }
+}
+
+export class InvalidActivityStateError extends Error {
+  constructor(message = 'A atividade não pode realizar esta operação no estado atual.') {
+    super(message)
+    this.name = 'InvalidActivityStateError'
+  }
+}

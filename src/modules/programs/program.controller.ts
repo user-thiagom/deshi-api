@@ -24,3 +24,20 @@ export function createProgramController(programService: ProgramService) {
         }
     }
 }
+
+export function listProgramsController(programService: ProgramService) {
+    return async function (request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const programs = await programService.findProgramsByStudent(
+                request.user.userId
+            )
+
+            return reply.status(200).send(programs)
+        } catch (error) {
+            request.log.error(error)
+            return reply.status(500).send({
+                message: 'Erro interno ao consultar programas.'
+            })
+        }
+    }
+}
