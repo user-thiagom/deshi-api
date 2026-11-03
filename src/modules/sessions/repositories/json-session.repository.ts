@@ -14,6 +14,9 @@ export class JsonSessionRepository implements SessionRepository {
         return sessions.map((session) => ({
             ...session,
             startedAt: new Date(session.startedAt),
+            finishedAt: session.finishedAt
+                ? new Date(session.finishedAt)
+                : undefined,
 
             activities: session.activities.map((activity) => {
                 const tracking = activity.timeTracking

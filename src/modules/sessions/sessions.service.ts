@@ -11,7 +11,7 @@ import {
 
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
-import type { Session } from './sessions.types.js'
+import type { Session, SessionActivity } from './sessions.types.js'
 
 export class SessionsService {
     constructor(
@@ -406,6 +406,62 @@ export class SessionsService {
         return this.sessionRepository.update(session)
     }
 
+    private closeOpenActivityInterval(
+        activity: SessionActivity,
+        now: Date
+    ): void {
+        const tracking = activity.timeTracking
+
+        if (!tracking) {
+            return
+        }
+
+        if (activity.status === 'IN_PROGRESS') {
+            const interval = tracking.activeIntervals[
+                tracking.activeIntervals.length - 1
+            ]
+
+            if (tracking.activeStartedAt && interval && !interval.endedAt) {
+                interval.endedAt = now
+
+                tracking.activeTimeMs +=
+                    now.getTime() - tracking.activeStartedAt.getTime()
+
+                tracking.activeStartedAt = undefined
+            }
+        }
+
+        if (activity.status === 'PAUSED') {
+            const interval = tracking.pauseIntervals[
+                tracking.pauseIntervals.length - 1
+            ]
+
+            if (tracking.pauseStartedAt && interval && !interval.endedAt) {
+                interval.endedAt = now
+
+                tracking.pauseTimeMs +=
+                    now.getTime() - tracking.pauseStartedAt.getTime()
+
+                tracking.pauseStartedAt = undefined
+            }
+        }
+
+        if (activity.status === 'RESTING') {
+            const interval = tracking.restIntervals[
+                tracking.restIntervals.length - 1
+            ]
+
+            if (tracking.restStartedAt && interval && !interval.endedAt) {
+                interval.endedAt = now
+
+                tracking.restTimeMs +=
+                    now.getTime() - tracking.restStartedAt.getTime()
+
+                tracking.restStartedAt = undefined
+            }
+        }
+    }
+
     async completeActivity(
         sessionId: string,
         studentId: string,
@@ -512,5 +568,89 @@ export class SessionsService {
         activity.status = 'COMPLETED'
 
         return this.sessionRepository.update(session)
+    }
+
+    async finishSession(
+        sessionId: string,
+        studentId: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.studentId !== studentId) {
+            throw new SessionNotOwnedByStudentError()
+        }
+
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError(
+                'Somente uma sessão em andamento pode ser finalizada.'
+            )
+        }
+
+        const now = new Date()
+
+        for (const activity of session.activities) {
+            if (
+                activity.status === 'IN_PROGRESS' ||
+                activity.status === 'PAUSED' ||
+                activity.status === 'RESTING'
+            ) {
+                this.closeOpenActivityInterval(activity, now)
+                activity.status = 'INCOMPLETE'
+            }
+        }
+
+        session.status = 'COMPLETED'
+        session.finishedAt = now
+
+        return this.sessionRepository.update(session)
+    }
+
+    async interruptSession(
+        sessionId: string,
+        studentId: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.studentId !== studentId) {
+            throw new SessionNotOwnedByStudentError()
+        }
+
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError(
+                'Somente uma sessão em andamento pode ser interrompida.'
+            )
+        }
+
+        const now = new Date()
+
+        for (const activity of session.activities) {
+            if (
+                activity.status === 'IN_PROGRESS' ||
+                activity.status === 'PAUSED' ||
+                activity.status === 'RESTING'
+            ) {
+                this.closeOpenActivityInterval(activity, now)
+                activity.status = 'INCOMPLETE'
+            }
+        }
+
+        session.status = 'INTERRUPTED'
+        session.finishedAt = now
+
+        return this.sessionRepository.update(session)
+    }
+
+    async getStudentSessions(
+        studentId: string
+    ): Promise<Session[]> {
+        return this.sessionRepository.findByStudentId(studentId)
     }
 }

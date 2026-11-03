@@ -8,6 +8,9 @@ import { resumeActivityController } from './resume-activity.controller.js'
 import { startRestController } from './start-rest.controller.js'
 import { endRestController } from './end-rest.controller.js'
 import { completeActivityController } from './complete-activity.controller.js'
+import { finishSessionController } from './finish-session.controller.js'
+import { interruptSessionController } from './interrupt-session.controller.js'
+import { listSessionsController } from './list-sessions.controller.js'
 
 import {
   startSessionController,
@@ -67,9 +70,30 @@ export async function sessionRoutes(server: FastifyInstance) {
   }, endRestController(sessionsService))
 
   server.post('/sessions/:sessionId/activities/:activityId/complete', {
-      preHandler: [
-        authenticate,
-        authorizeProfile('STUDENT')
-      ]
-    }, completeActivityController(sessionsService))
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, completeActivityController(sessionsService))
+
+  server.post('/sessions/:sessionId/finish', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, finishSessionController(sessionsService))
+
+  server.post('/sessions/:sessionId/interrupt', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, interruptSessionController(sessionsService))
+
+  server.get('/sessions/history', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, listSessionsController)
 }
