@@ -12,12 +12,14 @@ import {
 
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
+import type { ConfiguracaoRepository } from '../configuracoes-atividades/repositories/configuracao.repository.js'
 import type { Session, SessionActivity } from './sessions.types.js'
 
 export class SessionsService {
     constructor(
         private readonly programRepository: ProgramRepository,
-        private readonly sessionRepository: SessionRepository
+        private readonly sessionRepository: SessionRepository,
+        private readonly configuracaoRepository: ConfiguracaoRepository
     ) { }
 
     async startSession(
@@ -34,6 +36,8 @@ export class SessionsService {
             throw new ProgramNotOwnedByStudentError()
         }
 
+        const configuracoes = await this.configuracaoRepository.listar()
+
         const session: Session = {
             id: randomUUID(),
             programId: program.id,
@@ -43,19 +47,39 @@ export class SessionsService {
             status: 'IN_PROGRESS',
             activities: [...program.activities]
                 .sort((a, b) => a.order - b.order)
-                .map((activity) => ({
-                    activityId: activity.activityId,
-                    order: activity.order,
-                    status: 'PENDING' as const,
-                    timeTracking: {
-                        activeIntervals: [],
-                        pauseIntervals: [],
-                        restIntervals: [],
-                        activeTimeMs: 0,
-                        pauseTimeMs: 0,
-                        restTimeMs: 0
+                .map((activity) => {
+                    const configuracao = configuracoes
+                        .filter((item) =>
+                            item.atividadeId === activity.activityId &&
+                            item.profissionalId === program.professionalId
+                        )
+                        .reduce<typeof configuracoes[number] | undefined>(
+                            (maisRecente, atual) =>
+                                !maisRecente ||
+                                new Date(atual.atualizadoEm).getTime() >
+                                    new Date(maisRecente.atualizadoEm).getTime()
+                                    ? atual
+                                    : maisRecente,
+                            undefined
+                        )
+
+                    return {
+                        activityId: activity.activityId,
+                        order: activity.order,
+                        status: 'PENDING' as const,
+                        ...(configuracao
+                            ? { prescribed: { ...configuracao.valores } }
+                            : {}),
+                        timeTracking: {
+                            activeIntervals: [],
+                            pauseIntervals: [],
+                            restIntervals: [],
+                            activeTimeMs: 0,
+                            pauseTimeMs: 0,
+                            restTimeMs: 0
+                        }
                     }
-                }))
+                })
         }
 
         return this.sessionRepository.create(session)

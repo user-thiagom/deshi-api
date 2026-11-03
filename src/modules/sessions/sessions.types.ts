@@ -34,6 +34,7 @@ export interface SessionActivity {
   status: SessionActivityStatus
   timeTracking?: ActivityTimeTracking
   observations?: string[]
+  prescribed?: Record<string, number>
 
   execution?: {
     values: Record<string, number>

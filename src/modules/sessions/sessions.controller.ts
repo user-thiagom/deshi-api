@@ -3,6 +3,7 @@ import path from 'node:path'
 
 import { JsonProgramRepository } from '../programs/repositories/json-program.repository.js'
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
+import { JsonConfiguracaoRepository } from '../configuracoes-atividades/repositories/json-configuracao.repository.js'
 import { SessionsService } from './sessions.service.js'
 import { startSessionSchema } from './sessions.schema.js'
 import {
@@ -20,9 +21,14 @@ const sessionRepository = new JsonSessionRepository(
     path.resolve(process.cwd(), 'data', 'sessions.json')
 )
 
+const configuracaoRepository = new JsonConfiguracaoRepository(
+    path.resolve(process.cwd(), 'data', 'configuracoes-atividades.json')
+)
+
 export const sessionsService = new SessionsService(
     programRepository,
-    sessionRepository
+    sessionRepository,
+    configuracaoRepository
 )
 
 export async function getSessionResultController(
