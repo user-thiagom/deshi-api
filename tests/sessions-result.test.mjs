@@ -26,9 +26,19 @@ function createFixture() {
       activityId,
       order: 1,
       status: 'COMPLETED',
-      prescribed: { series: 3, repeticoes: 12, cargaKg: 20 },
+      prescribed: {
+        series: 3,
+        repeticoes: 12,
+        cargaKg: 20,
+        prescribedOnly: 99
+      },
       execution: {
-        values: { series: 3, repeticoes: 10, cargaKg: 15 },
+        values: {
+          series: 3,
+          repeticoes: 10,
+          cargaKg: 15,
+          executedOnly: 7
+        },
         executedAt: new Date('2026-11-03T10:20:00.000Z')
       },
       observations: ['Desconforto informado pelo aluno.'],
@@ -86,7 +96,7 @@ function createFixture() {
 }
 
 test('session result returns recorded values and duration without fabricating data', async (t) => {
-  const { app } = createFixture()
+  const { app, session } = createFixture()
   t.after(() => app.close())
 
   const response = await app.inject({
@@ -102,14 +112,49 @@ test('session result returns recorded values and duration without fabricating da
   assert.deepEqual(result.activities[0].prescribed, {
     series: 3,
     repeticoes: 12,
-    cargaKg: 20
+    cargaKg: 20,
+    prescribedOnly: 99
   })
   assert.deepEqual(result.activities[0].execution.values, {
     series: 3,
     repeticoes: 10,
-    cargaKg: 15
+    cargaKg: 15,
+    executedOnly: 7
+  })
+  assert.deepEqual(result.activities[0].comparison, {
+    series: {
+      prescribed: 3,
+      executed: 3,
+      difference: 0,
+      different: false
+    },
+    repeticoes: {
+      prescribed: 12,
+      executed: 10,
+      difference: -2,
+      different: true
+    },
+    cargaKg: {
+      prescribed: 20,
+      executed: 15,
+      difference: -5,
+      different: true
+    }
   })
   assert.equal(result.activities[0].execution.executedAt, '2026-11-03T10:20:00.000Z')
+  assert.deepEqual(session.activities[0].prescribed, {
+    series: 3,
+    repeticoes: 12,
+    cargaKg: 20,
+    prescribedOnly: 99
+  })
+  assert.deepEqual(session.activities[0].execution.values, {
+    series: 3,
+    repeticoes: 10,
+    cargaKg: 15,
+    executedOnly: 7
+  })
+  assert.equal(Object.hasOwn(session.activities[0], 'comparison'), false)
   assert.deepEqual(result.activities[0].observations, [
     'Desconforto informado pelo aluno.'
   ])
@@ -216,5 +261,56 @@ test('result omits unrecorded optional values and zero-initialized time tracking
   assert.equal(Object.hasOwn(result.activities[0], 'execution'), false)
   assert.equal(Object.hasOwn(result.activities[0], 'observations'), false)
   assert.equal(Object.hasOwn(result.activities[0], 'prescribed'), false)
+  assert.equal(Object.hasOwn(result.activities[0], 'comparison'), false)
   assert.equal(Object.hasOwn(result.activities[0], 'timeTracking'), false)
+})
+
+test('result omits comparison when either prescribed or executed values are missing', async (t) => {
+  const { app, session } = createFixture()
+  t.after(() => app.close())
+
+  session.activities[0].execution = undefined
+  let response = await app.inject({
+    method: 'GET',
+    url: `/sessions/${sessionId}/result`,
+    headers: { 'x-user-id': professionalId }
+  })
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(Object.hasOwn(response.json().activities[0], 'comparison'), false)
+
+  session.activities[0].execution = {
+    values: { series: 3 },
+    executedAt: new Date('2026-11-03T10:20:00.000Z')
+  }
+  session.activities[0].prescribed = undefined
+  response = await app.inject({
+    method: 'GET',
+    url: `/sessions/${sessionId}/result`,
+    headers: { 'x-user-id': professionalId }
+  })
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(Object.hasOwn(response.json().activities[0], 'comparison'), false)
+})
+
+test('result omits comparison when prescribed and executed values have no metrics in common', async (t) => {
+  const { app, session } = createFixture()
+  t.after(() => app.close())
+  session.activities[0].prescribed = { prescribedOnly: 99 }
+  session.activities[0].execution.values = { executedOnly: 7 }
+
+  const response = await app.inject({
+    method: 'GET',
+    url: `/sessions/${sessionId}/result`,
+    headers: { 'x-user-id': professionalId }
+  })
+
+  assert.equal(response.statusCode, 200)
+  const activity = response.json().activities[0]
+  assert.equal(Object.hasOwn(activity, 'comparison'), false)
+  assert.deepEqual(activity.prescribed, { prescribedOnly: 99 })
+  assert.deepEqual(activity.execution.values, { executedOnly: 7 })
+  assert.deepEqual(session.activities[0].prescribed, { prescribedOnly: 99 })
+  assert.deepEqual(session.activities[0].execution.values, { executedOnly: 7 })
 })
