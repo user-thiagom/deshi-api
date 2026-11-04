@@ -1,0 +1,9 @@
+[
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000001", "nome": "Musculação" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000002", "nome": "Yoga" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000003", "nome": "Muay Thai" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000004", "nome": "Boxe" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000005", "nome": "Tênis" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000006", "nome": "Natação" },
+  { "id": "d1b10e90-8d5c-4ad3-9d68-000000000007", "nome": "CrossFit" }
+]
