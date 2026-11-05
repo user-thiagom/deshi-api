@@ -5,14 +5,16 @@ export interface Program {
     name: string
     modalityId: string
     activities: ProgramActivity[]
+    version: number
     createdAt: Date
 }
 
-export type CreateProgramData = Omit<Program, 'id' | 'createdAt'>
+export type CreateProgramData = Omit<Program, 'id' | 'createdAt' | 'version'>
 
 export interface ProgramActivity {
     activityId: string
     order: number
+    prescribed?: Record<string, number>
 }
 
 export interface CatalogActivity {

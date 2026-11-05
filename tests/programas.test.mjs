@@ -113,7 +113,7 @@ test('HU10 — criação de programas, HTTP real e JSONs isolados', { timeout: 6
             'profissional-modalidades.json',
             'vinculos.json',
             'revoked-tokens.json',
-            'programas.json'
+            'programs.json'
         ]) {
             await fs.writeFile(path.join(data, arquivo), '[]\n')
         }
@@ -180,7 +180,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.deepEqual(resposta.body.atividades[0], body.atividades[0])
 
             const persistidos = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             assert.equal(persistidos.length, 1)
             assert.equal(persistidos[0].id, resposta.body.id)
@@ -225,7 +225,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
 
             const persistidos = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const salvo = persistidos.find(
                 (programa) => programa.id === resposta.body.id
@@ -236,6 +236,46 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
                 salvo.atividades.map((atividade) => atividade.ordem),
                 [1, 2]
             )
+        })
+
+        await t.test('rejeita atividades duplicadas na criação', async () => {
+            const resposta = await requisitar('POST', '/programas', credencial, {
+                ...body,
+                atividades: [
+                    { ...body.atividades[0], ordem: 1 },
+                    { ...body.atividades[0], ordem: 2 }
+                ]
+            })
+
+            assert.equal(resposta.status, 400)
+            const persistidos = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            assert.equal(persistidos.length, 2)
+        })
+
+        await t.test('rejeita ordens repetidas na criação', async () => {
+            const resposta = await requisitar('POST', '/programas', credencial, {
+                ...body,
+                atividades: [
+                    {
+                        atividadeId,
+                        ordem: 1,
+                        valores: { series: 3, repeticoes: 12 }
+                    },
+                    {
+                        atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000002',
+                        ordem: 1,
+                        valores: { series: 3, repeticoes: 10 }
+                    }
+                ]
+            })
+
+            assert.equal(resposta.status, 400)
+            const persistidos = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            assert.equal(persistidos.length, 2)
         })
 
         await t.test('aluno consulta atividades na ordem definida pelo profissional', async () => {
@@ -269,7 +309,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         
         await t.test('profissional responsável edita programa e suas atividades', async () => {
             const programasAntes = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaOriginal = programasAntes[0]
 
@@ -317,7 +357,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             )
 
             const programasDepois = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaSalvo = programasDepois.find(
                 (programa) => programa.id === programaOriginal.id
@@ -330,7 +370,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
         await t.test('adiciona e remove atividades ao editar programa', async () => {
             const programasAntes = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaOriginal = programasAntes[0]
 
@@ -391,9 +431,80 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(respostaRemocao.body.atividades.length, 1)
             assert.equal(respostaRemocao.body.atividades[0].atividadeId, atividadeId)
         })
+
+        await t.test('rejeita atividades duplicadas na edição sem alterar o programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: programaOriginal.nome,
+                    atividades: [
+                        {
+                            atividadeId,
+                            ordem: 1,
+                            valores: { series: 3, repeticoes: 12 }
+                        },
+                        {
+                            atividadeId,
+                            ordem: 2,
+                            valores: { series: 4, repeticoes: 10 }
+                        }
+                    ]
+                }
+            )
+
+            assert.equal(resposta.status, 400)
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            assert.deepEqual(programasDepois[0], programaOriginal)
+        })
+
+        await t.test('rejeita ordens repetidas na edição sem alterar o programa', async () => {
+            const programasAntes = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            const programaOriginal = programasAntes[0]
+            const resposta = await requisitar(
+                'PUT',
+                `/programas/${programaOriginal.id}`,
+                credencial,
+                {
+                    alunoId,
+                    modalidadeId: musculacaoId,
+                    nome: programaOriginal.nome,
+                    atividades: [
+                        {
+                            atividadeId,
+                            ordem: 1,
+                            valores: { series: 3, repeticoes: 12 }
+                        },
+                        {
+                            atividadeId: 'a7101d90-8d5c-4ad3-9d68-000000000002',
+                            ordem: 1,
+                            valores: { series: 3, repeticoes: 10 }
+                        }
+                    ]
+                }
+            )
+
+            assert.equal(resposta.status, 400)
+            const programasDepois = JSON.parse(
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
+            )
+            assert.deepEqual(programasDepois[0], programaOriginal)
+        })
+
         await t.test('nome vazio rejeita edição sem alterar programa', async () => {
             const programasAntes = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaOriginal = programasAntes[0]
 
@@ -419,7 +530,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(resposta.status, 400)
 
             const programasDepois = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaDepois = programasDepois.find(
                 (programa) => programa.id === programaOriginal.id
@@ -429,7 +540,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         })
         await t.test('rejeita atividade de outra modalidade sem alterar programa', async () => {
             const programasAntes = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaOriginal = programasAntes[0]
 
@@ -453,7 +564,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
             assert.equal(resposta.status, 400)
             const programasDepois = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaDepois = programasDepois.find(
                 (programa) => programa.id === programaOriginal.id
@@ -464,7 +575,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         
         await t.test('outro profissional não pode editar o programa', async () => {
             const programasAntes = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaOriginal = programasAntes[0]
 
@@ -490,7 +601,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(resposta.status, 403)
 
             const programasDepois = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programaDepois = programasDepois.find(
                 (programa) => programa.id === programaOriginal.id
@@ -551,7 +662,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
             assert.equal(resposta.status, 403)
 
             const persistidos = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             assert.equal(persistidos.length, 2)
         })
@@ -599,7 +710,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         })
                 await t.test('aluno visualiza seu próprio programa', async () => {
             const programas = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programa = programas[0]
 
@@ -618,7 +729,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
         await t.test('aluno não visualiza programa de outro aluno', async () => {
             const programas = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programa = programas[0]
 
@@ -633,7 +744,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
         await t.test('profissional visualiza seu próprio programa', async () => {
             const programas = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programa = programas[0]
 
@@ -659,7 +770,7 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
 
         await t.test('visualização individual sem token retorna 401', async () => {
             const programas = JSON.parse(
-                await fs.readFile(path.join(data, 'programas.json'), 'utf-8')
+                await fs.readFile(path.join(data, 'programs.json'), 'utf-8')
             )
             const programa = programas[0]
 
@@ -675,4 +786,3 @@ await fs.writeFile(path.join(data, 'users.json'), JSON.stringify([
         await fs.rm(temporario, { recursive: true, force: true })
     }
 })
-

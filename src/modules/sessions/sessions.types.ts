@@ -45,6 +45,7 @@ export interface SessionActivity {
 export interface Session {
   id: string
   programId: string
+  programVersion?: number
   studentId: string
   professionalId: string
   startedAt: Date

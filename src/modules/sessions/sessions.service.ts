@@ -36,11 +36,17 @@ export class SessionsService {
             throw new ProgramNotOwnedByStudentError()
         }
 
-        const configuracoes = await this.configuracaoRepository.listar()
+        const activitiesWithoutPrescription = program.activities.filter(
+            (activity) => activity.prescribed === undefined
+        )
+        const configuracoes = activitiesWithoutPrescription.length > 0
+            ? await this.configuracaoRepository.listar()
+            : []
 
         const session: Session = {
             id: randomUUID(),
             programId: program.id,
+            programVersion: program.version,
             studentId,
             professionalId: program.professionalId,
             startedAt: new Date(),
@@ -48,28 +54,32 @@ export class SessionsService {
             activities: [...program.activities]
                 .sort((a, b) => a.order - b.order)
                 .map((activity) => {
-                    const configuracao = configuracoes
-                        .filter((item) =>
-                            item.atividadeId === activity.activityId &&
-                            item.profissionalId === program.professionalId
-                        )
-                        .reduce<typeof configuracoes[number] | undefined>(
-                            (maisRecente, atual) =>
-                                !maisRecente ||
-                                new Date(atual.atualizadoEm).getTime() >
-                                    new Date(maisRecente.atualizadoEm).getTime()
-                                    ? atual
-                                    : maisRecente,
-                            undefined
-                        )
+                    const configuracao = activity.prescribed === undefined
+                        ? configuracoes
+                            .filter((item) =>
+                                item.atividadeId === activity.activityId &&
+                                item.profissionalId === program.professionalId
+                            )
+                            .reduce<typeof configuracoes[number] | undefined>(
+                                (maisRecente, atual) =>
+                                    !maisRecente ||
+                                    new Date(atual.atualizadoEm).getTime() >
+                                        new Date(maisRecente.atualizadoEm).getTime()
+                                        ? atual
+                                        : maisRecente,
+                                undefined
+                            )
+                        : undefined
 
                     return {
                         activityId: activity.activityId,
                         order: activity.order,
                         status: 'PENDING' as const,
-                        ...(configuracao
-                            ? { prescribed: { ...configuracao.valores } }
-                            : {}),
+                        ...(activity.prescribed !== undefined
+                            ? { prescribed: { ...activity.prescribed } }
+                            : configuracao
+                                ? { prescribed: { ...configuracao.valores } }
+                                : {}),
                         timeTracking: {
                             activeIntervals: [],
                             pauseIntervals: [],
@@ -728,6 +738,28 @@ export class SessionsService {
     async getStudentSessions(
         studentId: string
     ): Promise<Session[]> {
-        return this.sessionRepository.findByStudentId(studentId)
+        const sessions = await this.sessionRepository.findByStudentId(studentId)
+
+        return this.sortSessionsByStartedAt(sessions)
+    }
+
+    async getProfessionalStudentSessions(
+        studentId: string,
+        professionalId: string
+    ): Promise<Session[]> {
+        const sessions = await this.sessionRepository.findByStudentId(studentId)
+
+        return this.sortSessionsByStartedAt(
+            sessions.filter(
+                (session) => session.professionalId === professionalId
+            )
+        )
+    }
+
+    private sortSessionsByStartedAt(sessions: Session[]): Session[] {
+        return [...sessions].sort(
+            (first, second) =>
+                second.startedAt.getTime() - first.startedAt.getTime()
+        )
     }
 }

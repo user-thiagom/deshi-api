@@ -136,6 +136,15 @@ As respostas de listagem contêm dados públicos dos usuários, sem o hash da se
 
 O código do convite tem oito caracteres. Convites expiram após sete dias e somente o aluno destinatário pode consultá-los ou responder. Códigos inválidos retornam `400`, convites inexistentes retornam `404` e convites expirados retornam `410`.
 
+### Programas
+
+| Método | Rota | Perfil exigido | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/programas` | `PROFESSIONAL` | Cria um programa para o aluno informado. |
+| `GET` | `/programas` | `STUDENT` | Lista os programas do aluno autenticado. |
+
+O corpo de criação usa os campos `alunoId`, `nome`, `modalidadeId` e `atividades` (lista de UUIDs de atividades). O programa persistido mantém os campos internos do domínio e inicia com `version: 1`.
+
 ### Rotas de teste de perfil
 
 Estas rotas existem para demonstrar autenticação e autorização e não são funcionalidades de negócio:
@@ -146,6 +155,17 @@ Estas rotas existem para demonstrar autenticação e autorização e não são f
 | `GET` | `/student-test` | JWT de usuário `STUDENT` | `{ "message": "Acesso estudante autorizado!" }` |
 
 Em rotas autenticadas, a API pode responder com `401` para token ausente, inválido, expirado ou revogado, ou usuário não encontrado; `403` indica perfil sem autorização para a operação.
+
+### Sessões e histórico
+
+| Método | Rota | Perfil exigido | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/sessions/history` | `STUDENT` | Lista as sessões do aluno autenticado, da mais recente para a mais antiga. |
+| `GET` | `/students/:studentId/sessions/history` | `PROFESSIONAL` | Lista somente as sessões do aluno associadas ao profissional autenticado, da mais recente para a mais antiga. |
+| `GET` | `/sessions/:sessionId` | `PROFESSIONAL` | Abre os dados e resultados da sessão se ela pertencer ao profissional autenticado. |
+| `GET` | `/sessions/:sessionId/result` | `PROFESSIONAL` | Retorna os resultados da sessão se ela pertencer ao profissional autenticado. |
+
+Cada sessão persiste suas referências ao programa, à versão do programa, ao aluno e ao profissional, além das datas de início e término. Programas novos começam na versão 1, programas legados sem versão são lidos como versão 1 e alterações efetivas incrementam a versão. As atividades e os valores prescritos são copiados no início da sessão para manter o registro histórico mesmo que o programa seja alterado depois.
 
 ## Testes
 

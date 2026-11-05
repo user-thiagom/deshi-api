@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { afterEach, beforeEach, test } from 'node:test'
+import { isDeepStrictEqual } from 'node:util'
 import Fastify, { FastifyReply, FastifyRequest } from 'fastify'
 import { ProgramRouteDependencies, programRoutes } from '../src/modules/programs/program.routes.js'
 import { ProgramService } from '../src/modules/programs/program.service.js'
@@ -20,13 +21,64 @@ const input = {
     modalityId: MODALITY_ID,
     activityIds: [ACTIVITY_TWO_ID, ACTIVITY_ONE_ID]
 }
+const requestInput = {
+    alunoId: STUDENT_ID,
+    nome: 'Programa de teste',
+    modalidadeId: MODALITY_ID,
+    atividades: [ACTIVITY_TWO_ID, ACTIVITY_ONE_ID]
+}
 
 class MemoryProgramRepository implements ProgramRepository {
     readonly created: Program[] = []
 
     async create(data: CreateProgramData): Promise<Program> {
-        const program = { ...data, id: 'program-id', createdAt: new Date('2026-01-01T00:00:00Z') }
+        const program = {
+            ...data,
+            id: 'program-id',
+            version: 1,
+            createdAt: new Date('2026-01-01T00:00:00Z')
+        }
         this.created.push(program)
+        return program
+    }
+
+    async findById(id: string): Promise<Program | null> {
+        return this.created.find((program) => program.id === id) ?? null
+    }
+
+    async findByStudentId(studentId: string): Promise<Program[]> {
+        return this.created.filter((program) => program.studentId === studentId)
+    }
+
+    async update(updatedProgram: Program): Promise<Program> {
+        const index = this.created.findIndex((program) => program.id === updatedProgram.id)
+        if (index === -1) {
+            throw new Error('Programa não encontrado.')
+        }
+
+        const currentProgram = this.created[index]
+        const {
+            id: _currentId,
+            version: _currentVersion,
+            createdAt: _currentCreatedAt,
+            ...currentData
+        } = currentProgram
+        const {
+            id: _updatedId,
+            version: _updatedVersion,
+            createdAt: _updatedCreatedAt,
+            ...updatedData
+        } = updatedProgram
+        const changed = !isDeepStrictEqual(currentData, updatedData)
+        const program = {
+            ...updatedProgram,
+            id: currentProgram.id,
+            createdAt: currentProgram.createdAt,
+            activities: updatedProgram.activities.map((activity) => ({ ...activity })),
+            version: currentProgram.version + (changed ? 1 : 0)
+        }
+
+        this.created[index] = program
         return program
     }
 }
@@ -106,19 +158,23 @@ afterEach(async () => {
 function postProgram(body: unknown, authenticated = true) {
     return app.inject({
         method: 'POST',
-        url: '/programs',
+        url: '/programas',
         headers: authenticated ? { authorization: 'Bearer test-token' } : {},
         payload: body
     })
 }
 
 test('creates a program with 201 and preserves activity order', async () => {
-    const response = await postProgram(input)
+    const response = await postProgram(requestInput)
 
     assert.equal(response.statusCode, 201)
     assert.equal(response.json().id, 'program-id')
     assert.equal(response.json().professionalId, PROFESSIONAL_ID)
-    assert.deepEqual(response.json().activities, [
+    assert.equal(response.json().alunoId, STUDENT_ID)
+    assert.equal(response.json().nome, 'Programa de teste')
+    assert.equal(response.json().modalidadeId, MODALITY_ID)
+    assert.equal(response.json().version, 1)
+    assert.deepEqual(response.json().atividades, [
         { activityId: ACTIVITY_TWO_ID, order: 1 },
         { activityId: ACTIVITY_ONE_ID, order: 2 }
     ])
@@ -126,6 +182,64 @@ test('creates a program with 201 and preserves activity order', async () => {
         { activityId: ACTIVITY_TWO_ID, order: 1 },
         { activityId: ACTIVITY_ONE_ID, order: 2 }
     ])
+})
+
+test('increments program version once when update changes program data', async () => {
+    const original = await programs.create({
+        professionalId: PROFESSIONAL_ID,
+        ...input,
+        activities: [{ activityId: ACTIVITY_ONE_ID, order: 1 }]
+    })
+    const updated = await programs.update({
+        ...original,
+        name: 'Programa alterado'
+    })
+
+    assert.equal(updated.version, original.version + 1)
+    assert.equal(updated.id, original.id)
+    assert.equal(updated.createdAt, original.createdAt)
+})
+
+test('keeps program version when update does not change program data', async () => {
+    const original = await programs.create({
+        professionalId: PROFESSIONAL_ID,
+        ...input,
+        activities: [{ activityId: ACTIVITY_ONE_ID, order: 1 }]
+    })
+    const updated = await programs.update({ ...original })
+
+    assert.equal(updated.version, original.version)
+})
+
+test('does not allow caller to manipulate program version during update', async () => {
+    const original = await programs.create({
+        professionalId: PROFESSIONAL_ID,
+        ...input,
+        activities: [{ activityId: ACTIVITY_ONE_ID, order: 1 }]
+    })
+    const updated = await programs.update({
+        ...original,
+        name: 'Programa alterado',
+        version: 500
+    })
+
+    assert.equal(updated.version, original.version + 1)
+})
+
+test('rejects updating a program that does not exist', async () => {
+    const missingProgram = {
+        id: 'missing-program',
+        professionalId: PROFESSIONAL_ID,
+        ...input,
+        activities: [{ activityId: ACTIVITY_ONE_ID, order: 1 }],
+        version: 1,
+        createdAt: new Date('2026-01-01T00:00:00Z')
+    }
+
+    await assert.rejects(
+        programs.update(missingProgram),
+        { message: 'Programa não encontrado.' }
+    )
 })
 
 test('rejects missing required fields', async () => {
@@ -140,23 +254,23 @@ test('rejects unauthenticated requests', async () => {
 
 test('rejects a student not linked to the authenticated professional', async () => {
     catalog.linked = false
-    const response = await postProgram(input)
+    const response = await postProgram(requestInput)
     assert.equal(response.statusCode, 403)
 })
 
 test('rejects programs without activities', async () => {
-    const response = await postProgram({ ...input, activityIds: [] })
+    const response = await postProgram({ ...requestInput, atividades: [] })
     assert.equal(response.statusCode, 400)
 })
 
 test('rejects an activity missing from the catalog', async () => {
-    const response = await postProgram({ ...input, activityIds: [UNKNOWN_ACTIVITY_ID] })
+    const response = await postProgram({ ...requestInput, atividades: [UNKNOWN_ACTIVITY_ID] })
     assert.equal(response.statusCode, 404)
 })
 
 test('rejects a modality not selected by the professional', async () => {
     catalog.modalitySelected = false
-    const response = await postProgram(input)
+    const response = await postProgram(requestInput)
     assert.equal(response.statusCode, 404)
 })
 
@@ -167,7 +281,7 @@ test('rejects an activity from another modality', async () => {
         origem: 'PADRAO',
         profissionalId: null
     })
-    const response = await postProgram({ ...input, activityIds: [ACTIVITY_ONE_ID] })
+    const response = await postProgram({ ...requestInput, atividades: [ACTIVITY_ONE_ID] })
     assert.equal(response.statusCode, 404)
 })
 
@@ -178,11 +292,11 @@ test('rejects another professional\'s personalized activity', async () => {
         origem: 'PERSONALIZADA',
         profissionalId: '00000000-0000-4000-8000-000000000099'
     })
-    const response = await postProgram({ ...input, activityIds: [ACTIVITY_ONE_ID] })
+    const response = await postProgram({ ...requestInput, atividades: [ACTIVITY_ONE_ID] })
     assert.equal(response.statusCode, 404)
 })
 
 test('rejects a missing student', async () => {
-    const response = await postProgram({ ...input, studentId: '00000000-0000-4000-8000-000000000003' })
+    const response = await postProgram({ ...requestInput, alunoId: '00000000-0000-4000-8000-000000000003' })
     assert.equal(response.statusCode, 404)
 })

@@ -1,6 +1,9 @@
 import { promises as fs } from 'node:fs'
-import { CatalogActivity } from '../program.types.js'
-import { ProgramCatalogRepository } from './program-catalog.repository.js'
+import { dirname, join } from 'node:path'
+import { definirCamposSchema } from '../../configuracoes-atividades/configuracoes-atividades.schema.js'
+import type { CamposAtividade } from '../../configuracoes-atividades/configuracoes-atividades.types.js'
+import type { CatalogActivity } from '../program.types.js'
+import type { ProgramCatalogRepository } from './program-catalog.repository.js'
 
 interface VinculoRecord {
     profissionalId: string
@@ -56,5 +59,22 @@ export class JsonProgramCatalogRepository implements ProgramCatalogRepository {
             this.readJson<CatalogActivity[]>(this.atividadesPersonalizadasPath)
         ])
         return [...standardActivities, ...customActivities].find((activity) => activity.id === activityId) ?? null
+    }
+
+    async findActivityFields(activityId: string): Promise<CamposAtividade | null> {
+        const directory = dirname(this.atividadesPath)
+        const [standardFields, customFields] = await Promise.all([
+            this.readJson<CamposAtividade[]>(join(directory, 'campos-configuracao-atividades.json')),
+            this.readJson<CamposAtividade[]>(join(directory, 'campos-configuracao-personalizadas.json'))
+        ])
+        const definition = [...standardFields, ...customFields]
+            .find((item) => item.atividadeId === activityId)
+
+        if (!definition) return null
+
+        return {
+            atividadeId: definition.atividadeId,
+            campos: definirCamposSchema.parse({ campos: definition.campos }).campos
+        }
     }
 }

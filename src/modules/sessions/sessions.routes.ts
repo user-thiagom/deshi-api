@@ -11,6 +11,7 @@ import { completeActivityController } from './complete-activity.controller.js'
 import { finishSessionController } from './finish-session.controller.js'
 import { interruptSessionController } from './interrupt-session.controller.js'
 import { listSessionsController } from './list-sessions.controller.js'
+import { listProfessionalSessionsController } from './list-professional-sessions.controller.js'
 
 import {
   getSessionResultController,
@@ -122,4 +123,11 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, listSessionsController)
+
+  server.get<{ Params: { studentId: string } }>('/students/:studentId/sessions/history', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, listProfessionalSessionsController(sessionsService))
 }
