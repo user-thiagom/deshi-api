@@ -1,0 +1,85 @@
+[
+  {
+    "id": "6153edd7-242e-46ea-88f3-dd94f34a696c",
+    "programId": "program-001",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-10-11T04:20:04.624Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "INCOMPLETE",
+        "execution": {
+          "values": {
+            "series": 2,
+            "repetitions": 8,
+            "weight": 15
+          },
+          "executedAt": "2026-11-03T15:28:20.763Z"
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-03T16:13:50.302Z",
+              "endedAt": "2026-11-03T16:27:46.589Z"
+            },
+            {
+              "startedAt": "2026-11-03T16:34:21.187Z",
+              "endedAt": "2026-11-03T16:52:00.891Z"
+            },
+            {
+              "startedAt": "2026-11-03T16:52:51.689Z",
+              "endedAt": "2026-11-03T16:57:59.182Z"
+            },
+            {
+              "startedAt": "2026-11-03T17:28:07.056Z",
+              "endedAt": "2026-11-03T17:31:14.226Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-03T16:27:46.589Z",
+              "endedAt": "2026-11-03T16:34:21.187Z"
+            }
+          ],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-03T16:52:00.891Z",
+              "endedAt": "2026-11-03T16:52:51.689Z"
+            }
+          ],
+          "activeTimeMs": 2390654,
+          "pauseTimeMs": 394598,
+          "restTimeMs": 50798
+        }
+      }
+    ],
+    "finishedAt": "2026-11-03T17:34:54.967Z"
+  },
+  {
+    "id": "1bb9c7bf-0db8-4045-a213-aa63cf4a6d14",
+    "programId": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-03T17:32:39.048Z",
+    "status": "COMPLETED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-03T17:32:51.775Z"
+  }
+]
