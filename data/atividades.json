@@ -1,0 +1,100 @@
+[
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000001",
+    "nome": "Agachamento livre",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000002",
+    "nome": "Supino reto",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000003",
+    "nome": "Postura da árvore",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000002",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000004",
+    "nome": "Saudação ao sol",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000002",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000005",
+    "nome": "Chute circular",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000003",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000006",
+    "nome": "Joelhada frontal",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000003",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000007",
+    "nome": "Jab",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000004",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000008",
+    "nome": "Direto",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000004",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000009",
+    "nome": "Saque",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000005",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000010",
+    "nome": "Forehand",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000005",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000011",
+    "nome": "Nado crawl",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000006",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000012",
+    "nome": "Nado costas",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000006",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000013",
+    "nome": "Burpee",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000007",
+    "origem": "PADRAO",
+    "profissionalId": null
+  },
+  {
+    "id": "a7101d90-8d5c-4ad3-9d68-000000000014",
+    "nome": "Salto na caixa",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000007",
+    "origem": "PADRAO",
+    "profissionalId": null
+  }
+]
