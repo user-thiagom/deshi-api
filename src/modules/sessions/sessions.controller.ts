@@ -4,8 +4,11 @@ import path from 'node:path'
 import { JsonProgramRepository } from '../programs/repositories/json-program.repository.js'
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
 import { JsonConfiguracaoRepository } from '../configuracoes-atividades/repositories/json-configuracao.repository.js'
+import { JsonAtividadeRepository } from '../atividades/repositories/json-atividade.repository.js'
+import { JsonModalidadeRepository } from '../modalidades/repositories/json-modalidade.repository.js'
 import { SessionsService } from './sessions.service.js'
 import {
+    evolutionQuerySchema,
     recordActivityObservationSchema,
     startSessionSchema
 } from './sessions.schema.js'
@@ -32,11 +35,58 @@ const configuracaoRepository = new JsonConfiguracaoRepository(
     path.resolve(process.cwd(), 'data', 'configuracoes-atividades.json')
 )
 
+const atividadeRepository = new JsonAtividadeRepository(
+    path.resolve(process.cwd(), 'data', 'atividades.json'),
+    path.resolve(process.cwd(), 'data', 'atividades-personalizadas.json')
+)
+
+const modalidadeRepository = new JsonModalidadeRepository(
+    path.resolve(process.cwd(), 'data', 'modalidades.json'),
+    path.resolve(process.cwd(), 'data', 'profissional-modalidades.json')
+)
+
 export const sessionsService = new SessionsService(
     programRepository,
     sessionRepository,
-    configuracaoRepository
+    configuracaoRepository,
+    atividadeRepository,
+    modalidadeRepository
 )
+
+export function getProfessionalStudentEvolutionController(service: SessionsService) {
+    return async function (
+        request: FastifyRequest<{
+            Params: { studentId: string }
+            Querystring: { activityId?: string; metric?: string }
+        }>,
+        reply: FastifyReply
+    ) {
+        const query = evolutionQuerySchema.safeParse(request.query)
+
+        if (!query.success) {
+            return reply.code(400).send({
+                message: 'Filtros inválidos.',
+                errors: query.error.flatten()
+            })
+        }
+
+        try {
+            const evolution = await service.getProfessionalStudentEvolution(
+                request.params.studentId,
+                request.user.userId,
+                query.data
+            )
+
+            return reply.code(200).send(evolution)
+        } catch (error) {
+            request.log.error(error)
+
+            return reply.code(500).send({
+                message: 'Erro interno ao consultar evolução do aluno.'
+            })
+        }
+    }
+}
 
 export function getSessionResultController(service: SessionsService) {
     return async function (

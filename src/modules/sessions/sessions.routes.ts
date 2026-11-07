@@ -15,6 +15,7 @@ import { listProfessionalSessionsController } from './list-professional-sessions
 
 import {
   getSessionResultController,
+  getProfessionalStudentEvolutionController,
   recordActivityObservationController,
   startSessionController,
   sessionsService
@@ -130,4 +131,14 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('PROFESSIONAL')
     ]
   }, listProfessionalSessionsController(sessionsService))
+
+  server.get<{
+    Params: { studentId: string }
+    Querystring: { activityId?: string; metric?: string }
+  }>('/students/:studentId/evolution', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getProfessionalStudentEvolutionController(sessionsService))
 }

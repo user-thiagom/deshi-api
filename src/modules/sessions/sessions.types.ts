@@ -53,3 +53,23 @@ export interface Session {
   status: SessionStatus
   activities: SessionActivity[]
 }
+
+export interface EvolutionPoint {
+  sessionId: string
+  value: number
+  executedAt: string
+}
+
+export interface ActivityMetricEvolution {
+  activityId: string
+  activityName?: string
+  modalityId?: string
+  modalityName?: string
+  metric: string
+  points: EvolutionPoint[]
+}
+
+export interface StudentEvolution {
+  studentId: string
+  evolution: ActivityMetricEvolution[]
+}

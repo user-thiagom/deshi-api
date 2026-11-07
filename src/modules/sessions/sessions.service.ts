@@ -13,13 +13,22 @@ import {
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
 import type { ConfiguracaoRepository } from '../configuracoes-atividades/repositories/configuracao.repository.js'
-import type { Session, SessionActivity } from './sessions.types.js'
+import type { AtividadeRepository } from '../atividades/repositories/atividade.repository.js'
+import type { ModalidadeRepository } from '../modalidades/repositories/modalidade.repository.js'
+import type {
+    ActivityMetricEvolution,
+    Session,
+    SessionActivity,
+    StudentEvolution
+} from './sessions.types.js'
 
 export class SessionsService {
     constructor(
         private readonly programRepository: ProgramRepository,
         private readonly sessionRepository: SessionRepository,
-        private readonly configuracaoRepository: ConfiguracaoRepository
+        private readonly configuracaoRepository: ConfiguracaoRepository,
+        private readonly atividadeRepository?: Pick<AtividadeRepository, 'listar'>,
+        private readonly modalidadeRepository?: Pick<ModalidadeRepository, 'listarCatalogo'>
     ) { }
 
     async startSession(
@@ -754,6 +763,90 @@ export class SessionsService {
                 (session) => session.professionalId === professionalId
             )
         )
+    }
+
+    async getProfessionalStudentEvolution(
+        studentId: string,
+        professionalId: string,
+        filters: { activityId?: string; metric?: string } = {}
+    ): Promise<StudentEvolution> {
+        const sessions = await this.getProfessionalStudentSessions(
+            studentId,
+            professionalId
+        )
+        const groups = new Map<string, ActivityMetricEvolution>()
+
+        for (const session of sessions) {
+            for (const activity of session.activities) {
+                if (
+                    !activity.execution ||
+                    (filters.activityId && activity.activityId !== filters.activityId)
+                ) {
+                    continue
+                }
+
+                for (const [metric, value] of Object.entries(activity.execution.values)) {
+                    if (filters.metric && metric !== filters.metric) {
+                        continue
+                    }
+
+                    const key = JSON.stringify([activity.activityId, metric])
+                    let group = groups.get(key)
+
+                    if (!group) {
+                        group = {
+                            activityId: activity.activityId,
+                            metric,
+                            points: []
+                        }
+                        groups.set(key, group)
+                    }
+
+                    group.points.push({
+                        sessionId: session.id,
+                        value,
+                        executedAt: activity.execution.executedAt.toISOString()
+                    })
+                }
+            }
+        }
+
+        if (groups.size === 0) {
+            return { studentId, evolution: [] }
+        }
+
+        if (!this.atividadeRepository || !this.modalidadeRepository) {
+            throw new Error('Repositórios de atividades e modalidades não configurados.')
+        }
+
+        const [atividades, modalidades] = await Promise.all([
+            this.atividadeRepository.listar(),
+            this.modalidadeRepository.listarCatalogo()
+        ])
+        const atividadesPorId = new Map(atividades.map((atividade) => [atividade.id, atividade]))
+        const modalidadesPorId = new Map(modalidades.map((modalidade) => [modalidade.id, modalidade]))
+
+        for (const evolution of groups.values()) {
+            const atividade = atividadesPorId.get(evolution.activityId)
+
+            if (atividade) {
+                evolution.activityName = atividade.nome
+                evolution.modalityId = atividade.modalidadeId
+                const modalidade = modalidadesPorId.get(atividade.modalidadeId)
+
+                if (modalidade) {
+                    evolution.modalityName = modalidade.nome
+                }
+            }
+
+            evolution.points.sort(
+                (first, second) =>
+                    Date.parse(first.executedAt) -
+                    Date.parse(second.executedAt)
+            )
+        }
+
+        return { studentId, evolution: [...groups.values()] }
     }
 
     private sortSessionsByStartedAt(sessions: Session[]): Session[] {

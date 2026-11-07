@@ -8,7 +8,13 @@ export const recordActivityObservationSchema = z.object({
     observation: z.string().trim().min(1, 'A observação não pode estar vazia.')
 }).strict()
 
+export const evolutionQuerySchema = z.object({
+    activityId: z.string().trim().min(1).optional(),
+    metric: z.string().trim().min(1).optional()
+}).strict()
+
 export type StartSessionBody = z.infer<typeof startSessionSchema>
 export type RecordActivityObservationBody = z.infer<
     typeof recordActivityObservationSchema
 >
+export type EvolutionQuery = z.infer<typeof evolutionQuerySchema>
