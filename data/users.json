@@ -18,12 +18,30 @@
     "updatedAt": "2026-10-09T13:45:16.781Z"
   },
   {
-    "id": "28faa0e5-c1f2-412e-b756-9dcb35c86819",
-    "name": "Thiago Mateus Costa Fernandes de Lima",
-    "email": "teste@gmail.com",
-    "passwordHash": "$2b$10$Xqtu69ESy3iedrSXPfgeU.X8WCtn8Hx8bmrokBPc.Vqfdprs.kMtO",
+    "id": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "name": "Lucas",
+    "email": "lucas@gmail.com",
+    "passwordHash": "$2b$10$81sz7PGDOe7CdwmcOiOBo.8zoEKYtkvJhUIMmzy4dq7/BZa8vlAUm",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-11T15:49:30.839Z",
+    "updatedAt": "2026-10-11T15:49:30.839Z"
+  },
+  {
+    "id": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "name": "Everton",
+    "email": "everton@gmail.com",
+    "passwordHash": "$2b$10$FHKimFus4u75ZmEOOpSKUOdi/a5JafpBm5jOH6MIAGm5P7TdnsiUi",
     "profile": "PROFESSIONAL",
-    "createdAt": "2026-10-22T14:11:20.669Z",
-    "updatedAt": "2026-10-22T14:11:20.669Z"
+    "createdAt": "2026-10-23T18:54:00.687Z",
+    "updatedAt": "2026-10-23T18:54:00.687Z"
+  },
+  {
+    "id": "b9ca9054-7300-4f50-8b3f-ee9c468bc746",
+    "name": "joao",
+    "email": "joao@gmail.com",
+    "passwordHash": "$2b$10$Pu/3Mwma.DQufw3hHZci9.3OqC1FQ0rBmRR8NWiyPqTpMDFMjqQ0u",
+    "profile": "STUDENT",
+    "createdAt": "2026-10-23T20:20:11.294Z",
+    "updatedAt": "2026-10-23T20:20:11.294Z"
   }
 ]
