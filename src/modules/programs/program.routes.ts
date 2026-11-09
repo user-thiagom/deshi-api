@@ -4,7 +4,9 @@ import { authenticate } from '../../shared/auth/authenticate.js'
 import { authorizeProfile } from '../../shared/auth/authorize-profile.js'
 import {
     createProgramController,
-    listProgramsController
+    getProgramController,
+    listProgramsController,
+    updateProgramController
 } from './program.controller.js'
 import { JsonProgramCatalogRepository } from './repositories/json-program-catalog.repository.js'
 import { JsonProgramRepository } from './repositories/json-program.repository.js'
@@ -29,17 +31,25 @@ export interface ProgramRouteDependencies {
 }
 
 export async function programRoutes(server: FastifyInstance, dependencies: ProgramRouteDependencies = {}) {
-    server.post('/programs', {
+    server.post('/programas', {
         preHandler: [
             dependencies.authenticate ?? authenticate,
             dependencies.authorizeProfessional ?? authorizeProfile('PROFESSIONAL')
         ]
     }, createProgramController(dependencies.programService ?? programService))
 
-    server.get('/programs', {
+    server.get('/programas', {
+        preHandler: [dependencies.authenticate ?? authenticate]
+    }, listProgramsController(dependencies.programService ?? programService))
+
+    server.get('/programas/:id', {
+        preHandler: [dependencies.authenticate ?? authenticate]
+    }, getProgramController(dependencies.programService ?? programService))
+
+    server.put('/programas/:id', {
         preHandler: [
             dependencies.authenticate ?? authenticate,
-            authorizeProfile('STUDENT')
+            dependencies.authorizeProfessional ?? authorizeProfile('PROFESSIONAL')
         ]
-    }, listProgramsController(dependencies.programService ?? programService))
+    }, updateProgramController(dependencies.programService ?? programService))
 }

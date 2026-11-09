@@ -3,6 +3,24 @@ import { promises as fs } from 'node:fs'
 import type { Session } from '../sessions.types.js'
 import type { SessionRepository } from './session.repository.js'
 
+function parseExecutionDate(
+    executedAt: Date | string,
+    sessionId: string,
+    activityId: string
+): Date {
+    const date = executedAt instanceof Date
+        ? new Date(executedAt.getTime())
+        : new Date(executedAt)
+
+    if (!Number.isFinite(date.getTime())) {
+        throw new Error(
+            `Data de execução inválida na sessão "${sessionId}", atividade "${activityId}".`
+        )
+    }
+
+    return date
+}
+
 export class JsonSessionRepository implements SessionRepository {
     constructor(private readonly filePath: string) { }
 
@@ -20,13 +38,24 @@ export class JsonSessionRepository implements SessionRepository {
 
             activities: session.activities.map((activity) => {
                 const tracking = activity.timeTracking
+                const execution = activity.execution
+                    ? {
+                        ...activity.execution,
+                        executedAt: parseExecutionDate(
+                            activity.execution.executedAt,
+                            session.id,
+                            activity.activityId
+                        )
+                    }
+                    : undefined
 
                 if (!tracking) {
-                    return activity
+                    return execution ? { ...activity, execution } : activity
                 }
 
                 return {
                     ...activity,
+                    ...(execution ? { execution } : {}),
                     timeTracking: {
                         ...tracking,
 

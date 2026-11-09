@@ -11,8 +11,12 @@ import { completeActivityController } from './complete-activity.controller.js'
 import { finishSessionController } from './finish-session.controller.js'
 import { interruptSessionController } from './interrupt-session.controller.js'
 import { listSessionsController } from './list-sessions.controller.js'
+import { listProfessionalSessionsController } from './list-professional-sessions.controller.js'
 
 import {
+  getSessionResultController,
+  getProfessionalStudentEvolutionController,
+  recordActivityObservationController,
   startSessionController,
   sessionsService
 } from './sessions.controller.js'
@@ -33,6 +37,16 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, startActivityController(sessionsService))
+
+  server.post<{
+    Params: { sessionId: string; activityId: string }
+    Body: { observation: string }
+  }>('/sessions/:sessionId/activities/:activityId/observations', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('STUDENT')
+    ]
+  }, recordActivityObservationController(sessionsService))
 
   server.post('/sessions/:sessionId/executions', {
     preHandler: [
@@ -90,10 +104,41 @@ export async function sessionRoutes(server: FastifyInstance) {
     ]
   }, interruptSessionController(sessionsService))
 
+  server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getSessionResultController(sessionsService))
+
+  server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId/result', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getSessionResultController(sessionsService))
+
   server.get('/sessions/history', {
     preHandler: [
       authenticate,
       authorizeProfile('STUDENT')
     ]
   }, listSessionsController)
+
+  server.get<{ Params: { studentId: string } }>('/students/:studentId/sessions/history', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, listProfessionalSessionsController(sessionsService))
+
+  server.get<{
+    Params: { studentId: string }
+    Querystring: { activityId?: string; metric?: string }
+  }>('/students/:studentId/evolution', {
+    preHandler: [
+      authenticate,
+      authorizeProfile('PROFESSIONAL')
+    ]
+  }, getProfessionalStudentEvolutionController(sessionsService))
 }

@@ -5,18 +5,30 @@ import {
     ProgramNotOwnedByStudentError,
     SessionNotFoundError,
     SessionNotOwnedByStudentError,
+    SessionNotOwnedByProfessionalError,
     SessionActivityNotFoundError,
     InvalidActivityStateError
 } from './sessions.errors.js'
 
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
-import type { Session, SessionActivity } from './sessions.types.js'
+import type { ConfiguracaoRepository } from '../configuracoes-atividades/repositories/configuracao.repository.js'
+import type { AtividadeRepository } from '../atividades/repositories/atividade.repository.js'
+import type { ModalidadeRepository } from '../modalidades/repositories/modalidade.repository.js'
+import type {
+    ActivityMetricEvolution,
+    Session,
+    SessionActivity,
+    StudentEvolution
+} from './sessions.types.js'
 
 export class SessionsService {
     constructor(
         private readonly programRepository: ProgramRepository,
-        private readonly sessionRepository: SessionRepository
+        private readonly sessionRepository: SessionRepository,
+        private readonly configuracaoRepository: ConfiguracaoRepository,
+        private readonly atividadeRepository?: Pick<AtividadeRepository, 'listar'>,
+        private readonly modalidadeRepository?: Pick<ModalidadeRepository, 'listarCatalogo'>
     ) { }
 
     async startSession(
@@ -33,28 +45,60 @@ export class SessionsService {
             throw new ProgramNotOwnedByStudentError()
         }
 
+        const activitiesWithoutPrescription = program.activities.filter(
+            (activity) => activity.prescribed === undefined
+        )
+        const configuracoes = activitiesWithoutPrescription.length > 0
+            ? await this.configuracaoRepository.listar()
+            : []
+
         const session: Session = {
             id: randomUUID(),
             programId: program.id,
+            programVersion: program.version,
             studentId,
             professionalId: program.professionalId,
             startedAt: new Date(),
             status: 'IN_PROGRESS',
             activities: [...program.activities]
                 .sort((a, b) => a.order - b.order)
-                .map((activity) => ({
-                    activityId: activity.activityId,
-                    order: activity.order,
-                    status: 'PENDING' as const,
-                    timeTracking: {
-                        activeIntervals: [],
-                        pauseIntervals: [],
-                        restIntervals: [],
-                        activeTimeMs: 0,
-                        pauseTimeMs: 0,
-                        restTimeMs: 0
+                .map((activity) => {
+                    const configuracao = activity.prescribed === undefined
+                        ? configuracoes
+                            .filter((item) =>
+                                item.atividadeId === activity.activityId &&
+                                item.profissionalId === program.professionalId
+                            )
+                            .reduce<typeof configuracoes[number] | undefined>(
+                                (maisRecente, atual) =>
+                                    !maisRecente ||
+                                    new Date(atual.atualizadoEm).getTime() >
+                                        new Date(maisRecente.atualizadoEm).getTime()
+                                        ? atual
+                                        : maisRecente,
+                                undefined
+                            )
+                        : undefined
+
+                    return {
+                        activityId: activity.activityId,
+                        order: activity.order,
+                        status: 'PENDING' as const,
+                        ...(activity.prescribed !== undefined
+                            ? { prescribed: { ...activity.prescribed } }
+                            : configuracao
+                                ? { prescribed: { ...configuracao.valores } }
+                                : {}),
+                        timeTracking: {
+                            activeIntervals: [],
+                            pauseIntervals: [],
+                            restIntervals: [],
+                            activeTimeMs: 0,
+                            pauseTimeMs: 0,
+                            restTimeMs: 0
+                        }
                     }
-                }))
+                })
         }
 
         return this.sessionRepository.create(session)
@@ -648,9 +692,167 @@ export class SessionsService {
         return this.sessionRepository.update(session)
     }
 
+    async getSessionResult(
+        sessionId: string,
+        professionalId: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.professionalId !== professionalId) {
+            throw new SessionNotOwnedByProfessionalError()
+        }
+
+        return session
+    }
+
+    async recordActivityObservation(
+        sessionId: string,
+        studentId: string,
+        activityId: string,
+        observation: string
+    ): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) {
+            throw new SessionNotFoundError()
+        }
+
+        if (session.studentId !== studentId) {
+            throw new SessionNotOwnedByStudentError()
+        }
+
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError(
+                'Não é possível registrar observações em uma sessão finalizada.'
+            )
+        }
+
+        const activity = session.activities.find(
+            (item) => item.activityId === activityId
+        )
+
+        if (!activity) {
+            throw new SessionActivityNotFoundError()
+        }
+
+        activity.observations = [...(activity.observations ?? []), observation]
+
+        return this.sessionRepository.update(session)
+    }
+
     async getStudentSessions(
         studentId: string
     ): Promise<Session[]> {
-        return this.sessionRepository.findByStudentId(studentId)
+        const sessions = await this.sessionRepository.findByStudentId(studentId)
+
+        return this.sortSessionsByStartedAt(sessions)
+    }
+
+    async getProfessionalStudentSessions(
+        studentId: string,
+        professionalId: string
+    ): Promise<Session[]> {
+        const sessions = await this.sessionRepository.findByStudentId(studentId)
+
+        return this.sortSessionsByStartedAt(
+            sessions.filter(
+                (session) => session.professionalId === professionalId
+            )
+        )
+    }
+
+    async getProfessionalStudentEvolution(
+        studentId: string,
+        professionalId: string,
+        filters: { activityId?: string; metric?: string } = {}
+    ): Promise<StudentEvolution> {
+        const sessions = await this.getProfessionalStudentSessions(
+            studentId,
+            professionalId
+        )
+        const groups = new Map<string, ActivityMetricEvolution>()
+
+        for (const session of sessions) {
+            for (const activity of session.activities) {
+                if (
+                    !activity.execution ||
+                    (filters.activityId && activity.activityId !== filters.activityId)
+                ) {
+                    continue
+                }
+
+                for (const [metric, value] of Object.entries(activity.execution.values)) {
+                    if (filters.metric && metric !== filters.metric) {
+                        continue
+                    }
+
+                    const key = JSON.stringify([activity.activityId, metric])
+                    let group = groups.get(key)
+
+                    if (!group) {
+                        group = {
+                            activityId: activity.activityId,
+                            metric,
+                            points: []
+                        }
+                        groups.set(key, group)
+                    }
+
+                    group.points.push({
+                        sessionId: session.id,
+                        value,
+                        executedAt: activity.execution.executedAt.toISOString()
+                    })
+                }
+            }
+        }
+
+        if (groups.size === 0) {
+            return { studentId, evolution: [] }
+        }
+
+        if (!this.atividadeRepository || !this.modalidadeRepository) {
+            throw new Error('Repositórios de atividades e modalidades não configurados.')
+        }
+
+        const [atividades, modalidades] = await Promise.all([
+            this.atividadeRepository.listar(),
+            this.modalidadeRepository.listarCatalogo()
+        ])
+        const atividadesPorId = new Map(atividades.map((atividade) => [atividade.id, atividade]))
+        const modalidadesPorId = new Map(modalidades.map((modalidade) => [modalidade.id, modalidade]))
+
+        for (const evolution of groups.values()) {
+            const atividade = atividadesPorId.get(evolution.activityId)
+
+            if (atividade) {
+                evolution.activityName = atividade.nome
+                evolution.modalityId = atividade.modalidadeId
+                const modalidade = modalidadesPorId.get(atividade.modalidadeId)
+
+                if (modalidade) {
+                    evolution.modalityName = modalidade.nome
+                }
+            }
+
+            evolution.points.sort(
+                (first, second) =>
+                    Date.parse(first.executedAt) -
+                    Date.parse(second.executedAt)
+            )
+        }
+
+        return { studentId, evolution: [...groups.values()] }
+    }
+
+    private sortSessionsByStartedAt(sessions: Session[]): Session[] {
+        return [...sessions].sort(
+            (first, second) =>
+                second.startedAt.getTime() - first.startedAt.getTime()
+        )
     }
 }

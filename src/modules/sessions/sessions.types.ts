@@ -33,6 +33,8 @@ export interface SessionActivity {
   order: number
   status: SessionActivityStatus
   timeTracking?: ActivityTimeTracking
+  observations?: string[]
+  prescribed?: Record<string, number>
 
   execution?: {
     values: Record<string, number>
@@ -43,10 +45,31 @@ export interface SessionActivity {
 export interface Session {
   id: string
   programId: string
+  programVersion?: number
   studentId: string
   professionalId: string
   startedAt: Date
   finishedAt?: Date
   status: SessionStatus
   activities: SessionActivity[]
+}
+
+export interface EvolutionPoint {
+  sessionId: string
+  value: number
+  executedAt: string
+}
+
+export interface ActivityMetricEvolution {
+  activityId: string
+  activityName?: string
+  modalityId?: string
+  modalityName?: string
+  metric: string
+  points: EvolutionPoint[]
+}
+
+export interface StudentEvolution {
+  studentId: string
+  evolution: ActivityMetricEvolution[]
 }

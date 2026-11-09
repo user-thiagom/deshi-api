@@ -42,6 +42,7 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
             ]),
             writeJson('revoked-tokens.json', []),
             writeJson('sessions.json', []),
+            writeJson('configuracoes-atividades.json', []),
             writeJson('programs.json', [
                 {
                     id: programId,
@@ -49,7 +50,7 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
                     studentId,
                     name: 'Programa de teste',
                     modalityId: randomUUID(),
-                    activities: activityIds.map((activityId, index) => ({ activityId, order: index + 1 })),
+                    activities: activityIds.map((activityId, index) => ({ activityId, order: index + 1, prescribed: { repeticoes: 12 } })),
                     createdAt: iso('2026-01-01T10:00:00.000Z')
                 },
                 {
@@ -196,9 +197,9 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
             const ownHistory = await request('GET', '/sessions/history', studentToken)
             assert.equal(ownHistory.status, 200)
             assert.deepEqual(ownHistory.body.map(({ id }) => id), [
-                firstSessionId,
+                interruptedSessionId,
                 finishedSessionId,
-                interruptedSessionId
+                firstSessionId
             ])
             assert.ok(ownHistory.body.every(({ studentId: owner }) => owner === studentId))
             assert.deepEqual((await request('GET', '/sessions/history', token(otherStudentId))).body, [])

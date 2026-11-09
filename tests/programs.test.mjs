@@ -80,24 +80,24 @@ test('US10 — create programs over HTTP and persist isolated JSON data', { time
         }
         const professionalToken = token(professionalId)
         const body = {
-            studentId,
-            name: 'Programa inicial',
-            modalityId,
-            activityIds: [activityIds[1], activityIds[0]]
+            alunoId: studentId,
+            nome: 'Programa inicial',
+            modalidadeId: modalityId,
+            atividades: [activityIds[1], activityIds[0]]
         }
 
         await t.test('creates a linked student program with ordered activities and persists it', async () => {
-            const response = await request('POST', '/programs', professionalToken, body)
+            const response = await request('POST', '/programas', professionalToken, body)
             assert.equal(response.status, 201)
-            assert.equal(response.body.professionalId, professionalId)
-            assert.equal(response.body.studentId, studentId)
-            assert.equal(response.body.name, body.name)
-            assert.equal(response.body.modalityId, modalityId)
-            assert.deepEqual(response.body.activities, [
-                { activityId: activityIds[1], order: 1 },
-                { activityId: activityIds[0], order: 2 }
+            assert.equal(response.body.profissionalId, professionalId)
+            assert.equal(response.body.alunoId, studentId)
+            assert.equal(response.body.nome, body.nome)
+            assert.equal(response.body.modalidadeId, modalityId)
+            assert.deepEqual(response.body.atividades.map(({ atividadeId, ordem }) => ({ atividadeId, ordem })), [
+                { atividadeId: activityIds[1], ordem: 1 },
+                { atividadeId: activityIds[0], ordem: 2 }
             ])
-            assert.ok(response.body.createdAt)
+            assert.ok(response.body.criadoEm)
 
             const persisted = JSON.parse(await fs.readFile(path.join(data, 'programs.json'), 'utf8'))
             assert.equal(persisted.length, 1)
@@ -105,37 +105,37 @@ test('US10 — create programs over HTTP and persist isolated JSON data', { time
         })
 
         await t.test('rejects a missing token and a student creating a program', async () => {
-            assert.equal((await request('POST', '/programs', undefined, body)).status, 401)
-            assert.equal((await request('POST', '/programs', token(studentId), body)).status, 403)
+            assert.equal((await request('POST', '/programas', undefined, body)).status, 401)
+            assert.equal((await request('POST', '/programas', token(studentId), body)).status, 403)
         })
 
         await t.test('rejects invalid input, unlinked students, and unavailable modalities or activities', async () => {
-            assert.equal((await request('POST', '/programs', professionalToken, {})).status, 400)
-            assert.equal((await request('POST', '/programs', professionalToken, {
+            assert.equal((await request('POST', '/programas', professionalToken, {})).status, 400)
+            assert.equal((await request('POST', '/programas', professionalToken, {
                 ...body,
-                studentId: unlinkedStudentId
+                alunoId: unlinkedStudentId
             })).status, 403)
-            assert.equal((await request('POST', '/programs', professionalToken, {
+            assert.equal((await request('POST', '/programas', professionalToken, {
                 ...body,
-                modalityId: randomUUID()
+                modalidadeId: randomUUID()
             })).status, 404)
-            assert.equal((await request('POST', '/programs', professionalToken, {
+            assert.equal((await request('POST', '/programas', professionalToken, {
                 ...body,
-                activityIds: [randomUUID()]
+                atividades: [randomUUID()]
             })).status, 404)
-            assert.equal((await request('POST', '/programs', professionalToken, {
+            assert.equal((await request('POST', '/programas', professionalToken, {
                 ...body,
-                activityIds: []
+                atividades: []
             })).status, 400)
         })
 
         await t.test('lists only the authenticated student’s programs', async () => {
-            const ownPrograms = await request('GET', '/programs', token(studentId))
+            const ownPrograms = await request('GET', '/programas', token(studentId))
             assert.equal(ownPrograms.status, 200)
             assert.equal(ownPrograms.body.length, 1)
-            assert.equal(ownPrograms.body[0].studentId, studentId)
-            assert.deepEqual((await request('GET', '/programs', token(unlinkedStudentId))).body, [])
-            assert.equal((await request('GET', '/programs')).status, 401)
+            assert.equal(ownPrograms.body[0].alunoId, studentId)
+            assert.deepEqual((await request('GET', '/programas', token(unlinkedStudentId))).body, [])
+            assert.equal((await request('GET', '/programas')).status, 401)
         })
 
         assert.equal(JSON.parse(await fs.readFile(path.join(data, 'programs.json'), 'utf8')).length, 1)

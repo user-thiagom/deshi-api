@@ -26,6 +26,13 @@ export class SessionNotOwnedByStudentError extends Error {
   }
 }
 
+export class SessionNotOwnedByProfessionalError extends Error {
+  constructor() {
+    super('Esta sessão não pertence ao profissional autenticado.')
+    this.name = 'SessionNotOwnedByProfessionalError'
+  }
+}
+
 export class SessionActivityNotFoundError extends Error {
   constructor() {
     super('Atividade não encontrada nesta sessão.')
