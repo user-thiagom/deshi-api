@@ -64,20 +64,35 @@ function createTestApp() {
         createdAt: new Date(),
         updatedAt: new Date()
     } satisfies User
+    const professional = {
+        id: PROFESSIONAL_ID,
+        name: 'Profissional responsável',
+        email: 'profissional@example.com',
+        passwordHash: 'not-used',
+        profile: 'PROFESSIONAL',
+        createdAt: new Date(),
+        updatedAt: new Date()
+    } satisfies User
     const users = {
-        findById: async (id: string) => id === STUDENT_ID ? student : null
+        findById: async (id: string) => id === STUDENT_ID ? student : id === PROFESSIONAL_ID ? professional : null
     }
     const service = new ProgramService(programs, catalog, users)
     const dependencies: ProgramRouteDependencies = {
         programService: service,
         authenticate: async (request: FastifyRequest, reply: FastifyReply) => {
-            if (request.headers.authorization !== 'Bearer test-token') {
+            if (!['Bearer test-token', 'Bearer student-token'].includes(request.headers.authorization ?? '')) {
                 return reply.status(401).send({ message: 'Token de autenticação não informado.' })
             }
-            request.user = { userId: PROFESSIONAL_ID, jti: 'test-jti', exp: 1 }
+            const isStudent = request.headers.authorization === 'Bearer student-token'
+            request.user = { userId: isStudent ? STUDENT_ID : PROFESSIONAL_ID, jti: 'test-jti', exp: 1 }
         },
         authorizeProfessional: async (request: FastifyRequest, reply: FastifyReply) => {
             if (request.user.userId !== PROFESSIONAL_ID) {
+                return reply.status(403).send({ message: 'Você não tem permissão para acessar este recurso.' })
+            }
+        },
+        authorizeStudent: async (request: FastifyRequest, reply: FastifyReply) => {
+            if (request.user.userId !== STUDENT_ID) {
                 return reply.status(403).send({ message: 'Você não tem permissão para acessar este recurso.' })
             }
         }
@@ -118,6 +133,7 @@ test('creates a program with 201 and preserves activity order', async () => {
     assert.equal(response.statusCode, 201)
     assert.equal(response.json().id, 'program-id')
     assert.equal(response.json().professionalId, PROFESSIONAL_ID)
+    assert.equal(response.json().professionalName, 'Profissional responsável')
     assert.deepEqual(response.json().activities, [
         { activityId: ACTIVITY_TWO_ID, order: 1 },
         { activityId: ACTIVITY_ONE_ID, order: 2 }
@@ -126,6 +142,21 @@ test('creates a program with 201 and preserves activity order', async () => {
         { activityId: ACTIVITY_TWO_ID, order: 1 },
         { activityId: ACTIVITY_ONE_ID, order: 2 }
     ])
+})
+
+test('lists programs with the responsible professional name and no personal user data', async () => {
+    await postProgram(input)
+    const response = await app.inject({
+        method: 'GET',
+        url: '/programs',
+        headers: { authorization: 'Bearer student-token' }
+    })
+
+    assert.equal(response.statusCode, 200)
+    assert.equal(response.json()[0].professionalId, PROFESSIONAL_ID)
+    assert.equal(response.json()[0].professionalName, 'Profissional responsável')
+    assert.equal('email' in response.json()[0], false)
+    assert.equal('passwordHash' in response.json()[0], false)
 })
 
 test('rejects missing required fields', async () => {

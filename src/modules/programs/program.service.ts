@@ -42,6 +42,7 @@ export class ProgramService {
 
         return this.programRepository.create({
             professionalId,
+            professionalName: (await this.userRepository.findById(professionalId))?.name ?? '',
             studentId: data.studentId,
             name: data.name,
             modalityId: data.modalityId,
@@ -50,6 +51,14 @@ export class ProgramService {
     }
 
     async findProgramsByStudent(studentId: string): Promise<Program[]> {
-        return this.programRepository.findByStudentId(studentId)
+        const programs = await this.programRepository.findByStudentId(studentId)
+
+        return Promise.all(programs.map(async (program) => {
+            const professional = await this.userRepository.findById(program.professionalId)
+            return {
+                ...program,
+                professionalName: professional?.name ?? ''
+            }
+        }))
     }
 }

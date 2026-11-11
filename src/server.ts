@@ -8,18 +8,35 @@ import { configuracaoAtividadeRoutes } from './modules/configuracoes-atividades/
 import { programRoutes } from './modules/programs/program.routes.js'
 import { vinculoRoutes } from './modules/vinculos/vinculos.routes.js'
 import { conviteRoutes } from './modules/vinculos/convite.routes.js'
-import { programaRoutes } from './modules/programas/programas.routes.js'
 
 const PORT = 3030
+
+function isLocalFrontendOrigin(origin: string): boolean {
+  const match = origin.match(/^http:\/\/([^:/]+):(\d+)$/)
+  if (!match) return false
+
+  const [, host, portValue] = match
+  const port = Number(portValue)
+  if (port < 5173 || port > 5180) return false
+  if (host === 'localhost' || host === '127.0.0.1') return true
+
+  const octets = host.split('.').map(Number)
+  if (octets.length !== 4 || octets.some((octet) => !Number.isInteger(octet) || octet < 0 || octet > 255)) return false
+  const [first, second] = octets
+
+  return first === 10
+    || (first === 172 && second >= 16 && second <= 31)
+    || (first === 192 && second === 168)
+}
 
 const server = fastify()
 
 await server.register(cors, {
-  origin: [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://192.168.0.100:5173',
-  ],
+  origin: (origin, callback) => {
+    // Requisições sem Origin (por exemplo, health checks) não precisam de CORS.
+    if (!origin || isLocalFrontendOrigin(origin)) return callback(null, true)
+    return callback(new Error('Origem não permitida pelo CORS'), false)
+  },
 })
 
 server.register(userRoutes)

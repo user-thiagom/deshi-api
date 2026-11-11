@@ -26,6 +26,7 @@ export interface ProgramRouteDependencies {
     programService?: ProgramService
     authenticate?: preHandlerHookHandler
     authorizeProfessional?: preHandlerHookHandler
+    authorizeStudent?: preHandlerHookHandler
 }
 
 export async function programRoutes(server: FastifyInstance, dependencies: ProgramRouteDependencies = {}) {
@@ -39,7 +40,7 @@ export async function programRoutes(server: FastifyInstance, dependencies: Progr
     server.get('/programs', {
         preHandler: [
             dependencies.authenticate ?? authenticate,
-            authorizeProfile('STUDENT')
+            dependencies.authorizeStudent ?? authorizeProfile('STUDENT')
         ]
     }, listProgramsController(dependencies.programService ?? programService))
 }

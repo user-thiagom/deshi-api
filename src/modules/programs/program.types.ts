@@ -1,6 +1,7 @@
 export interface Program {
     id: string
     professionalId: string
+    professionalName: string
     studentId: string
     name: string
     modalityId: string
