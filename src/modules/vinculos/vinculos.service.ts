@@ -24,34 +24,28 @@ export class VinculoService {
     async listarAlunosVinculados(profissionalId: string): Promise<UserResponse[]> {
         return executarOperacaoVinculo(async () => {
             const vinculos = await this.vinculoRepository.buscarAtivosPorProfissional(profissionalId)
-            const alunos: UserResponse[] = []
+            const alunos = await this.userRepository.findByIds(
+                vinculos.map((vinculo) => vinculo.alunoId)
+            )
 
-            for (const vinculo of vinculos) {
-                const aluno = await this.userRepository.findById(vinculo.alunoId)
-
-                if (aluno?.profile === 'STUDENT') {
-                    alunos.push(toUserResponse(aluno))
-                }
-            }
-
-            return alunos
+            return alunos.flatMap((aluno) =>
+                aluno?.profile === 'STUDENT' ? [toUserResponse(aluno)] : []
+            )
         })
     }
 
     async listarProfissionaisVinculados(alunoId: string): Promise<UserResponse[]> {
         return executarOperacaoVinculo(async () => {
             const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)
-            const profissionais: UserResponse[] = []
+            const profissionais = await this.userRepository.findByIds(
+                vinculos.map((vinculo) => vinculo.profissionalId)
+            )
 
-            for (const vinculo of vinculos) {
-                const profissional = await this.userRepository.findById(vinculo.profissionalId)
-
-                if (profissional?.profile === 'PROFESSIONAL') {
-                    profissionais.push(toUserResponse(profissional))
-                }
-            }
-
-            return profissionais
+            return profissionais.flatMap((profissional) =>
+                profissional?.profile === 'PROFESSIONAL'
+                    ? [toUserResponse(profissional)]
+                    : []
+            )
         })
     }
 

@@ -45,4 +45,20 @@ export class JsonUserRepository implements UserRepository {
         const user = users.find((user) => user.id === id)
         return user ?? null
     }
+
+    async findByIds(ids: string[]): Promise<Array<User | null>> {
+        if (ids.length === 0) return []
+
+        const idsToFind = new Set(ids)
+        const users = await this.readUsers()
+        const usersById = new Map<string, User>()
+
+        for (const user of users) {
+            if (idsToFind.has(user.id) && !usersById.has(user.id)) {
+                usersById.set(user.id, user)
+            }
+        }
+
+        return ids.map((id) => usersById.get(id) ?? null)
+    }
 }
