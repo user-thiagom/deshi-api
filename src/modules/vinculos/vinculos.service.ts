@@ -38,6 +38,17 @@ export class VinculoService {
         })
     }
 
+    async removerAlunoVinculado(profissionalId: string, alunoId: string): Promise<void> {
+        return executarOperacaoVinculo(async () => {
+            const vinculos = await this.vinculoRepository.buscarEntreProfissionalEAluno(profissionalId, alunoId)
+            const ativo = vinculos.find((vinculo) => vinculo.status === 'ATIVO')
+            if (!ativo) throw new VinculoNaoEncontradoError()
+
+            const removido = await this.vinculoRepository.remover(ativo.id)
+            if (!removido) throw new VinculoNaoEncontradoError()
+        })
+    }
+
     async listarProfissionaisVinculados(alunoId: string): Promise<UserResponse[]> {
         return executarOperacaoVinculo(async () => {
             const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)

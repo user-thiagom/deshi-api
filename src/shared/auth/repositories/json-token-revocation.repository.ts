@@ -53,10 +53,10 @@ export class JsonTokenRevocationRepository implements TokenRevocationRepository 
 
     async isRevoked(jti: string): Promise<boolean> {
         const tokens = await this.readTokens()
-        const activeTokens = this.removeExpiredTokens(tokens)
+        const now = new Date()
 
-        await this.writeTokens(activeTokens)
-
-        return activeTokens.some((token) => token.jti === jti)
+        // Protected requests can arrive in parallel. Keep authentication
+        // read-only to prevent concurrent checks from rewriting this file.
+        return tokens.some((token) => token.jti === jti && token.expiresAt > now)
     }
 }

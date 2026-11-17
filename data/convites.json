@@ -1,1 +1,20 @@
-[]
+[
+  {
+    "id": "d36b1b51-5045-4449-aa30-416853cea466",
+    "codigo": "XFAQ946B",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "01001150-5e31-4f00-8d84-a57319305a22",
+    "status": "PENDENTE",
+    "criadoEm": "2026-11-10T21:42:34.837Z",
+    "expiraEm": "2026-11-17T21:42:34.837Z"
+  },
+  {
+    "id": "021e26f6-fcda-461d-9b1e-2d1960bcc1d5",
+    "codigo": "Q89EFVKE",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "status": "PENDENTE",
+    "criadoEm": "2026-11-10T23:39:22.359Z",
+    "expiraEm": "2026-11-17T23:39:22.359Z"
+  }
+]

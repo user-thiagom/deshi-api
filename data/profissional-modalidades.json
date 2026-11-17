@@ -4,5 +4,21 @@
     "modalidadeIds": [
       "d1b10e90-8d5c-4ad3-9d68-000000000001"
     ]
+  },
+  {
+    "profissionalId": "e28dc603-cf8f-426c-a67d-83b51422d6d2",
+    "modalidadeIds": [
+      "d1b10e90-8d5c-4ad3-9d68-000000000001",
+      "d1b10e90-8d5c-4ad3-9d68-000000000003",
+      "d1b10e90-8d5c-4ad3-9d68-000000000004"
+    ]
+  },
+  {
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "modalidadeIds": [
+      "d1b10e90-8d5c-4ad3-9d68-000000000001",
+      "d1b10e90-8d5c-4ad3-9d68-000000000003",
+      "d1b10e90-8d5c-4ad3-9d68-000000000004"
+    ]
   }
 ]

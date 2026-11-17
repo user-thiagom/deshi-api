@@ -1,1 +1,14 @@
-[]
+[
+  {
+    "atividadeId": "f75997ff-2011-420e-9012-a73fdfe76075",
+    "campos": [
+      {
+        "chave": "series",
+        "tipo": "inteiro",
+        "obrigatorio": false,
+        "unidade": "series",
+        "min": 1
+      }
+    ]
+  }
+]

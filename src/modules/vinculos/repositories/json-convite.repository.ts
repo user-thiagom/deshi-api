@@ -99,6 +99,14 @@ export class JsonConviteRepository implements ConviteRepository {
         ) ?? null
     }
 
+    async listarPendentesAtivosPorProfissional(profissionalId: string): Promise<Convite[]> {
+        const convites = await this.lerArquivo()
+        const agora = Date.now()
+        return convites
+            .filter((convite) => convite.profissionalId === profissionalId && convite.status === 'PENDENTE' && convite.expiraEm.getTime() > agora)
+            .sort((a, b) => a.expiraEm.getTime() - b.expiraEm.getTime())
+    }
+
     async atualizar(conviteAtualizado: Convite): Promise<Convite | null> {
         return this.executarEmSequencia(async () => {
             const convites = await this.lerArquivo()

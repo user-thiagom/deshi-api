@@ -81,5 +81,52 @@
       }
     ],
     "finishedAt": "2026-11-03T17:32:51.775Z"
+  },
+  {
+    "id": "demo-session-f0170001-2000-4000-8000-000000000001",
+    "programId": "d3e00001-0000-4000-8000-000000000001",
+    "studentId": "f0170001-2000-4000-8000-000000000001",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-10T16:05:00.000Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "IN_PROGRESS",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "demo-session-f0170002-2000-4000-8000-000000000002",
+    "programId": "d3e00002-0000-4000-8000-000000000002",
+    "studentId": "f0170002-2000-4000-8000-000000000002",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-10T15:00:00.000Z",
+    "finishedAt": "2026-11-10T16:02:00.000Z",
+    "status": "COMPLETED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "COMPLETED",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
   }
 ]

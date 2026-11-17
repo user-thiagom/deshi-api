@@ -4,9 +4,14 @@ export const criarConviteSchema = z.object({
     alunoId: z.uuid()
 }).strict()
 
+export const criarConvitePorEmailSchema = z.object({
+    email: z.email()
+}).strict()
+
 export const parametrosConviteSchema = z.object({
     codigo: z.string().regex(/^[ABCDEFGHJKLMNPQRSTUVWXYZ23456789]{8}$/)
 }).strict()
 
 export type CriarConviteBody = z.infer<typeof criarConviteSchema>
+export type CriarConvitePorEmailBody = z.infer<typeof criarConvitePorEmailSchema>
 export type ParametrosConvite = z.infer<typeof parametrosConviteSchema>

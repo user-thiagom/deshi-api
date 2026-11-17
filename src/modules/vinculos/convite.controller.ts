@@ -1,4 +1,4 @@
-import { criarConviteSchema, parametrosConviteSchema, CriarConviteBody, ParametrosConvite } from './convite.schema.js'
+import { criarConvitePorEmailSchema, criarConviteSchema, parametrosConviteSchema, CriarConviteBody, CriarConvitePorEmailBody, ParametrosConvite } from './convite.schema.js'
 import { ConviteError, FalhaRollbackConviteError } from './convite.errors.js'
 import { AlunoNaoEncontradoError, UsuarioNaoEhAlunoError, VinculoConsigoMesmoError, VinculoJaExistenteError } from './vinculos.errors.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
@@ -57,6 +57,38 @@ export async function criarConviteController(
         return reply.status(201).send(convite)
     } catch (error) {
         return responderErroConvite(error, reply)
+    }
+}
+
+export async function criarConvitePorEmailController(
+    request: FastifyRequest<{ Body: CriarConvitePorEmailBody }>,
+    reply: FastifyReply
+) {
+    const resultado = criarConvitePorEmailSchema.safeParse(request.body)
+    if (!resultado.success) {
+        return reply.status(400).send({ mensagem: 'Informe um e-mail válido.' })
+    }
+
+    try {
+        const convite = await conviteService.criarConvitePorEmail(
+            request.user.userId,
+            resultado.data.email
+        )
+        return reply.status(201).send(convite)
+    } catch (error) {
+        return responderErroConvite(error, reply)
+    }
+}
+
+export async function listarConvitesPendentesController(
+    request: FastifyRequest,
+    reply: FastifyReply
+) {
+    try {
+        return reply.status(200).send(await conviteService.listarConvitesPendentes(request.user.userId))
+    } catch (error) {
+        request.log.error({ err: error }, 'Falha ao consultar convites pendentes.')
+        return reply.status(500).send({ mensagem: 'Não foi possível carregar os convites pendentes.' })
     }
 }
 

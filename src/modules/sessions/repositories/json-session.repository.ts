@@ -127,6 +127,11 @@ export class JsonSessionRepository implements SessionRepository {
         )
     }
 
+    async findByProfessionalId(professionalId: string): Promise<Session[]> {
+        const sessions = await this.readSessions()
+        return sessions.filter((session) => session.professionalId === professionalId)
+    }
+
 
     async update(updatedSession: Session): Promise<Session> {
         const sessions = await this.readSessions()

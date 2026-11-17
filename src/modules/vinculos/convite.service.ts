@@ -74,6 +74,28 @@ export class ConviteService {
         })
     }
 
+    async criarConvitePorEmail(profissionalId: string, email: string): Promise<Convite> {
+        const aluno = await this.userRepository.findByEmail(email.trim().toLowerCase())
+        if (!aluno || aluno.profile !== 'STUDENT') throw new AlunoNaoEncontradoError()
+        return this.criarConvite(profissionalId, aluno.id)
+    }
+
+    async listarConvitesPendentes(profissionalId: string) {
+        const convites = await this.conviteRepository.listarPendentesAtivosPorProfissional(profissionalId)
+        return Promise.all(convites.map(async (convite) => {
+            const aluno = await this.userRepository.findById(convite.alunoId)
+            return {
+                id: convite.id,
+                codigo: convite.codigo,
+                alunoId: convite.alunoId,
+                alunoNome: aluno?.profile === 'STUDENT' ? aluno.name : 'Aluno',
+                status: convite.status,
+                criadoEm: convite.criadoEm,
+                expiraEm: convite.expiraEm
+            }
+        }))
+    }
+
     private async buscarConviteValido(
         codigo: string,
         alunoId: string

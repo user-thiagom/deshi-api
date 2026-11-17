@@ -4,5 +4,6 @@ export interface SessionRepository {
   create(session: Session): Promise<Session>
   findById(id: string): Promise<Session | null>
   findByStudentId(studentId: string): Promise<Session[]>
+  findByProfessionalId(professionalId: string): Promise<Session[]>
   update(session: Session): Promise<Session>
 }

@@ -43,5 +43,68 @@
     "profile": "STUDENT",
     "createdAt": "2026-10-23T20:20:11.294Z",
     "updatedAt": "2026-10-23T20:20:11.294Z"
+  },
+  {
+    "id": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "name": "Thiago Mateus Costa Fernandes de Lima",
+    "email": "teste@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "PROFESSIONAL",
+    "createdAt": "2026-11-10T17:36:22.481Z",
+    "updatedAt": "2026-11-10T17:36:22.481Z"
+  },
+  {
+    "id": "f0170001-2000-4000-8000-000000000001",
+    "name": "Eduardo Silva",
+    "email": "aluno1.demo@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-10T12:00:00.000Z",
+    "updatedAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "f0170002-2000-4000-8000-000000000002",
+    "name": "Mariana Costa",
+    "email": "aluno2.demo@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-10T12:00:00.000Z",
+    "updatedAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "f0170003-2000-4000-8000-000000000003",
+    "name": "Jefferson Lima",
+    "email": "aluno3.demo@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-10T12:00:00.000Z",
+    "updatedAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "f0170004-2000-4000-8000-000000000004",
+    "name": "Carlos Almeida",
+    "email": "aluno4.demo@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-10T12:00:00.000Z",
+    "updatedAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "f0170005-2000-4000-8000-000000000005",
+    "name": "Beatriz Santos",
+    "email": "aluno5.demo@gmail.com",
+    "passwordHash": "$2b$10$2B/Q7pQ1ol7UWF9trG1Qtu.j09uA6XWR/sPBVhVOYOGzFoYNBPOIK",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-10T12:00:00.000Z",
+    "updatedAt": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "e28dc603-cf8f-426c-a67d-83b51422d6d2",
+    "name": "Everton Marques",
+    "email": "everton2@gmail.com",
+    "passwordHash": "$2b$10$R1oifwIcj1USmhW5t2lWreq6lVEqar.CZ7nAjrmhAC5vEwgAGkbg6",
+    "profile": "PROFESSIONAL",
+    "createdAt": "2026-11-17T13:34:24.647Z",
+    "updatedAt": "2026-11-17T13:34:24.647Z"
   }
 ]

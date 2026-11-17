@@ -48,6 +48,27 @@ export async function listarProfissionaisVinculadosController(request: FastifyRe
     return reply.status(200).send(profissionais)
 }
 
+export async function removerAlunoVinculadoController(
+    request: FastifyRequest<{ Params: { studentId: string } }>,
+    reply: FastifyReply
+) {
+    const studentId = request.params.studentId
+    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(studentId)) {
+        return reply.status(400).send({ message: 'Identificador de aluno inválido.' })
+    }
+
+    try {
+        await vinculoService.removerAlunoVinculado(request.user.userId, studentId)
+        return reply.status(204).send()
+    } catch (error) {
+        if (error instanceof VinculoNaoEncontradoError) {
+            return reply.status(404).send({ message: error.message })
+        }
+        request.log.error(error)
+        return reply.status(500).send({ message: 'Erro ao remover o aluno vinculado.' })
+    }
+}
+
 export async function criarVinculoController(request: FastifyRequest<{ Body: CriarVinculoBody }>, reply: FastifyReply) {
     const resultado = criarVinculoSchema.safeParse(request.body)
 

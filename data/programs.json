@@ -1,30 +1,139 @@
 [
   {
     "id": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
-    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
-    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
-    "name": "Programa individual",
-    "modalityId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
-    "activities": [
+    "profissionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "nome": "Programa individual",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "atividades": [
       {
-        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
-        "order": 1
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1
       }
     ],
-    "createdAt": "2026-10-23T19:18:40.423Z"
+    "version": 1,
+    "criadoEm": "2026-10-23T19:18:40.423Z"
   },
   {
     "id": "08972b0d-9605-4256-bea4-2b52817e0a48",
-    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
-    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
-    "name": "Programa individual",
-    "modalityId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
-    "activities": [
+    "profissionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "nome": "Programa individual",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "atividades": [
       {
-        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
-        "order": 1
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1
       }
     ],
-    "createdAt": "2026-10-23T19:25:44.938Z"
+    "version": 1,
+    "criadoEm": "2026-10-23T19:25:44.938Z"
+  },
+  {
+    "id": "d3e00001-0000-4000-8000-000000000001",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "f0170001-2000-4000-8000-000000000001",
+    "nome": "Treino Louco",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1,
+        "valores": {
+          "series": 2,
+          "repeticoes": 8,
+          "cargaKg": 146,
+          "descansoSegundos": 26
+        }
+      },
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "ordem": 2,
+        "valores": {
+          "series": 3,
+          "repeticoes": 3,
+          "cargaKg": 48,
+          "descansoSegundos": 10
+        }
+      }
+    ],
+    "version": 2,
+    "criadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "d3e00002-0000-4000-8000-000000000002",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "f0170002-2000-4000-8000-000000000002",
+    "nome": "Treino B",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d1d-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "d3e00003-0000-4000-8000-000000000003",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "f0170003-2000-4000-8000-000000000003",
+    "nome": "Treino C",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d1d-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "d3e00004-0000-4000-8000-000000000004",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "f0170004-2000-4000-8000-000000000004",
+    "nome": "Treino D",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d1d-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "d3e00005-0000-4000-8000-000000000005",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "f0170005-2000-4000-8000-000000000005",
+    "nome": "Treino E",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d1d-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-10T12:00:00.000Z"
   }
 ]
