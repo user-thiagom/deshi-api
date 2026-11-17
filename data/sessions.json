@@ -156,5 +156,680 @@
       }
     ],
     "finishedAt": "2026-11-10T23:46:43.691Z"
+  },
+  {
+    "id": "3d468479-630c-4ded-a162-1dd1291b3c67",
+    "programId": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T07:23:49.542Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "7ac720ec-c5b4-468c-b30c-e46885f78ddd",
+    "programId": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T07:29:35.955Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "6270e3ac-3875-4a6a-b3d9-8ece1ab7303c",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:29:16.009Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "1df21655-b8ac-40d0-920a-9e7b75ad1077",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:31:24.620Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "18ecfec6-22e9-4450-acdd-1a5be3da7431",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:31:44.442Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "d6084a5f-1ae5-451d-a177-b1166ec64e90",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:32:42.531Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "33c65422-5507-44d7-a367-bd91438613c9",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:34:53.731Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "5fa5197f-8118-4991-a02f-f9c3835600a4",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:35:38.529Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-17T15:37:40.702Z"
+  },
+  {
+    "id": "1a79a8b9-ada8-461b-aa7b-683fce08f36c",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:37:47.226Z",
+    "status": "COMPLETED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-17T15:49:42.230Z"
+  },
+  {
+    "id": "bdaf0b66-38f5-442c-b934-067937bf5731",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T15:50:11.279Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "COMPLETED",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T15:50:17.483Z",
+              "endedAt": "2026-11-17T15:50:20.317Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 2834,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "pausedDurationMs": 865
+  },
+  {
+    "id": "876bb973-ba0a-4ea0-ae6a-5966a50e2dbe",
+    "programId": "a0e46fb4-5caf-4dcb-af52-5218a7ea6a84",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:03:20.504Z",
+    "pausedDurationMs": 17489,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "COMPLETED",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T16:03:47.867Z",
+              "endedAt": "2026-11-17T16:03:49.848Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 1981,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "3cd76f2a-677c-4216-875c-004a9378b2ac",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:14:15.613Z",
+    "pausedDurationMs": 4597,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PAUSED",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T16:14:20.371Z",
+              "endedAt": "2026-11-17T16:14:27.348Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:14:33.260Z",
+              "endedAt": "2026-11-17T16:14:36.870Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:14:40.418Z",
+              "endedAt": "2026-11-17T16:15:02.959Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:15:04.008Z",
+              "endedAt": "2026-11-17T16:15:06.178Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:15:07.213Z",
+              "endedAt": "2026-11-17T16:15:08.451Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-17T16:14:27.348Z",
+              "endedAt": "2026-11-17T16:14:33.260Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:15:06.178Z",
+              "endedAt": "2026-11-17T16:15:07.213Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:15:08.451Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 36536,
+          "pauseTimeMs": 6947,
+          "restTimeMs": 0,
+          "pauseStartedAt": "2026-11-17T16:15:08.451Z"
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "eb21b071-617f-40d1-a75d-b5cd4b5bd127",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:21:05.847Z",
+    "pausedDurationMs": 7932,
+    "status": "COMPLETED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "COMPLETED",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T16:21:17.013Z",
+              "endedAt": "2026-11-17T16:21:22.891Z"
+            },
+            {
+              "startedAt": "2026-11-17T16:21:24.848Z",
+              "endedAt": "2026-11-17T16:21:35.579Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 16609,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-17T16:21:40.918Z"
+  },
+  {
+    "id": "30d84ec8-8fd5-4006-b780-73908f0253c6",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:23:49.475Z",
+    "pausedDurationMs": 0,
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-17T16:26:31.878Z"
+  },
+  {
+    "id": "a32f93e8-a4e3-4523-a372-9632ae739794",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:26:51.758Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "f6831d29-7510-40a6-ae70-2579ed3a6f92",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:27:41.557Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "f7e5bf17-5a1a-49ef-bea9-c91bf8027749",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:29:40.854Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "437e67c7-56b9-45d7-96b4-795f9ea95c26",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:39:25.414Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
   }
 ]

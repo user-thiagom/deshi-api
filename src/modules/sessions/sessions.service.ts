@@ -39,6 +39,7 @@ export class SessionsService {
             studentId,
             professionalId: program.professionalId,
             startedAt: new Date(),
+            pausedDurationMs: 0,
             status: 'IN_PROGRESS',
             activities: [...program.activities]
                 .sort((a, b) => a.order - b.order)
@@ -77,6 +78,8 @@ export class SessionsService {
             throw new SessionNotOwnedByStudentError()
         }
 
+        this.ensureSessionInProgress(session)
+
         const activity = session.activities.find(
             (item) => item.activityId === activityId
         )
@@ -108,6 +111,8 @@ export class SessionsService {
         if (session.studentId !== studentId) {
             throw new SessionNotOwnedByStudentError()
         }
+
+        this.ensureSessionInProgress(session)
 
         const activity = session.activities.find(
             (item) => item.activityId === activityId
@@ -157,6 +162,8 @@ export class SessionsService {
         if (session.studentId !== studentId) {
             throw new SessionNotOwnedByStudentError()
         }
+
+        this.ensureSessionInProgress(session)
 
         const activity = session.activities.find(
             (item) => item.activityId === activityId
@@ -224,6 +231,8 @@ export class SessionsService {
             throw new SessionNotOwnedByStudentError()
         }
 
+        this.ensureSessionInProgress(session)
+
         const activity = session.activities.find(
             (item) => item.activityId === activityId
         )
@@ -290,6 +299,8 @@ export class SessionsService {
             throw new SessionNotOwnedByStudentError()
         }
 
+        this.ensureSessionInProgress(session)
+
         const activity = session.activities.find(
             (item) => item.activityId === activityId
         )
@@ -351,6 +362,8 @@ export class SessionsService {
         if (session.studentId !== studentId) {
             throw new SessionNotOwnedByStudentError()
         }
+
+        this.ensureSessionInProgress(session)
 
         const activity = session.activities.find(
             (item) => item.activityId === activityId
@@ -462,6 +475,77 @@ export class SessionsService {
         }
     }
 
+    private ensureSessionInProgress(session: Session): void {
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError(
+                session.status === 'PAUSED'
+                    ? 'Retome a sessão antes de alterar uma atividade.'
+                    : 'Somente uma sessão em andamento pode ser atualizada.'
+            )
+        }
+    }
+
+    async pauseSession(sessionId: string, studentId: string): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) throw new SessionNotFoundError()
+        if (session.studentId !== studentId) throw new SessionNotOwnedByStudentError()
+        if (session.status !== 'IN_PROGRESS') {
+            throw new InvalidActivityStateError('Somente uma sessão em andamento pode ser pausada.')
+        }
+
+        const now = new Date()
+        for (const activity of session.activities) {
+            if (['IN_PROGRESS', 'PAUSED', 'RESTING'].includes(activity.status)) {
+                this.closeOpenActivityInterval(activity, now)
+            }
+        }
+
+        session.pauseStartedAt = now
+        session.pausedDurationMs ??= 0
+        session.status = 'PAUSED'
+        return this.sessionRepository.update(session)
+    }
+
+    async resumeSession(sessionId: string, studentId: string): Promise<Session> {
+        const session = await this.sessionRepository.findById(sessionId)
+
+        if (!session) throw new SessionNotFoundError()
+        if (session.studentId !== studentId) throw new SessionNotOwnedByStudentError()
+        if (session.status !== 'PAUSED' || !session.pauseStartedAt) {
+            throw new InvalidActivityStateError('Somente uma sessão pausada pode ser retomada.')
+        }
+
+        const now = new Date()
+        session.pausedDurationMs = (session.pausedDurationMs || 0) + now.getTime() - session.pauseStartedAt.getTime()
+        session.pauseStartedAt = undefined
+
+        for (const activity of session.activities) {
+            const tracking = activity.timeTracking
+            if (!tracking) continue
+
+            if (activity.status === 'IN_PROGRESS' && !tracking.activeStartedAt) {
+                tracking.activeStartedAt = now
+                tracking.activeIntervals.push({ startedAt: now })
+            } else if (activity.status === 'PAUSED' && !tracking.pauseStartedAt) {
+                tracking.pauseStartedAt = now
+                tracking.pauseIntervals.push({ startedAt: now })
+            } else if (activity.status === 'RESTING' && !tracking.restStartedAt) {
+                tracking.restStartedAt = now
+                tracking.restIntervals.push({ startedAt: now })
+            }
+        }
+
+        session.status = 'IN_PROGRESS'
+        return this.sessionRepository.update(session)
+    }
+
+    private closeSessionPause(session: Session, now: Date): void {
+        if (!session.pauseStartedAt) return
+        session.pausedDurationMs = (session.pausedDurationMs || 0) + now.getTime() - session.pauseStartedAt.getTime()
+        session.pauseStartedAt = undefined
+    }
+
     async completeActivity(
         sessionId: string,
         studentId: string,
@@ -476,6 +560,8 @@ export class SessionsService {
         if (session.studentId !== studentId) {
             throw new SessionNotOwnedByStudentError()
         }
+
+        this.ensureSessionInProgress(session)
 
         const activity = session.activities.find(
             (item) => item.activityId === activityId
@@ -584,13 +670,14 @@ export class SessionsService {
             throw new SessionNotOwnedByStudentError()
         }
 
-        if (session.status !== 'IN_PROGRESS') {
+        if (session.status !== 'IN_PROGRESS' && session.status !== 'PAUSED') {
             throw new InvalidActivityStateError(
-                'Somente uma sessão em andamento pode ser finalizada.'
+                'Somente uma sessão em andamento ou pausada pode ser finalizada.'
             )
         }
 
         const now = new Date()
+        this.closeSessionPause(session, now)
 
         for (const activity of session.activities) {
             if (
@@ -623,13 +710,14 @@ export class SessionsService {
             throw new SessionNotOwnedByStudentError()
         }
 
-        if (session.status !== 'IN_PROGRESS') {
+        if (session.status !== 'IN_PROGRESS' && session.status !== 'PAUSED') {
             throw new InvalidActivityStateError(
-                'Somente uma sessão em andamento pode ser interrompida.'
+                'Somente uma sessão em andamento ou pausada pode ser interrompida.'
             )
         }
 
         const now = new Date()
+        this.closeSessionPause(session, now)
 
         for (const activity of session.activities) {
             if (

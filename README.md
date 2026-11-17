@@ -68,6 +68,7 @@ As histórias de usuário implementadas até a **US05** abrangem, conforme os fl
 - autenticação JWT, logout com revogação do token e autorização por perfil;
 - solicitação direta de vínculo criada pelo profissional e aceita ou recusada pelo aluno;
 - convite de vínculo criado pelo profissional e consultado, aceito ou recusado pelo aluno destinatário; o convite expira em sete dias;
+- sessões de treino com registro de início e fim, progresso por atividade, pausa e retomada;
 - consulta dos alunos vinculados ao profissional e dos profissionais vinculados ao aluno, considerando apenas vínculos ativos.
 
 A validação identificada como **US05** cobre a listagem de alunos com vínculo ativo isolada por profissional: cada profissional recebe somente seus próprios alunos, sem expor o hash da senha. Os títulos e a distribuição exata das demais funcionalidades entre US01–US04 não estão especificados no repositório.
@@ -104,6 +105,15 @@ A autenticação valida a assinatura e a expiração do token, verifica sua revo
 | `POST` | `/logout` | Autenticado | Revoga o token apresentado; retorna `204 No Content`. |
 
 Regras do cadastro: nome com pelo menos 3 caracteres, e-mail válido, senha com pelo menos 8 caracteres e perfil `PROFESSIONAL` ou `STUDENT`. E-mail já cadastrado retorna `409`.
+
+### Sessões de treino
+
+| Método | Rota | Perfil exigido | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/sessions/:sessionId/pause` | `STUDENT` | Pausa a sessão e congela os cronômetros das atividades em andamento. |
+| `POST` | `/sessions/:sessionId/resume` | `STUDENT` | Retoma a sessão e reabre os cronômetros que estavam ativos antes da pausa. |
+
+O tempo pausado é armazenado e não conta no tempo decorrido da sessão. Atividades não podem ser alteradas enquanto a sessão estiver pausada.
 
 ### Solicitações diretas e vínculos
 

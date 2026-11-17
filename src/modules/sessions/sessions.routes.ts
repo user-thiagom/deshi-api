@@ -11,6 +11,7 @@ import { completeActivityController } from './complete-activity.controller.js'
 import { finishSessionController } from './finish-session.controller.js'
 import { interruptSessionController } from './interrupt-session.controller.js'
 import { listSessionsController } from './list-sessions.controller.js'
+import { sessionStatusController } from './session-status.controller.js'
 
 import {
   startSessionController,
@@ -89,6 +90,14 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, interruptSessionController(sessionsService))
+
+  server.post('/sessions/:sessionId/pause', {
+    preHandler: [authenticate, authorizeProfile('STUDENT')]
+  }, sessionStatusController(sessionsService, 'pauseSession'))
+
+  server.post('/sessions/:sessionId/resume', {
+    preHandler: [authenticate, authorizeProfile('STUDENT')]
+  }, sessionStatusController(sessionsService, 'resumeSession'))
 
   server.get('/sessions/history', {
     preHandler: [
