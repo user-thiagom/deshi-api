@@ -10,13 +10,15 @@ import {
 } from './sessions.errors.js'
 
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
+import type { ProgramCatalogRepository } from '../programs/repositories/program-catalog.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
 import type { Session, SessionActivity } from './sessions.types.js'
 
 export class SessionsService {
     constructor(
         private readonly programRepository: ProgramRepository,
-        private readonly sessionRepository: SessionRepository
+        private readonly sessionRepository: SessionRepository,
+        private readonly catalogRepository?: Pick<ProgramCatalogRepository, 'findActivity'>
     ) { }
 
     async startSession(
@@ -33,20 +35,17 @@ export class SessionsService {
             throw new ProgramNotOwnedByStudentError()
         }
 
-        const session: Session = {
-            id: randomUUID(),
-            programId: program.id,
-            studentId,
-            professionalId: program.professionalId,
-            startedAt: new Date(),
-            pausedDurationMs: 0,
-            status: 'IN_PROGRESS',
-            activities: [...program.activities]
-                .sort((a, b) => a.order - b.order)
-                .map((activity) => ({
+        const activities = await Promise.all([...program.activities]
+            .sort((a, b) => a.order - b.order)
+            .map(async (activity) => {
+                const details = await this.catalogRepository?.findActivity(activity.activityId)
+                return {
                     activityId: activity.activityId,
                     order: activity.order,
                     status: 'PENDING' as const,
+                    ...(details?.nome ? { nome: details.nome } : {}),
+                    ...(details?.descricao ? { descricao: details.descricao } : {}),
+                    ...(details?.midiaUrl ? { midiaUrl: details.midiaUrl } : {}),
                     timeTracking: {
                         activeIntervals: [],
                         pauseIntervals: [],
@@ -55,7 +54,18 @@ export class SessionsService {
                         pauseTimeMs: 0,
                         restTimeMs: 0
                     }
-                }))
+                }
+            }))
+
+        const session: Session = {
+            id: randomUUID(),
+            programId: program.id,
+            studentId,
+            professionalId: program.professionalId,
+            startedAt: new Date(),
+            pausedDurationMs: 0,
+            status: 'IN_PROGRESS',
+            activities
         }
 
         return this.sessionRepository.create(session)
@@ -739,6 +749,18 @@ export class SessionsService {
     async getStudentSessions(
         studentId: string
     ): Promise<Session[]> {
-        return this.sessionRepository.findByStudentId(studentId)
+        const sessions = await this.sessionRepository.findByStudentId(studentId)
+        return Promise.all(sessions.map(async (session) => ({
+            ...session,
+            activities: await Promise.all(session.activities.map(async (activity) => {
+                const details = await this.catalogRepository?.findActivity(activity.activityId)
+                return {
+                    ...activity,
+                    ...(activity.nome || !details?.nome ? {} : { nome: details.nome }),
+                    ...(activity.descricao || !details?.descricao ? {} : { descricao: details.descricao }),
+                    ...(activity.midiaUrl || !details?.midiaUrl ? {} : { midiaUrl: details.midiaUrl }),
+                }
+            }))
+        })))
     }
 }

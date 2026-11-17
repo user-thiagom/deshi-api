@@ -18,6 +18,9 @@ export interface ProgramActivity {
 
 export interface CatalogActivity {
     id: string
+    nome?: string
+    descricao?: string
+    midiaUrl?: string
     modalidadeId: string
     origem: 'PADRAO' | 'PERSONALIZADA'
     profissionalId: string | null

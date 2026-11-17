@@ -807,6 +807,48 @@
       {
         "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
         "order": 1,
+        "status": "IN_PROGRESS",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T16:49:50.555Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0,
+          "activeStartedAt": "2026-11-17T16:49:50.555Z"
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "e271971a-6f1d-4b40-b996-f21255c1b795",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T16:56:15.959Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
         "status": "PENDING",
         "timeTracking": {
           "activeIntervals": [],
@@ -828,6 +870,65 @@
           "activeTimeMs": 0,
           "pauseTimeMs": 0,
           "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "eadfb280-ecd7-4915-b98d-84d264c593ea",
+    "programId": "6c56c32f-5d2c-4b38-aab4-77d5677625ee",
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-17T17:07:23.656Z",
+    "pausedDurationMs": 0,
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PAUSED",
+        "nome": "Agachamento livre",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T17:08:12.132Z",
+              "endedAt": "2026-11-17T17:08:14.700Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-17T17:08:14.700Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 2568,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0,
+          "pauseStartedAt": "2026-11-17T17:08:14.700Z"
+        }
+      },
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000002",
+        "order": 2,
+        "status": "PAUSED",
+        "nome": "Supino reto",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-17T17:07:43.722Z",
+              "endedAt": "2026-11-17T17:07:45.202Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-17T17:07:45.202Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 1480,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0,
+          "pauseStartedAt": "2026-11-17T17:07:45.202Z"
         }
       }
     ]

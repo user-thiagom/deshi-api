@@ -5,6 +5,7 @@ import { JsonProgramRepository } from '../programs/repositories/json-program.rep
 import { JsonUserRepository } from '../users/repositories/json-user.repository.js'
 import type { UserRepository } from '../users/repositories/user.repository.js'
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
+import { JsonProgramCatalogRepository } from '../programs/repositories/json-program-catalog.repository.js'
 import { SessionsService } from './sessions.service.js'
 import { startSessionSchema } from './sessions.schema.js'
 import { ProgramNotFoundError, ProgramNotOwnedByStudentError } from './sessions.errors.js'
@@ -20,9 +21,18 @@ const userRepository = new JsonUserRepository(
     path.resolve(process.cwd(), 'data', 'users.json')
 )
 
+const programCatalogRepository = new JsonProgramCatalogRepository(
+    path.resolve(process.cwd(), 'data', 'vinculos.json'),
+    path.resolve(process.cwd(), 'data', 'modalidades.json'),
+    path.resolve(process.cwd(), 'data', 'profissional-modalidades.json'),
+    path.resolve(process.cwd(), 'data', 'atividades.json'),
+    path.resolve(process.cwd(), 'data', 'atividades-personalizadas.json')
+)
+
 export const sessionsService = new SessionsService(
     programRepository,
-    sessionRepository
+    sessionRepository,
+    programCatalogRepository
 )
 
 export function createStartSessionController(

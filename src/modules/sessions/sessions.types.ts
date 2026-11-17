@@ -33,6 +33,9 @@ export interface SessionActivity {
   activityId: string
   order: number
   status: SessionActivityStatus
+  nome?: string
+  descricao?: string
+  midiaUrl?: string
   timeTracking?: ActivityTimeTracking
 
   execution?: {
