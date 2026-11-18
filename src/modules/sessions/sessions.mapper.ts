@@ -89,7 +89,9 @@ export function toSessionResult(session: Session): SessionResult {
         return { ...session, activities }
     }
 
-    const durationMs = session.finishedAt.getTime() - session.startedAt.getTime()
+    const durationMs = session.finishedAt.getTime()
+        - session.startedAt.getTime()
+        - (session.pausedDurationMs ?? 0)
 
     if (!Number.isFinite(durationMs) || durationMs < 0) {
         return { ...session, activities }

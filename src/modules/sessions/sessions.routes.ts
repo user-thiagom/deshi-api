@@ -10,6 +10,7 @@ import { endRestController } from './end-rest.controller.js'
 import { completeActivityController } from './complete-activity.controller.js'
 import { finishSessionController } from './finish-session.controller.js'
 import { interruptSessionController } from './interrupt-session.controller.js'
+import { pauseSessionController, resumeSessionController } from './session-pause.controller.js'
 import { listSessionsController } from './list-sessions.controller.js'
 import { listProfessionalSessionsController } from './list-professional-sessions.controller.js'
 
@@ -103,6 +104,14 @@ export async function sessionRoutes(server: FastifyInstance) {
       authorizeProfile('STUDENT')
     ]
   }, interruptSessionController(sessionsService))
+
+  server.post('/sessions/:sessionId/pause', {
+    preHandler: [authenticate, authorizeProfile('STUDENT')]
+  }, pauseSessionController(sessionsService))
+
+  server.post('/sessions/:sessionId/resume', {
+    preHandler: [authenticate, authorizeProfile('STUDENT')]
+  }, resumeSessionController(sessionsService))
 
   server.get<{ Params: { sessionId: string } }>('/sessions/:sessionId', {
     preHandler: [

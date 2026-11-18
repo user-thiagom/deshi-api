@@ -1,5 +1,6 @@
 export type SessionStatus =
   | 'IN_PROGRESS'
+  | 'PAUSED'
   | 'COMPLETED'
   | 'INTERRUPTED'
 
@@ -49,6 +50,8 @@ export interface Session {
   studentId: string
   professionalId: string
   startedAt: Date
+  pauseStartedAt?: Date
+  pausedDurationMs?: number
   finishedAt?: Date
   status: SessionStatus
   activities: SessionActivity[]

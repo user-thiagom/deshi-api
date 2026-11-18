@@ -128,5 +128,77 @@
         }
       }
     ]
+  },
+  {
+    "id": "62cd97f4-90cd-4aca-80cd-7074cc311b6a",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-18T05:59:31.405Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "1a693f8a-a44f-4520-91ce-8ed74239197e",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-18T06:02:45.753Z",
+    "status": "PAUSED",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "IN_PROGRESS",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-18T06:16:55.080Z",
+              "endedAt": "2026-11-18T06:17:08.272Z"
+            },
+            {
+              "startedAt": "2026-11-18T06:18:50.325Z",
+              "endedAt": "2026-11-18T06:18:56.023Z"
+            },
+            {
+              "startedAt": "2026-11-18T06:19:07.623Z",
+              "endedAt": "2026-11-18T06:19:22.462Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-18T06:17:08.272Z",
+              "endedAt": "2026-11-18T06:18:45.674Z"
+            },
+            {
+              "startedAt": "2026-11-18T06:18:46.536Z",
+              "endedAt": "2026-11-18T06:18:50.325Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 33729,
+          "pauseTimeMs": 101191,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "pausedDurationMs": 14167,
+    "pauseStartedAt": "2026-11-18T06:19:22.462Z"
   }
 ]

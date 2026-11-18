@@ -142,6 +142,16 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
             assert.ok(response.body.activities[1].timeTracking.activeIntervals[0].endedAt)
             assert.equal(response.body.activities[1].timeTracking.pauseIntervals.length, 1)
 
+            response = await request('POST', `/sessions/${firstSessionId}/pause`, studentToken)
+            assert.equal(response.status, 200)
+            assert.equal(response.body.status, 'PAUSED')
+            assert.ok(response.body.activities[1].timeTracking.pauseIntervals[0].endedAt)
+
+            response = await request('POST', `/sessions/${firstSessionId}/resume`, studentToken)
+            assert.equal(response.status, 200)
+            assert.equal(response.body.status, 'IN_PROGRESS')
+            assert.equal(response.body.activities[1].timeTracking.pauseIntervals.length, 2)
+
             response = await request('POST', `/sessions/${firstSessionId}/activities/${activityIds[1]}/resume`, studentToken)
             assert.equal(response.body.activities[1].status, 'IN_PROGRESS')
             assert.ok(response.body.activities[1].timeTracking.pauseIntervals[0].endedAt)
@@ -161,6 +171,29 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
 
             const invalidTransition = await request('POST', `/sessions/${firstSessionId}/activities/${activityIds[1]}/pause`, studentToken)
             assert.equal(invalidTransition.status, 409)
+        })
+
+        await t.test('pauses and resumes the entire session and its activity clocks', async () => {
+            const paused = await request('POST', `/sessions/${firstSessionId}/pause`, studentToken)
+            assert.equal(paused.status, 200)
+            assert.equal(paused.body.status, 'PAUSED')
+            assert.ok(paused.body.pauseStartedAt)
+            assert.equal((await request('POST', `/sessions/${firstSessionId}/pause`, studentToken)).status, 409)
+            assert.equal((await request('POST', `/sessions/${firstSessionId}/resume`, token(otherStudentId))).status, 403)
+
+            const blockedActivityAction = await request(
+                'POST',
+                `/sessions/${firstSessionId}/activities/${activityIds[0]}/start`,
+                studentToken
+            )
+            assert.equal(blockedActivityAction.status, 409)
+
+            const resumed = await request('POST', `/sessions/${firstSessionId}/resume`, studentToken)
+            assert.equal(resumed.status, 200)
+            assert.equal(resumed.body.status, 'IN_PROGRESS')
+            assert.equal(resumed.body.pauseStartedAt, undefined)
+            assert.ok(resumed.body.pausedDurationMs >= 0)
+            assert.equal((await request('POST', `/sessions/${firstSessionId}/resume`, studentToken)).status, 409)
         })
 
         await t.test('US16 finishes a session, closes active work as incomplete, and exposes it in history', async () => {

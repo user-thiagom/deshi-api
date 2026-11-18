@@ -32,6 +32,9 @@ export class JsonSessionRepository implements SessionRepository {
         return sessions.map((session) => ({
             ...session,
             startedAt: new Date(session.startedAt),
+            pauseStartedAt: session.pauseStartedAt
+                ? new Date(session.pauseStartedAt)
+                : undefined,
             finishedAt: session.finishedAt
                 ? new Date(session.finishedAt)
                 : undefined,
