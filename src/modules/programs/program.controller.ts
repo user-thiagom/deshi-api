@@ -40,6 +40,10 @@ function toProgramResponse(
         atividades: activities.map((activity) => ({
             atividadeId: activity.activityId,
             ...(activity.nome === undefined ? {} : { nome: activity.nome }),
+            ...(activity.midiaUrl === undefined ? {} : { midiaUrl: activity.midiaUrl }),
+            ...(activity.grupoMuscular === undefined
+                ? {}
+                : { grupoMuscular: activity.grupoMuscular }),
             ordem: activity.order,
             ...(activity.prescribed === undefined
                 ? {}

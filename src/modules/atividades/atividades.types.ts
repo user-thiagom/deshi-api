@@ -3,6 +3,7 @@ interface AtividadeBase {
     nome: string
     descricao?: string
     midiaUrl?: string
+    grupoMuscular?: string
     modalidadeId: string
 }
 

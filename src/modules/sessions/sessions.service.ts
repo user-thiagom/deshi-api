@@ -35,16 +35,21 @@ export class SessionsService {
         if (!this.atividadeRepository) return session
 
         const activities = await this.atividadeRepository.listar()
-        const namesById = new Map(activities.map((activity) => [activity.id, activity.nome]))
+        const activitiesById = new Map(activities.map((activity) => [activity.id, activity]))
 
         return {
             ...session,
-            activities: session.activities.map((activity) => ({
-                ...activity,
-                ...(namesById.has(activity.activityId)
-                    ? { nome: namesById.get(activity.activityId) }
-                    : {})
-            }))
+            activities: session.activities.map((activity) => {
+                const catalogActivity = activitiesById.get(activity.activityId)
+                return {
+                    ...activity,
+                    ...(catalogActivity?.nome ? { nome: catalogActivity.nome } : {}),
+                    ...(catalogActivity?.midiaUrl ? { midiaUrl: catalogActivity.midiaUrl } : {}),
+                    ...(catalogActivity?.grupoMuscular
+                        ? { grupoMuscular: catalogActivity.grupoMuscular }
+                        : {})
+                }
+            })
         }
     }
 
@@ -68,9 +73,9 @@ export class SessionsService {
         const configuracoes = activitiesWithoutPrescription.length > 0
             ? await this.configuracaoRepository.listar()
             : []
-        const activityNames = this.atividadeRepository
-            ? new Map((await this.atividadeRepository.listar()).map((activity) => [activity.id, activity.nome]))
-            : new Map<string, string>()
+        const catalogActivities = this.atividadeRepository
+            ? new Map((await this.atividadeRepository.listar()).map((activity) => [activity.id, activity]))
+            : new Map()
 
         const session: Session = {
             id: randomUUID(),
@@ -83,6 +88,7 @@ export class SessionsService {
             activities: [...program.activities]
                 .sort((a, b) => a.order - b.order)
                 .map((activity) => {
+                    const catalogActivity = catalogActivities.get(activity.activityId)
                     const configuracao = activity.prescribed === undefined
                         ? configuracoes
                             .filter((item) =>
@@ -102,8 +108,10 @@ export class SessionsService {
 
                     return {
                         activityId: activity.activityId,
-                        ...(activityNames.has(activity.activityId)
-                            ? { nome: activityNames.get(activity.activityId) }
+                        ...(catalogActivity?.nome ? { nome: catalogActivity.nome } : {}),
+                        ...(catalogActivity?.midiaUrl ? { midiaUrl: catalogActivity.midiaUrl } : {}),
+                        ...(catalogActivity?.grupoMuscular
+                            ? { grupoMuscular: catalogActivity.grupoMuscular }
                             : {}),
                         order: activity.order,
                         status: 'PENDING' as const,

@@ -7,11 +7,17 @@
     "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
     "atividades": [
       {
-        "atividadeId": "a7101d90-8d5c-4ad3-9d68-000000000001",
-        "ordem": 1
+        "atividadeId": "d9e154e8-2ac9-41da-9e71-3f3fd1c54cdd",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 50,
+          "descansoSegundos": 10
+        }
       }
     ],
-    "version": 2,
+    "version": 3,
     "criadoEm": "2026-10-23T19:18:40.423Z"
   },
   {
@@ -135,5 +141,26 @@
     ],
     "version": 1,
     "criadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "dc714abd-cb5a-4a01-9b19-0dca980b3840",
+    "profissionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "nome": "Treino de Perna",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "ordem": 1,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 50,
+          "descansoSegundos": 10
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-23T03:26:05.331Z"
   }
 ]

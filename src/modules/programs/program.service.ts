@@ -186,7 +186,11 @@ export class ProgramService {
             const catalogActivity = await this.catalogRepository.findActivity(activity.activityId)
             return {
                 ...activity,
-                ...(catalogActivity ? { nome: catalogActivity.nome } : {})
+                ...(catalogActivity?.nome ? { nome: catalogActivity.nome } : {}),
+                ...(catalogActivity?.midiaUrl ? { midiaUrl: catalogActivity.midiaUrl } : {}),
+                ...(catalogActivity?.grupoMuscular
+                    ? { grupoMuscular: catalogActivity.grupoMuscular }
+                    : {})
             }
         }))
         return {
