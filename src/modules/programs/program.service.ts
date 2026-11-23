@@ -182,8 +182,15 @@ export class ProgramService {
 
     private async attachProfessional(program: Program): Promise<ProgramWithProfessional> {
         const professional = await this.userRepository.findById(program.professionalId)
+        const activities = await Promise.all(program.activities.map(async (activity) => {
+            const catalogActivity = await this.catalogRepository.findActivity(activity.activityId)
+            return {
+                ...activity,
+                ...(catalogActivity ? { nome: catalogActivity.nome } : {})
+            }
+        }))
         return {
-            program,
+            program: { ...program, activities },
             professional: professional
                 ? { id: professional.id, name: professional.name }
                 : null

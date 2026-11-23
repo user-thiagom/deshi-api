@@ -31,6 +31,23 @@ export class SessionsService {
         private readonly modalidadeRepository?: Pick<ModalidadeRepository, 'listarCatalogo'>
     ) { }
 
+    private async addActivityNames(session: Session): Promise<Session> {
+        if (!this.atividadeRepository) return session
+
+        const activities = await this.atividadeRepository.listar()
+        const namesById = new Map(activities.map((activity) => [activity.id, activity.nome]))
+
+        return {
+            ...session,
+            activities: session.activities.map((activity) => ({
+                ...activity,
+                ...(namesById.has(activity.activityId)
+                    ? { nome: namesById.get(activity.activityId) }
+                    : {})
+            }))
+        }
+    }
+
     async startSession(
         programId: string,
         studentId: string
@@ -51,6 +68,9 @@ export class SessionsService {
         const configuracoes = activitiesWithoutPrescription.length > 0
             ? await this.configuracaoRepository.listar()
             : []
+        const activityNames = this.atividadeRepository
+            ? new Map((await this.atividadeRepository.listar()).map((activity) => [activity.id, activity.nome]))
+            : new Map<string, string>()
 
         const session: Session = {
             id: randomUUID(),
@@ -82,6 +102,9 @@ export class SessionsService {
 
                     return {
                         activityId: activity.activityId,
+                        ...(activityNames.has(activity.activityId)
+                            ? { nome: activityNames.get(activity.activityId) }
+                            : {}),
                         order: activity.order,
                         status: 'PENDING' as const,
                         ...(activity.prescribed !== undefined
@@ -793,7 +816,7 @@ export class SessionsService {
             throw new SessionNotOwnedByProfessionalError()
         }
 
-        return session
+        return this.addActivityNames(session)
     }
 
     async recordActivityObservation(
@@ -836,7 +859,9 @@ export class SessionsService {
     ): Promise<Session[]> {
         const sessions = await this.sessionRepository.findByStudentId(studentId)
 
-        return this.sortSessionsByStartedAt(sessions)
+        return this.sortSessionsByStartedAt(
+            await Promise.all(sessions.map((session) => this.addActivityNames(session)))
+        )
     }
 
     async getProfessionalStudentSessions(
@@ -846,9 +871,9 @@ export class SessionsService {
         const sessions = await this.sessionRepository.findByStudentId(studentId)
 
         return this.sortSessionsByStartedAt(
-            sessions.filter(
-                (session) => session.professionalId === professionalId
-            )
+            await Promise.all(sessions
+                .filter((session) => session.professionalId === professionalId)
+                .map((session) => this.addActivityNames(session)))
         )
     }
 

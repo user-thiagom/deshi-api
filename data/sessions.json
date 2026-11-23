@@ -200,5 +200,150 @@
     ],
     "pausedDurationMs": 14167,
     "pauseStartedAt": "2026-11-18T06:19:22.462Z"
+  },
+  {
+    "id": "6b5f0626-0760-47ed-8c39-25ba8293bd23",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-18T19:38:30.918Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "COMPLETED",
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-18T19:38:42.818Z",
+              "endedAt": "2026-11-18T19:38:47.706Z"
+            },
+            {
+              "startedAt": "2026-11-18T19:38:48.706Z",
+              "endedAt": "2026-11-18T19:38:49.947Z"
+            },
+            {
+              "startedAt": "2026-11-18T19:38:53.258Z",
+              "endedAt": "2026-11-18T19:38:55.795Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-18T19:38:47.706Z",
+              "endedAt": "2026-11-18T19:38:48.706Z"
+            }
+          ],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-18T19:38:49.947Z",
+              "endedAt": "2026-11-18T19:38:53.258Z"
+            }
+          ],
+          "activeTimeMs": 8666,
+          "pauseTimeMs": 1000,
+          "restTimeMs": 3311
+        }
+      }
+    ]
+  },
+  {
+    "id": "b67458c0-fa84-4c0a-b31c-c2c2c0b75021",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-18T19:48:11.998Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "ae62bf39-b09b-4de0-9cb8-7e36a09b801f",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-23T02:16:19.600Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "0ae13b11-334a-4b7c-a3b1-cf51a8219238",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-23T02:24:40.711Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "nome": "Agachamento livre",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "ceac8140-6927-4c8a-8de2-70189b9dd14c",
+    "programId": "08972b0d-9605-4256-bea4-2b52817e0a48",
+    "programVersion": 1,
+    "studentId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
+    "professionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
+    "startedAt": "2026-11-23T02:27:19.891Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "a7101d90-8d5c-4ad3-9d68-000000000001",
+        "nome": "Agachamento livre",
+        "order": 1,
+        "status": "PENDING",
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
   }
 ]

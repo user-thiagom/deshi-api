@@ -13,12 +13,14 @@ export type CreateProgramData = Omit<Program, 'id' | 'createdAt' | 'version'>
 
 export interface ProgramActivity {
     activityId: string
+    nome?: string
     order: number
     prescribed?: Record<string, number>
 }
 
 export interface CatalogActivity {
     id: string
+    nome?: string
     modalidadeId: string
     origem: 'PADRAO' | 'PERSONALIZADA'
     profissionalId: string | null

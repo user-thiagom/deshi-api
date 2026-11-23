@@ -43,6 +43,14 @@ test('US13–US16 — session lifecycle over HTTP with isolated JSON persistence
             writeJson('revoked-tokens.json', []),
             writeJson('sessions.json', []),
             writeJson('configuracoes-atividades.json', []),
+            writeJson('atividades.json', activityIds.map((id, index) => ({
+                id,
+                nome: `Atividade do catálogo ${index + 1}`,
+                modalidadeId: randomUUID(),
+                origem: 'PADRAO',
+                profissionalId: null
+            }))),
+            writeJson('atividades-personalizadas.json', []),
             writeJson('programs.json', [
                 {
                     id: programId,

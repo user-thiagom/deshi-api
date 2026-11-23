@@ -31,6 +31,7 @@ export interface ActivityTimeTracking {
 
 export interface SessionActivity {
   activityId: string
+  nome?: string
   order: number
   status: SessionActivityStatus
   timeTracking?: ActivityTimeTracking

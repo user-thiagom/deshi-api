@@ -39,6 +39,7 @@ function toProgramResponse(
         ...(professional === undefined ? {} : { profissional: professional }),
         atividades: activities.map((activity) => ({
             atividadeId: activity.activityId,
+            ...(activity.nome === undefined ? {} : { nome: activity.nome }),
             ordem: activity.order,
             ...(activity.prescribed === undefined
                 ? {}
