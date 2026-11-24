@@ -12,6 +12,16 @@ import { programRoutes } from './modules/programs/program.routes.js'
 import { professionalHomeRoutes } from './modules/professional-home/professional-home.routes.js'
 
 const PORT = 3030
+const configuredFrontendOrigins = new Set(
+  (process.env.FRONTEND_ORIGINS || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .map((value) => {
+      try { return new URL(value).origin } catch { return '' }
+    })
+    .filter(Boolean),
+)
 
 function isLocalFrontendOrigin(origin: string): boolean {
   const match = origin.match(/^http:\/\/([^:/]+):(\d+)$/)
@@ -36,7 +46,7 @@ const server = fastify()
 await server.register(cors, {
   origin: (origin, callback) => {
     // Requisições sem Origin (por exemplo, health checks) não precisam de CORS.
-    if (!origin || isLocalFrontendOrigin(origin)) return callback(null, true)
+    if (!origin || isLocalFrontendOrigin(origin) || configuredFrontendOrigins.has(origin)) return callback(null, true)
     return callback(new Error('Origem não permitida pelo CORS'), false)
   },
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
