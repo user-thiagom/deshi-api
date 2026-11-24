@@ -1,0 +1,236 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum UserProfile {
+  PROFESSIONAL
+  STUDENT
+}
+
+enum LinkStatus {
+  PENDENTE
+  ATIVO
+  RECUSADO
+}
+
+enum InviteStatus {
+  PENDENTE
+  ACEITO
+  RECUSADO
+  EXPIRADO
+}
+
+enum ActivityOrigin {
+  PADRAO
+  PERSONALIZADA
+}
+
+enum SessionStatus {
+  IN_PROGRESS
+  PAUSED
+  COMPLETED
+  INTERRUPTED
+}
+
+enum SessionActivityStatus {
+  PENDING
+  IN_PROGRESS
+  PAUSED
+  RESTING
+  COMPLETED
+  INCOMPLETE
+}
+
+model User {
+  id                     String                  @id
+  name                   String
+  email                  String                  @unique
+  passwordHash           String
+  profile                UserProfile
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  professionalLinks      Link[]                  @relation("ProfessionalLinks")
+  studentLinks           Link[]                  @relation("StudentLinks")
+  professionalInvites    Invite[]                @relation("ProfessionalInvites")
+  studentInvites         Invite[]                @relation("StudentInvites")
+  selectedModalities     ProfessionalModality[]
+  customActivities       Activity[]              @relation("ActivityOwner")
+  activityConfigurations ActivityConfiguration[]
+  programsAsProfessional Program[]               @relation("ProgramProfessional")
+  programsAsStudent      Program[]               @relation("ProgramStudent")
+  sessionsAsProfessional WorkoutSession[]        @relation("SessionProfessional")
+  sessionsAsStudent      WorkoutSession[]        @relation("SessionStudent")
+}
+
+model Modality {
+  id                     String                 @id
+  name                   String
+  activities             Activity[]
+  professionalSelections ProfessionalModality[]
+  programs               Program[]
+}
+
+model ProfessionalModality {
+  professionalId String
+  modalityId     String
+  professional   User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  modality       Modality @relation(fields: [modalityId], references: [id], onDelete: Cascade)
+
+  @@id([professionalId, modalityId])
+  @@index([modalityId])
+}
+
+model Link {
+  id             String     @id
+  professionalId String
+  studentId      String
+  status         LinkStatus
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  professional   User       @relation("ProfessionalLinks", fields: [professionalId], references: [id], onDelete: Cascade)
+  student        User       @relation("StudentLinks", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([professionalId, studentId])
+  @@index([studentId, status])
+  @@index([professionalId, status])
+}
+
+model Invite {
+  id             String       @id
+  code           String       @unique
+  professionalId String
+  studentId      String
+  status         InviteStatus
+  createdAt      DateTime     @default(now())
+  expiresAt      DateTime
+  professional   User         @relation("ProfessionalInvites", fields: [professionalId], references: [id], onDelete: Cascade)
+  student        User         @relation("StudentInvites", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([professionalId, studentId, status])
+  @@index([expiresAt])
+}
+
+model Activity {
+  id                String                   @id
+  name              String
+  description       String?
+  mediaUrl          String?
+  muscleGroup       String?
+  modalityId        String
+  origin            ActivityOrigin
+  professionalId    String?
+  modality          Modality                 @relation(fields: [modalityId], references: [id], onDelete: Restrict)
+  professional      User?                    @relation("ActivityOwner", fields: [professionalId], references: [id], onDelete: Cascade)
+  fieldDefinition   ActivityFieldDefinition?
+  configurations    ActivityConfiguration[]
+  programActivities ProgramActivity[]
+  sessionActivities SessionActivity[]
+
+  @@index([modalityId, origin])
+  @@index([professionalId, modalityId])
+}
+
+model ActivityFieldDefinition {
+  activityId String   @id
+  fields     Json
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+}
+
+model ActivityConfiguration {
+  id             String   @id
+  activityId     String
+  professionalId String
+  values         Json
+  createdAt      DateTime
+  updatedAt      DateTime
+  activity       Activity @relation(fields: [activityId], references: [id], onDelete: Cascade)
+  professional   User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+
+  @@index([activityId, professionalId])
+}
+
+model Program {
+  id             String            @id
+  professionalId String
+  studentId      String
+  name           String
+  modalityId     String
+  iconUrl        String?
+  version        Int               @default(1)
+  createdAt      DateTime          @default(now())
+  professional   User              @relation("ProgramProfessional", fields: [professionalId], references: [id], onDelete: Restrict)
+  student        User              @relation("ProgramStudent", fields: [studentId], references: [id], onDelete: Restrict)
+  modality       Modality          @relation(fields: [modalityId], references: [id], onDelete: Restrict)
+  activities     ProgramActivity[]
+  sessions       WorkoutSession[]
+
+  @@index([studentId, createdAt])
+  @@index([professionalId, createdAt])
+}
+
+model ProgramActivity {
+  programId  String
+  order      Int
+  activityId String
+  prescribed Json?
+  program    Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  activity   Activity @relation(fields: [activityId], references: [id], onDelete: Restrict)
+
+  @@id([programId, order])
+  @@index([activityId])
+}
+
+model WorkoutSession {
+  id               String            @id
+  programId        String?
+  legacyProgramId  String?
+  programVersion   Int?
+  studentId        String
+  professionalId   String
+  startedAt        DateTime
+  pauseStartedAt   DateTime?
+  pausedDurationMs BigInt?
+  finishedAt       DateTime?
+  status           SessionStatus
+  program          Program?          @relation(fields: [programId], references: [id], onDelete: SetNull)
+  student          User              @relation("SessionStudent", fields: [studentId], references: [id], onDelete: Restrict)
+  professional     User              @relation("SessionProfessional", fields: [professionalId], references: [id], onDelete: Restrict)
+  activities       SessionActivity[]
+
+  @@index([studentId, startedAt])
+  @@index([professionalId, startedAt])
+  @@index([programId])
+}
+
+model SessionActivity {
+  sessionId           String
+  activityId          String
+  order               Int
+  status              SessionActivityStatus
+  nameSnapshot        String?
+  mediaUrlSnapshot    String?
+  muscleGroupSnapshot String?
+  timeTracking        Json?
+  observations        String[]
+  prescribed          Json?
+  execution           Json?
+  session             WorkoutSession        @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  activity            Activity              @relation(fields: [activityId], references: [id], onDelete: Restrict)
+
+  @@id([sessionId, order])
+  @@index([activityId])
+  @@index([status])
+}
+
+model RevokedToken {
+  jti       String   @id
+  expiresAt DateTime
+
+  @@index([expiresAt])
+}

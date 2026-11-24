@@ -2,7 +2,7 @@
 
 Backend da plataforma **DESHI**, desenvolvido com **Fastify** e **TypeScript** durante a Residência de Software.
 
-A API oferece cadastro e autenticação de usuários, solicitações diretas de vínculo entre profissionais e alunos, convites para vínculo e consulta dos vínculos ativos. A persistência do protótipo usa arquivos JSON locais, por meio de repositórios que podem ser substituídos futuramente.
+A API oferece cadastro e autenticação, vínculos entre profissionais e alunos, biblioteca de atividades, programas de treino e sessões. A persistência de produção usa PostgreSQL no Neon, acessado por Prisma ORM.
 
 ## Tecnologias
 
@@ -13,6 +13,8 @@ A API oferece cadastro e autenticação de usuários, solicitações diretas de 
 - bcryptjs
 - jsonwebtoken
 - dotenv
+- Prisma ORM e adapter Neon
+- PostgreSQL (Neon)
 
 ## Pré-requisitos
 
@@ -27,13 +29,15 @@ Instale as dependências:
 npm install
 ```
 
-Crie o arquivo `.env` a partir de `.env.example` e defina uma chave de assinatura forte:
+Crie o arquivo `.env` a partir de `.env.example`. Configure uma chave de assinatura e as duas URLs do Neon:
 
 ```env
 JWT_SECRET=uma_chave_secreta_longa_e_aleatoria
+DATABASE_URL=postgresql://...pooler.../deshi?sslmode=require
+DIRECT_URL=postgresql://.../deshi?sslmode=require
 ```
 
-`JWT_SECRET` é obrigatória. A aplicação não inicia se ela não estiver definida.
+`DATABASE_URL` deve ser a URL pooled do Neon usada pela API. `DIRECT_URL` deve ser a conexão direta sem pooler, usada por Prisma Migrate. Não publique essas URLs no frontend nem no repositório.
 
 ## Execução
 
@@ -72,20 +76,31 @@ O build compila `src/` para `dist/`. O comando `npm start` executa `dist/server.
 
 As operações de programas, sessões, resultados e histórico não fazem parte das rotas atualmente disponíveis nesta API.
 
-## Persistência
+## Banco de dados e migração
 
-Os dados são mantidos localmente nos seguintes arquivos:
+O schema relacional está em `prisma/schema.prisma`; a migração inicial versionada está em `prisma/migrations/`. Usuários, modalidades, vínculos, convites, atividades, programas e sessões são tabelas relacionais com chaves estrangeiras, índices e restrições. Prescrições, métricas de execução e intervalos de tempo usam JSONB porque seus campos variam por modalidade e tipo de exercício. Os arquivos em `data/*.json` ficam como fonte histórica para a importação, e não são lidos pela API em produção.
 
-- `data/users.json`: usuários e hashes de senha;
-- `data/revoked-tokens.json`: identificadores (`jti`) de tokens revogados e suas datas de expiração;
-- `data/vinculos.json`: solicitações e vínculos, com os estados `PENDENTE`, `ATIVO` ou `RECUSADO`;
-- `data/convites.json`: convites e seus estados `PENDENTE`, `ACEITO`, `RECUSADO` ou `EXPIRADO`.
-- `data/modalidades.json`: catálogo de modalidades disponíveis.
-- `data/profissional-modalidades.json`: modalidades selecionadas por cada profissional.
-- `data/atividades.json`: catálogo padrão de atividades.
-- `data/atividades-personalizadas.json`: atividades criadas por profissionais, isoladas por proprietário.
+Para criar ou atualizar o banco Neon:
 
-As senhas são armazenadas com hash bcrypt (custo 10), nunca em texto puro. Os arquivos JSON são a persistência de protótipo e não um banco de dados compartilhado para múltiplas instâncias.
+1. Crie um projeto e um banco no Neon. Copie a URL pooled para `DATABASE_URL` e a URL direta para `DIRECT_URL`.
+2. Configure ambas as variáveis no `.env` local. Faça backup dos arquivos `data/*.json` antes da primeira importação.
+3. Confira os arquivos locais, aplique o schema versionado e importe os dados legados:
+
+```bash
+npm run db:seed:check
+npm run db:migrate:deploy
+npm run db:seed
+```
+
+Para testar conexão e consultas de leitura depois da carga, rode `npm run db:check`. O comando usa o mesmo adapter e a `DATABASE_URL` da API, faz um `SELECT 1` e conta registros das tabelas principais.
+
+O importador valida as referências antes de gravar e executa a carga em uma transação. Ele preserva IDs e sessões históricas, é seguro para repetir e corrige um único typo conhecido de modalidade em quatro programas de demonstração. Uma sessão antiga que aponta para `program-001`, ausente dos dados, mantém esse valor no campo legado sem criar um programa falso.
+
+Para desenvolvimento local após configurar um banco vazio, `npm run db:migrate:dev` cria/aplica migrações. Para produção, gere uma nova migração durante o desenvolvimento e aplique-a com `npm run db:migrate:deploy`; não use `prisma db push` como substituto das migrações.
+
+No projeto da Vercel, adicione `DATABASE_URL` (pooled) e `DIRECT_URL` (direct) como variáveis de ambiente. A API usa o adapter Neon para as conexões serverless. Execute `npm run db:migrate:deploy` uma vez para cada ambiente antes de publicar a versão que depende da migração. O `postinstall` gera o Prisma Client durante a instalação.
+
+Os JSON antigos não são apagados automaticamente. Depois de confirmar a importação e manter um backup fora do repositório, eles podem ser removidos em uma etapa posterior.
 
 ## Autenticação e perfis
 
@@ -95,7 +110,7 @@ O login produz um JWT válido por uma hora, associado a um `jti` único. Rotas a
 Authorization: Bearer <token>
 ```
 
-A autenticação valida a assinatura e a expiração do token, verifica sua revogação e identifica o usuário. O logout registra o `jti` em `data/revoked-tokens.json`. Os perfis aceitos são `PROFESSIONAL` e `STUDENT`; as rotas de vínculos e convites também restringem as operações ao perfil correspondente.
+A autenticação valida a assinatura e a expiração do token, verifica sua revogação no PostgreSQL e identifica o usuário. Os perfis aceitos são `PROFESSIONAL` e `STUDENT`; as rotas de vínculos e convites também restringem as operações ao perfil correspondente.
 
 ## Rotas
 

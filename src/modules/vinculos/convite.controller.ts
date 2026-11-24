@@ -2,14 +2,12 @@ import { criarConvitePorEmailSchema, criarConviteSchema, parametrosConviteSchema
 import { ConviteError, FalhaRollbackConviteError } from './convite.errors.js'
 import { AlunoNaoEncontradoError, UsuarioNaoEhAlunoError, VinculoConsigoMesmoError, VinculoJaExistenteError } from './vinculos.errors.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { JsonUserRepository } from '../users/repositories/json-user.repository.js'
-import { JsonVinculoRepository } from './repositories/json-vinculo.repository.js'
-import { JsonConviteRepository } from './repositories/json-convite.repository.js'
+import { PrismaUserRepository, PrismaVinculoRepository, PrismaConviteRepository } from '../../shared/database/repositories.js'
 import { ConviteService } from './convite.service.js'
 
-const userRepository = new JsonUserRepository('data/users.json')
-const vinculoRepository = new JsonVinculoRepository('data/vinculos.json')
-const conviteRepository = new JsonConviteRepository('data/convites.json')
+const userRepository = new PrismaUserRepository()
+const vinculoRepository = new PrismaVinculoRepository()
+const conviteRepository = new PrismaConviteRepository()
 
 const conviteService = new ConviteService(
     conviteRepository,

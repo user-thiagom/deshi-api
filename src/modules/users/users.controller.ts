@@ -1,15 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUserBody, createUserSchema, LoginBody, loginSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
-import { JsonUserRepository } from "./repositories/json-user.repository.js";
+import { PrismaUserRepository, PrismaTokenRevocationRepository } from "../../shared/database/repositories.js";
 import { EmailAlreadyExistsError, InvalidCredentialsError } from "./users.errors.js";
 import { toLoginResponse, toUserResponse } from "./users.mapper.js";
 import { env } from "../../config/env.js";
-import { JsonTokenRevocationRepository } from "../../shared/auth/repositories/json-token-revocation.repository.js";
 
-const jsonUserRepository = new JsonUserRepository("data/users.json")
+const jsonUserRepository = new PrismaUserRepository()
 const userService = new UserService(jsonUserRepository, env.jwtSecret)
-const tokenRevocationRepository = new JsonTokenRevocationRepository('data/revoked-tokens.json')
+const tokenRevocationRepository = new PrismaTokenRevocationRepository()
 
 export async function createUserController(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
     const result = createUserSchema.safeParse(request.body)

@@ -1,11 +1,5 @@
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import path from 'node:path'
-
-import { JsonProgramRepository } from '../programs/repositories/json-program.repository.js'
-import { JsonSessionRepository } from './repositories/json-session.repository.js'
-import { JsonConfiguracaoRepository } from '../configuracoes-atividades/repositories/json-configuracao.repository.js'
-import { JsonAtividadeRepository } from '../atividades/repositories/json-atividade.repository.js'
-import { JsonModalidadeRepository } from '../modalidades/repositories/json-modalidade.repository.js'
+import { PrismaAtividadeRepository, PrismaConfiguracaoRepository, PrismaModalidadeRepository, PrismaProgramRepository, PrismaSessionRepository } from '../../shared/database/repositories.js'
 import { SessionsService } from './sessions.service.js'
 import {
     evolutionQuerySchema,
@@ -23,27 +17,11 @@ import {
     InvalidActivityStateError
 } from './sessions.errors.js'
 
-const programRepository = new JsonProgramRepository(
-    path.resolve(process.cwd(), 'data', 'programs.json')
-)
-
-const sessionRepository = new JsonSessionRepository(
-    path.resolve(process.cwd(), 'data', 'sessions.json')
-)
-
-const configuracaoRepository = new JsonConfiguracaoRepository(
-    path.resolve(process.cwd(), 'data', 'configuracoes-atividades.json')
-)
-
-const atividadeRepository = new JsonAtividadeRepository(
-    path.resolve(process.cwd(), 'data', 'atividades.json'),
-    path.resolve(process.cwd(), 'data', 'atividades-personalizadas.json')
-)
-
-const modalidadeRepository = new JsonModalidadeRepository(
-    path.resolve(process.cwd(), 'data', 'modalidades.json'),
-    path.resolve(process.cwd(), 'data', 'profissional-modalidades.json')
-)
+const programRepository = new PrismaProgramRepository()
+const sessionRepository = new PrismaSessionRepository()
+const configuracaoRepository = new PrismaConfiguracaoRepository()
+const atividadeRepository = new PrismaAtividadeRepository()
+const modalidadeRepository = new PrismaModalidadeRepository()
 
 export const sessionsService = new SessionsService(
     programRepository,

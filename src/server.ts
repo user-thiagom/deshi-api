@@ -9,6 +9,7 @@ import { vinculoRoutes } from './modules/vinculos/vinculos.routes.js'
 import { conviteRoutes } from './modules/vinculos/convite.routes.js'
 import { programRoutes } from './modules/programs/program.routes.js'
 import { professionalHomeRoutes } from './modules/professional-home/professional-home.routes.js'
+import { prisma } from './shared/database/prisma.js'
 
 const PORT = 3030
 
@@ -31,6 +32,10 @@ function isLocalFrontendOrigin(origin: string): boolean {
 }
 
 const server = fastify()
+
+server.addHook('onClose', async () => {
+  await prisma.$disconnect()
+})
 
 await server.register(cors, {
   origin: (origin, callback) => {

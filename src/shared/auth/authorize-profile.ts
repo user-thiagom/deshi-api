@@ -1,9 +1,9 @@
 
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { UserProfile } from '../../modules/users/users.types.js'
-import { JsonUserRepository } from '../../modules/users/repositories/json-user.repository.js'
+import { PrismaUserRepository } from '../database/repositories.js'
 
-const userRepository = new JsonUserRepository('data/users.json')
+const userRepository = new PrismaUserRepository()
 
 export function authorizeProfile(requiredProfile: UserProfile) {
     return async function (request: FastifyRequest, reply: FastifyReply) {
