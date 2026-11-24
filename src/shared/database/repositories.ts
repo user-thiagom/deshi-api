@@ -25,7 +25,7 @@ const db = prisma as any
 const asJson = <T>(value: unknown): T => value as T
 
 export class PrismaUserRepository implements UserRepository {
-  create(data: CreateUserData): Promise<User> { return db.user.create({ data }) }
+  create(data: CreateUserData): Promise<User> { return db.user.create({ data: { id: randomUUID(), ...data } }) }
   findByEmail(email: string): Promise<User | null> { return db.user.findUnique({ where: { email } }) }
   findById(id: string): Promise<User | null> { return db.user.findUnique({ where: { id } }) }
 }
