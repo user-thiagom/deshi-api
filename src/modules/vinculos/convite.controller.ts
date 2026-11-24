@@ -1,3 +1,4 @@
+import { dataPath } from '../../config/data.js'
 import { criarConvitePorEmailSchema, criarConviteSchema, parametrosConviteSchema, CriarConviteBody, CriarConvitePorEmailBody, ParametrosConvite } from './convite.schema.js'
 import { ConviteError, FalhaRollbackConviteError } from './convite.errors.js'
 import { AlunoNaoEncontradoError, UsuarioNaoEhAlunoError, VinculoConsigoMesmoError, VinculoJaExistenteError } from './vinculos.errors.js'
@@ -7,9 +8,9 @@ import { JsonVinculoRepository } from './repositories/json-vinculo.repository.js
 import { JsonConviteRepository } from './repositories/json-convite.repository.js'
 import { ConviteService } from './convite.service.js'
 
-const userRepository = new JsonUserRepository('data/users.json')
-const vinculoRepository = new JsonVinculoRepository('data/vinculos.json')
-const conviteRepository = new JsonConviteRepository('data/convites.json')
+const userRepository = new JsonUserRepository(dataPath('users.json'))
+const vinculoRepository = new JsonVinculoRepository(dataPath('vinculos.json'))
+const conviteRepository = new JsonConviteRepository(dataPath('convites.json'))
 
 const conviteService = new ConviteService(
     conviteRepository,

@@ -1,10 +1,11 @@
+import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { JsonModalidadeRepository } from './repositories/json-modalidade.repository.js'
 import { ModalidadeNaoEncontradaError } from './modalidades.errors.js'
 import { DefinirModalidadesBody, definirModalidadesSchema } from './modalidades.schema.js'
 import { ModalidadeService } from './modalidades.service.js'
 
-const modalidadeRepository = new JsonModalidadeRepository('data/modalidades.json', 'data/profissional-modalidades.json')
+const modalidadeRepository = new JsonModalidadeRepository(dataPath('modalidades.json'), dataPath('profissional-modalidades.json'))
 const modalidadeService = new ModalidadeService(modalidadeRepository)
 
 export async function listarModalidadesController(request: FastifyRequest, reply: FastifyReply) {

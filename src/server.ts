@@ -1,3 +1,4 @@
+import { initializeData } from './config/data.js'
 import fastify from 'fastify'
 import cors from '@fastify/cors'
 import './shared/auth/request-user.js'
@@ -40,6 +41,8 @@ function isLocalFrontendOrigin(origin: string): boolean {
     (first === 172 && second >= 16 && second <= 31) ||
     (first === 192 && second === 168)
 }
+
+await initializeData()
 
 const server = fastify()
 

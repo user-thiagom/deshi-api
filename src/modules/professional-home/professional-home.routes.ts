@@ -1,4 +1,4 @@
-import path from 'node:path'
+import { dataPath } from '../../config/data.js'
 import type { FastifyInstance } from 'fastify'
 import { authenticate } from '../../shared/auth/authenticate.js'
 import { authorizeProfile } from '../../shared/auth/authorize-profile.js'
@@ -10,7 +10,6 @@ import { JsonVinculoRepository } from '../vinculos/repositories/json-vinculo.rep
 import { professionalHomeController } from './professional-home.controller.js'
 import { ProfessionalHomeService } from './professional-home.service.js'
 
-const dataPath = (...parts: string[]) => path.resolve(process.cwd(), 'data', ...parts)
 const service = new ProfessionalHomeService(
   new JsonUserRepository(dataPath('users.json')),
   new JsonVinculoRepository(dataPath('vinculos.json')),

@@ -1,3 +1,4 @@
+import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUserBody, createUserSchema, LoginBody, loginSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
@@ -7,9 +8,9 @@ import { toLoginResponse, toUserResponse } from "./users.mapper.js";
 import { env } from "../../config/env.js";
 import { JsonTokenRevocationRepository } from "../../shared/auth/repositories/json-token-revocation.repository.js";
 
-const jsonUserRepository = new JsonUserRepository("data/users.json")
+const jsonUserRepository = new JsonUserRepository(dataPath('users.json'))
 const userService = new UserService(jsonUserRepository, env.jwtSecret)
-const tokenRevocationRepository = new JsonTokenRevocationRepository('data/revoked-tokens.json')
+const tokenRevocationRepository = new JsonTokenRevocationRepository(dataPath('revoked-tokens.json'))
 
 export async function createUserController(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
     const result = createUserSchema.safeParse(request.body)

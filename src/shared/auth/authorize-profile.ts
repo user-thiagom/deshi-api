@@ -1,9 +1,10 @@
+import { dataPath } from '../../config/data.js'
 
 import { FastifyReply, FastifyRequest } from 'fastify'
 import { UserProfile } from '../../modules/users/users.types.js'
 import { JsonUserRepository } from '../../modules/users/repositories/json-user.repository.js'
 
-const userRepository = new JsonUserRepository('data/users.json')
+const userRepository = new JsonUserRepository(dataPath('users.json'))
 
 export function authorizeProfile(requiredProfile: UserProfile) {
     return async function (request: FastifyRequest, reply: FastifyReply) {

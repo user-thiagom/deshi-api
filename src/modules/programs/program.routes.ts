@@ -1,3 +1,4 @@
+import { dataPath } from '../../config/data.js'
 import { FastifyInstance, preHandlerHookHandler } from 'fastify'
 import { JsonUserRepository } from '../users/repositories/json-user.repository.js'
 import { authenticate } from '../../shared/auth/authenticate.js'
@@ -13,15 +14,15 @@ import { JsonProgramRepository } from './repositories/json-program.repository.js
 import { ProgramService } from './program.service.js'
 
 const programService = new ProgramService(
-    new JsonProgramRepository('data/programs.json'),
+    new JsonProgramRepository(dataPath('programs.json')),
     new JsonProgramCatalogRepository(
-        'data/vinculos.json',
-        'data/modalidades.json',
-        'data/profissional-modalidades.json',
-        'data/atividades.json',
-        'data/atividades-personalizadas.json'
+        dataPath('vinculos.json'),
+        dataPath('modalidades.json'),
+        dataPath('profissional-modalidades.json'),
+        dataPath('atividades.json'),
+        dataPath('atividades-personalizadas.json')
     ),
-    new JsonUserRepository('data/users.json')
+    new JsonUserRepository(dataPath('users.json'))
 )
 
 export interface ProgramRouteDependencies {

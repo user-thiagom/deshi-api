@@ -1,5 +1,5 @@
+import { dataPath } from '../../config/data.js'
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import path from 'node:path'
 
 import { JsonProgramRepository } from '../programs/repositories/json-program.repository.js'
 import { JsonSessionRepository } from './repositories/json-session.repository.js'
@@ -24,25 +24,25 @@ import {
 } from './sessions.errors.js'
 
 const programRepository = new JsonProgramRepository(
-    path.resolve(process.cwd(), 'data', 'programs.json')
+    dataPath('programs.json')
 )
 
 const sessionRepository = new JsonSessionRepository(
-    path.resolve(process.cwd(), 'data', 'sessions.json')
+    dataPath('sessions.json')
 )
 
 const configuracaoRepository = new JsonConfiguracaoRepository(
-    path.resolve(process.cwd(), 'data', 'configuracoes-atividades.json')
+    dataPath('configuracoes-atividades.json')
 )
 
 const atividadeRepository = new JsonAtividadeRepository(
-    path.resolve(process.cwd(), 'data', 'atividades.json'),
-    path.resolve(process.cwd(), 'data', 'atividades-personalizadas.json')
+    dataPath('atividades.json'),
+    dataPath('atividades-personalizadas.json')
 )
 
 const modalidadeRepository = new JsonModalidadeRepository(
-    path.resolve(process.cwd(), 'data', 'modalidades.json'),
-    path.resolve(process.cwd(), 'data', 'profissional-modalidades.json')
+    dataPath('modalidades.json'),
+    dataPath('profissional-modalidades.json')
 )
 
 export const sessionsService = new SessionsService(
