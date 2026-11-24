@@ -169,6 +169,7 @@
     "alunoId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
     "nome": "Leg Day",
     "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "iconeUrl": "https://i.pinimg.com/474x/82/26/cb/8226cbe22c7e8631a75f350f43f7c840.jpg",
     "atividades": [
       {
         "atividadeId": "37184c02-eea1-445f-8f7b-a05caefac484",
@@ -191,7 +192,35 @@
         }
       }
     ],
-    "version": 1,
+    "version": 4,
     "criadoEm": "2026-11-24T12:21:47.229Z"
+  },
+  {
+    "id": "c282a12c-bff9-42dd-a7c9-86d04ae0c557",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "nome": "Muay Thai básico",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000003",
+    "iconeUrl": "https://st3.depositphotos.com/10312166/17087/v/450/depositphotos_170876730-stock-illustration-muay-thai-thai-boxing-action.jpg",
+    "atividades": [
+      {
+        "atividadeId": "336acb37-bdaa-4aee-80d1-ecbc68689ed9",
+        "ordem": 1,
+        "valores": {
+          "rounds": 3,
+          "duracaoRoundSegundos": 60
+        }
+      },
+      {
+        "atividadeId": "59b9813e-df94-4f95-9503-1904322f5a69",
+        "ordem": 2,
+        "valores": {
+          "rounds": 3,
+          "duracaoRoundSegundos": 60
+        }
+      }
+    ],
+    "version": 2,
+    "criadoEm": "2026-11-24T16:15:36.129Z"
   }
 ]

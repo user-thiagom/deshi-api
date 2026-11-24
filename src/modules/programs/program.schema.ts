@@ -86,11 +86,13 @@ const programActivitiesSchema = z.array(
 export const programDataSchema = z.object({
     alunoId: z.string().uuid(),
     nome: z.string().trim().min(1),
+    iconeUrl: z.url({ protocol: /^https?$/ }).optional(),
     modalidadeId: z.string().uuid(),
     atividades: programActivitiesSchema
-}).strict().transform(({ alunoId, nome, modalidadeId, atividades }) => ({
+}).strict().transform(({ alunoId, nome, iconeUrl, modalidadeId, atividades }) => ({
     studentId: alunoId,
     name: nome,
+    ...(iconeUrl ? { iconeUrl } : {}),
     modalityId: modalidadeId,
     activityIds: atividades.map(({ activityId }) => activityId),
     activities: atividades

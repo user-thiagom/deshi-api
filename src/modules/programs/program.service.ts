@@ -151,6 +151,7 @@ export class ProgramService {
             studentId: data.studentId,
             name: data.name,
             modalityId: data.modalityId,
+            iconeUrl: data.iconeUrl,
             activities
         })
     }
@@ -176,6 +177,7 @@ export class ProgramService {
             ...currentProgram,
             name: data.name,
             modalityId: data.modalityId,
+            iconeUrl: data.iconeUrl,
             activities
         })
     }

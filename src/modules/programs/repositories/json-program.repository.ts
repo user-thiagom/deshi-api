@@ -62,6 +62,7 @@ export class JsonProgramRepository implements ProgramRepository {
         studentId: (stored.studentId ?? stored.alunoId) as string,
         name: (stored.name ?? stored.nome) as string,
         modalityId: (stored.modalityId ?? stored.modalidadeId) as string,
+        ...((stored.iconeUrl ?? stored.iconUrl) === undefined ? {} : { iconeUrl: (stored.iconeUrl ?? stored.iconUrl) as string }),
         activities: activities.map((activity) => ({
           activityId: (activity.activityId ?? activity.atividadeId) as string,
           order: (activity.order ?? activity.ordem) as number,
@@ -82,6 +83,7 @@ export class JsonProgramRepository implements ProgramRepository {
       alunoId: program.studentId,
       nome: program.name,
       modalidadeId: program.modalityId,
+      ...(program.iconeUrl ? { iconeUrl: program.iconeUrl } : {}),
       atividades: program.activities.map((activity) => ({
         atividadeId: activity.activityId,
         ordem: activity.order,

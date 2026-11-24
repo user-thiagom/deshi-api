@@ -4,6 +4,7 @@ export interface Program {
     studentId: string
     name: string
     modalityId: string
+    iconeUrl?: string
     activities: ProgramActivity[]
     version: number
     createdAt: Date

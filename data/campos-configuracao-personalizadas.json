@@ -10,5 +10,43 @@
         "min": 1
       }
     ]
+  },
+  {
+    "atividadeId": "336acb37-bdaa-4aee-80d1-ecbc68689ed9",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "obrigatorio": true,
+        "unidade": "rounds",
+        "min": 1
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "obrigatorio": true,
+        "unidade": "s",
+        "min": 1
+      }
+    ]
+  },
+  {
+    "atividadeId": "59b9813e-df94-4f95-9503-1904322f5a69",
+    "campos": [
+      {
+        "chave": "rounds",
+        "tipo": "inteiro",
+        "obrigatorio": true,
+        "unidade": "rounds",
+        "min": 1
+      },
+      {
+        "chave": "duracaoRoundSegundos",
+        "tipo": "duracao",
+        "obrigatorio": true,
+        "unidade": "s",
+        "min": 1
+      }
+    ]
   }
 ]
