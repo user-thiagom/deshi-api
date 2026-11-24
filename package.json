@@ -14,11 +14,11 @@
   "description": "",
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^26.6.4",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@types/node": "^26.6.4",
     "@fastify/cors": "^11.3.1",
     "bcryptjs": "^3.0.3",
     "dotenv": "^18.0.6",
