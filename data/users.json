@@ -106,5 +106,14 @@
     "profile": "PROFESSIONAL",
     "createdAt": "2026-11-17T13:34:24.647Z",
     "updatedAt": "2026-11-17T13:34:24.647Z"
+  },
+  {
+    "id": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "name": "Everton Marques",
+    "email": "teste2@gmail.com",
+    "passwordHash": "$2b$10$HBfEjDMVlOgUc9.HLuMdD.8UMe0PYRO4sceVntG3jECZuvw82N6PW",
+    "profile": "STUDENT",
+    "createdAt": "2026-11-24T12:18:58.365Z",
+    "updatedAt": "2026-11-24T12:18:58.365Z"
   }
 ]

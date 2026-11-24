@@ -56,21 +56,24 @@ export class ProfessionalHomeService {
       }
     }))
 
-    const recentActivities = await Promise.all(sessions
-      .filter((session) => studentIds.has(session.studentId) && session.status === 'COMPLETED' && session.finishedAt)
+    const recentActivities = sessions
+      .filter((session) => studentIds.has(session.studentId) && ['COMPLETED', 'INTERRUPTED'].includes(session.status) && session.finishedAt)
       .sort((a, b) => new Date(b.finishedAt!).getTime() - new Date(a.finishedAt!).getTime())
       .slice(0, 6)
-      .map(async (session) => {
+      .map((session) => {
         const student = studentById.get(session.studentId)
         const program = programById.get(session.programId)
+        const completedActivities = session.activities.filter((activity) => activity.status === 'COMPLETED').length
         return {
           id: session.id,
-          type: 'completed',
-          title: `${student?.name ?? 'Aluno'} concluiu ${program?.name ?? 'o treino'}`,
-          description: `${session.activities.filter((activity) => activity.status === 'COMPLETED').length}/${session.activities.length} atividades concluídas`,
+          type: session.status === 'COMPLETED' ? 'completed' : 'interrupted',
+          studentName: student?.name ?? 'Aluno',
+          programName: program?.name ?? 'Treino do aluno',
+          completedActivities,
+          totalActivities: session.activities.length,
           at: session.finishedAt
         }
-      }))
+      })
 
     return {
       counts: {

@@ -162,5 +162,36 @@
     ],
     "version": 1,
     "criadoEm": "2026-11-23T03:26:05.331Z"
+  },
+  {
+    "id": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "nome": "Leg Day",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
+    "atividades": [
+      {
+        "atividadeId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "ordem": 1,
+        "valores": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        }
+      },
+      {
+        "atividadeId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "ordem": 2,
+        "valores": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        }
+      }
+    ],
+    "version": 1,
+    "criadoEm": "2026-11-24T12:21:47.229Z"
   }
 ]

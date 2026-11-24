@@ -2,7 +2,9 @@
   {
     "profissionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
     "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
-    "status": "ATIVO"
+    "status": "ATIVO",
+    "criadoEm": null,
+    "atualizadoEm": null
   },
   {
     "id": "demo-link-f0170001-2000-4000-8000-000000000001",
@@ -43,5 +45,13 @@
     "status": "ATIVO",
     "criadoEm": "2026-11-10T12:00:00.000Z",
     "atualizadoEm": "2026-11-10T12:00:00.000Z"
+  },
+  {
+    "id": "48d4e7e4-98e0-43da-a7c6-655a9d7448cd",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "alunoId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "status": "ATIVO",
+    "criadoEm": "2026-11-24T12:20:08.791Z",
+    "atualizadoEm": "2026-11-24T12:20:08.791Z"
   }
 ]
