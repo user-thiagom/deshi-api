@@ -485,5 +485,735 @@
       }
     ],
     "finishedAt": "2026-11-24T12:40:54.795Z"
+  },
+  {
+    "id": "f6bce605-522b-4f65-958b-cd83af72c6d4",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T13:58:16.176Z",
+    "status": "IN_PROGRESS",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "PAUSED",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:01:03.496Z",
+              "endedAt": "2026-11-24T14:01:58.251Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:02:05.093Z",
+              "endedAt": "2026-11-24T14:02:30.329Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-24T14:02:30.329Z"
+            }
+          ],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T14:01:58.251Z",
+              "endedAt": "2026-11-24T14:02:05.093Z"
+            }
+          ],
+          "activeTimeMs": 79991,
+          "pauseTimeMs": 0,
+          "restTimeMs": 6842,
+          "pauseStartedAt": "2026-11-24T14:02:30.329Z"
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:05:19.798Z",
+              "endedAt": "2026-11-24T14:05:34.392Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 14594,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "e5de740f-28d8-4a32-ab62-31fd38eb1b73",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T14:13:47.908Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "PENDING",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "PENDING",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T14:13:50.180Z"
+  },
+  {
+    "id": "c868ca49-a592-407b-93ec-275847c1b993",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T14:22:06.005Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "INCOMPLETE",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:22:18.944Z",
+              "endedAt": "2026-11-24T14:22:21.083Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-24T14:22:21.083Z",
+              "endedAt": "2026-11-24T14:22:26.312Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 2139,
+          "pauseTimeMs": 5229,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "PENDING",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T14:22:26.312Z"
+  },
+  {
+    "id": "4043b73a-54c9-4a7d-915c-79274a3e1042",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T14:22:44.960Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:23:08.246Z",
+              "endedAt": "2026-11-24T14:23:15.190Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:23:17.942Z",
+              "endedAt": "2026-11-24T14:23:19.757Z"
+            }
+          ],
+          "pauseIntervals": [
+            {
+              "startedAt": "2026-11-24T14:23:15.190Z",
+              "endedAt": "2026-11-24T14:23:17.942Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:23:19.757Z",
+              "endedAt": "2026-11-24T14:23:21.088Z"
+            }
+          ],
+          "restIntervals": [],
+          "activeTimeMs": 8759,
+          "pauseTimeMs": 4083,
+          "restTimeMs": 0
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "PENDING",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [],
+          "pauseIntervals": [],
+          "restIntervals": [],
+          "activeTimeMs": 0,
+          "pauseTimeMs": 0,
+          "restTimeMs": 0
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T14:37:53.013Z"
+  },
+  {
+    "id": "0b3343f5-59a2-40ba-a573-85fe00663288",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T14:37:58.323Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:38:07.983Z",
+              "endedAt": "2026-11-24T14:38:33.067Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:38:46.902Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T14:38:33.067Z",
+              "endedAt": "2026-11-24T14:38:46.902Z"
+            }
+          ],
+          "activeTimeMs": 25084,
+          "pauseTimeMs": 0,
+          "restTimeMs": 13835,
+          "activeStartedAt": "2026-11-24T14:38:46.902Z"
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 10,
+            "cargaKg": 15
+          },
+          "executedAt": "2026-11-24T14:39:01.983Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T14:38:33.010Z"
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 10,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T14:39:01.983Z"
+            }
+          ]
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:39:38.886Z",
+              "endedAt": "2026-11-24T14:39:48.050Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:39:50.126Z",
+              "endedAt": "2026-11-24T14:39:55.011Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:39:56.886Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T14:39:48.050Z",
+              "endedAt": "2026-11-24T14:39:50.126Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:39:55.011Z",
+              "endedAt": "2026-11-24T14:39:56.886Z"
+            }
+          ],
+          "activeTimeMs": 14049,
+          "pauseTimeMs": 0,
+          "restTimeMs": 3951,
+          "activeStartedAt": "2026-11-24T14:39:56.886Z"
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 12,
+            "cargaKg": 30
+          },
+          "executedAt": "2026-11-24T14:40:06.170Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T14:39:48.033Z"
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T14:39:54.990Z"
+            },
+            {
+              "number": 3,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T14:40:06.170Z"
+            }
+          ]
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T14:46:03.250Z"
+  },
+  {
+    "id": "f991229a-067a-4bee-ae10-106103a75760",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T14:47:30.370Z",
+    "status": "INTERRUPTED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:47:33.670Z",
+              "endedAt": "2026-11-24T14:47:54.548Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:48:00.445Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T14:47:54.548Z",
+              "endedAt": "2026-11-24T14:48:00.445Z"
+            }
+          ],
+          "activeTimeMs": 20878,
+          "pauseTimeMs": 0,
+          "restTimeMs": 5897,
+          "activeStartedAt": "2026-11-24T14:48:00.445Z"
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 12,
+            "cargaKg": 15
+          },
+          "executedAt": "2026-11-24T14:48:17.361Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T14:47:54.528Z",
+              "durationMs": 22271
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T14:48:17.361Z",
+              "durationMs": 11849
+            }
+          ],
+          "comment": "Legal"
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T14:48:30.854Z",
+              "endedAt": "2026-11-24T14:48:40.078Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:48:41.622Z",
+              "endedAt": "2026-11-24T14:48:44.966Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:48:46.533Z",
+              "endedAt": "2026-11-24T14:49:25.848Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T14:48:40.078Z",
+              "endedAt": "2026-11-24T14:48:41.622Z"
+            },
+            {
+              "startedAt": "2026-11-24T14:48:44.966Z",
+              "endedAt": "2026-11-24T14:48:46.533Z"
+            }
+          ],
+          "activeTimeMs": 51883,
+          "pauseTimeMs": 0,
+          "restTimeMs": 3111
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 12,
+            "cargaKg": 30
+          },
+          "executedAt": "2026-11-24T14:48:44.949Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T14:48:40.053Z",
+              "durationMs": 11434
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T14:48:44.949Z",
+              "durationMs": 4879
+            }
+          ]
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T14:50:48.745Z"
+  },
+  {
+    "id": "3f23b6f4-036b-4ecb-9b6e-540891b8cc54",
+    "programId": "6d10f09f-d03d-42ae-8cff-cb3f511c8e67",
+    "programVersion": 1,
+    "studentId": "341c479c-dbe2-4332-a771-95e4e44b3f25",
+    "professionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
+    "startedAt": "2026-11-24T15:32:17.023Z",
+    "status": "COMPLETED",
+    "activities": [
+      {
+        "activityId": "37184c02-eea1-445f-8f7b-a05caefac484",
+        "nome": "Afundo Alternado com Salto",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Afundo%20Alternado%20com%20Salto.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 1,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 2,
+          "repeticoes": 12,
+          "cargaKg": 15,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T15:32:28.261Z",
+              "endedAt": "2026-11-24T15:32:36.877Z"
+            },
+            {
+              "startedAt": "2026-11-24T15:32:39.132Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T15:32:36.877Z",
+              "endedAt": "2026-11-24T15:32:39.132Z"
+            }
+          ],
+          "activeTimeMs": 8616,
+          "pauseTimeMs": 0,
+          "restTimeMs": 2255,
+          "activeStartedAt": "2026-11-24T15:32:39.132Z"
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 12,
+            "cargaKg": 15
+          },
+          "executedAt": "2026-11-24T15:32:59.338Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T15:32:36.861Z",
+              "durationMs": 11832
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 15
+              },
+              "executedAt": "2026-11-24T15:32:59.338Z",
+              "durationMs": 6645,
+              "restMs": 0
+            }
+          ],
+          "comment": "Legal"
+        }
+      },
+      {
+        "activityId": "5e89e9f2-e5f0-4c25-bf59-b9bdb4614ed3",
+        "nome": "Agachamento Frontal com Polia",
+        "midiaUrl": "https://raw.githubusercontent.com/arcelino-cavalcante/api-exercicios-gym/main/videos/Agachamento%20Frontal%20com%20Polia.mp4",
+        "grupoMuscular": "Pernas",
+        "order": 2,
+        "status": "COMPLETED",
+        "prescribed": {
+          "series": 3,
+          "repeticoes": 12,
+          "cargaKg": 30,
+          "descansoSegundos": 60
+        },
+        "timeTracking": {
+          "activeIntervals": [
+            {
+              "startedAt": "2026-11-24T15:33:24.485Z",
+              "endedAt": "2026-11-24T15:33:44.266Z"
+            },
+            {
+              "startedAt": "2026-11-24T15:33:46.053Z",
+              "endedAt": "2026-11-24T15:33:52.070Z"
+            },
+            {
+              "startedAt": "2026-11-24T15:33:53.445Z"
+            }
+          ],
+          "pauseIntervals": [],
+          "restIntervals": [
+            {
+              "startedAt": "2026-11-24T15:33:44.266Z",
+              "endedAt": "2026-11-24T15:33:46.053Z"
+            },
+            {
+              "startedAt": "2026-11-24T15:33:52.070Z",
+              "endedAt": "2026-11-24T15:33:53.445Z"
+            }
+          ],
+          "activeTimeMs": 25798,
+          "pauseTimeMs": 0,
+          "restTimeMs": 3162,
+          "activeStartedAt": "2026-11-24T15:33:53.445Z"
+        },
+        "execution": {
+          "values": {
+            "repeticoes": 12,
+            "cargaKg": 30
+          },
+          "executedAt": "2026-11-24T15:34:15.470Z",
+          "series": [
+            {
+              "number": 1,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 35
+              },
+              "executedAt": "2026-11-24T15:33:44.245Z",
+              "durationMs": 5084
+            },
+            {
+              "number": 2,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T15:33:52.054Z",
+              "durationMs": 7793
+            },
+            {
+              "number": 3,
+              "values": {
+                "repeticoes": 12,
+                "cargaKg": 30
+              },
+              "executedAt": "2026-11-24T15:34:15.470Z",
+              "durationMs": 13228,
+              "restMs": 0
+            }
+          ]
+        }
+      }
+    ],
+    "finishedAt": "2026-11-24T15:34:18.079Z"
   }
 ]

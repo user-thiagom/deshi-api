@@ -1,9 +1,29 @@
 [
   {
     "id": "f75997ff-2011-420e-9012-a73fdfe76075",
-    "nome": "Jab + Direto",
-    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000001",
-    "descricao": "AAAAA",
+    "nome": "Jab",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000004",
+    "descricao": "Sequência básica do boxe",
+    "midiaUrl": "https://www.mundoboaforma.com.br/wp-content/uploads/2021/04/boxe-jab.gif",
+    "grupoMuscular": "Ombros",
+    "origem": "PERSONALIZADA",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963"
+  },
+  {
+    "id": "59b9813e-df94-4f95-9503-1904322f5a69",
+    "nome": "Low Kick no saco de pancada",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000003",
+    "descricao": "Chute baixo no saco de pancada para treinar o movimento",
+    "midiaUrl": "https://i.imgur.com/2p933fW.gif",
+    "origem": "PERSONALIZADA",
+    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963"
+  },
+  {
+    "id": "336acb37-bdaa-4aee-80d1-ecbc68689ed9",
+    "nome": "Joelhada Saltando",
+    "modalidadeId": "d1b10e90-8d5c-4ad3-9d68-000000000003",
+    "descricao": "Joelhada saltando na jaca",
+    "midiaUrl": "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmw0YjhjbnJ1ZWt5bGYzdnl1dDBndnRwamVjb3Q2bTA2NjZ5b2xxMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/jR4Y0RwHatRLzgs4mR/giphy.gif",
     "origem": "PERSONALIZADA",
     "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963"
   }

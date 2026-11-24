@@ -3,8 +3,8 @@
     "profissionalId": "3113543b-c87e-456b-8a45-22d83f59e8f8",
     "alunoId": "e5bc36cd-6307-4f96-9c1d-e5b9285ec55d",
     "status": "ATIVO",
-    "criadoEm": null,
-    "atualizadoEm": null
+    "criadoEm": "1970-01-01T00:00:00.000Z",
+    "atualizadoEm": "1970-01-01T00:00:00.000Z"
   },
   {
     "id": "demo-link-f0170001-2000-4000-8000-000000000001",
@@ -34,14 +34,6 @@
     "id": "demo-link-f0170004-2000-4000-8000-000000000004",
     "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
     "alunoId": "f0170004-2000-4000-8000-000000000004",
-    "status": "ATIVO",
-    "criadoEm": "2026-11-10T12:00:00.000Z",
-    "atualizadoEm": "2026-11-10T12:00:00.000Z"
-  },
-  {
-    "id": "demo-link-f0170005-2000-4000-8000-000000000005",
-    "profissionalId": "2c6cef20-39ed-47d4-b4a5-58145db28963",
-    "alunoId": "f0170005-2000-4000-8000-000000000005",
     "status": "ATIVO",
     "criadoEm": "2026-11-10T12:00:00.000Z",
     "atualizadoEm": "2026-11-10T12:00:00.000Z"

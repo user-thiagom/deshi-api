@@ -140,7 +140,11 @@ export class SessionsService {
         studentId: string,
         activityId: string,
         values: Record<string, number>,
-        status: 'COMPLETED' | 'INCOMPLETE'
+        status: 'COMPLETED' | 'INCOMPLETE' | 'IN_PROGRESS',
+        seriesNumber?: number,
+        durationMs?: number,
+        restMs?: number,
+        comment?: string
     ): Promise<Session> {
         const session = await this.sessionRepository.findById(sessionId)
 
@@ -166,11 +170,20 @@ export class SessionsService {
             throw new SessionActivityNotFoundError()
         }
 
-        activity.status = status
-        activity.execution = {
-            values,
-            executedAt: new Date()
+        const executedAt = new Date()
+        if (seriesNumber !== undefined) {
+            const series = activity.execution?.series ?? []
+            if (seriesNumber > series.length + 1) {
+                throw new InvalidActivityStateError('A série informada não corresponde à próxima série da atividade.')
+            }
+            const setRecord = { number: seriesNumber, values, executedAt, durationMs, restMs }
+            if (seriesNumber === series.length + 1) series.push(setRecord)
+            else series[seriesNumber - 1] = setRecord
+            activity.execution = { values, executedAt, series, ...(comment ? { comment } : activity.execution?.comment ? { comment: activity.execution.comment } : {}) }
+        } else {
+            activity.execution = { values, executedAt }
         }
+        activity.status = status
 
         return this.sessionRepository.update(session)
     }

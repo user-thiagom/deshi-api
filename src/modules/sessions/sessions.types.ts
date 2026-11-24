@@ -43,6 +43,8 @@ export interface SessionActivity {
   execution?: {
     values: Record<string, number>
     executedAt: Date
+    series?: Array<{ number: number; values: Record<string, number>; executedAt: Date; durationMs?: number; restMs?: number }>
+    comment?: string
   }
 }
 

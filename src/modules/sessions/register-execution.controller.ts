@@ -7,7 +7,8 @@ import { registerExecutionSchema } from './sessions-execution.schema.js'
 import {
     SessionNotFoundError,
     SessionNotOwnedByStudentError,
-    SessionActivityNotFoundError
+    SessionActivityNotFoundError,
+    InvalidActivityStateError
 } from './sessions.errors.js'
 
 export function registerExecutionController(
@@ -20,12 +21,20 @@ export function registerExecutionController(
         const body = request.body as {
             activityId: string
             values: Record<string, number>
-            status: 'COMPLETED' | 'INCOMPLETE'
+            seriesNumber?: number
+            durationMs?: number
+            restMs?: number
+            comment?: string
+            status: 'COMPLETED' | 'INCOMPLETE' | 'IN_PROGRESS'
         }
 
         const result = registerExecutionSchema.safeParse({
             activityId: body.activityId,
             values: body.values,
+            seriesNumber: body.seriesNumber,
+            durationMs: body.durationMs,
+            restMs: body.restMs,
+            comment: body.comment,
             status: body.status,
             sessionId: (request.params as { sessionId: string }).sessionId
         })
@@ -43,7 +52,11 @@ export function registerExecutionController(
                 request.user.userId,
                 result.data.activityId,
                 result.data.values,
-                result.data.status
+                result.data.status,
+                result.data.seriesNumber,
+                result.data.durationMs,
+                result.data.restMs,
+                result.data.comment
             )
 
             return reply.status(200).send(session)
@@ -57,6 +70,10 @@ export function registerExecutionController(
                 error instanceof SessionActivityNotFoundError
             ) {
                 return reply.status(403).send({ message: error.message })
+            }
+
+            if (error instanceof InvalidActivityStateError) {
+                return reply.status(409).send({ message: error.message })
             }
 
             request.log.error(error)
