@@ -40,4 +40,25 @@ export class JsonAtividadeRepository implements AtividadeRepository {
         this.gravacoesPendentes = gravacao.catch(() => undefined)
         return gravacao
     }
+
+    async atualizar(atividade: Atividade): Promise<boolean> {
+        const gravacao = this.gravacoesPendentes.then(async () => {
+            const atividades = await this.lerPersonalizadas()
+            const index = atividades.findIndex((item) => item.id === atividade.id)
+            if (index < 0) return false
+            atividades[index] = atividade
+
+            const temporario = `${this.caminhoPersonalizadas}.tmp`
+            try {
+                await fs.writeFile(temporario, JSON.stringify(atividades, null, 2) + '\n')
+                await fs.rename(temporario, this.caminhoPersonalizadas)
+            } finally {
+                await fs.rm(temporario, { force: true })
+            }
+            return true
+        })
+
+        this.gravacoesPendentes = gravacao.then(() => undefined, () => undefined)
+        return gravacao
+    }
 }

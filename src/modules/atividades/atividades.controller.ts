@@ -3,7 +3,7 @@ import { JsonModalidadeRepository } from '../modalidades/repositories/json-modal
 import { JsonAtividadeRepository } from './repositories/json-atividade.repository.js'
 import { AtividadeService } from './atividades.service.js'
 import { ModalidadeDaAtividadeNaoEncontradaError } from './atividades.errors.js'
-import { CriarAtividadeBody, ListarAtividadesQuery, criarAtividadeSchema, listarAtividadesSchema } from './atividades.schema.js'
+import { AtualizarAtividadeBody, CriarAtividadeBody, ListarAtividadesQuery, atualizarAtividadeSchema, criarAtividadeSchema, listarAtividadesSchema } from './atividades.schema.js'
 
 const atividadeService = new AtividadeService(
     new JsonAtividadeRepository('data/atividades.json', 'data/atividades-personalizadas.json'),
@@ -36,6 +36,27 @@ export async function criarAtividadeController(request: FastifyRequest<{ Body: C
     try {
         const atividade = await atividadeService.criar(request.user.userId, resultado.data)
         return reply.status(201).send(atividade)
+    } catch (error) {
+        if (error instanceof ModalidadeDaAtividadeNaoEncontradaError) {
+            return reply.status(400).send(error.message)
+        }
+        throw error
+    }
+}
+
+export async function atualizarAtividadeController(
+    request: FastifyRequest<{ Params: { id: string }; Body: AtualizarAtividadeBody }>,
+    reply: FastifyReply
+) {
+    const resultado = atualizarAtividadeSchema.safeParse(request.body)
+    if (!resultado.success) {
+        return reply.status(400).send('Formato de dados inválido!')
+    }
+
+    try {
+        const atividade = await atividadeService.atualizar(request.user.userId, request.params.id, resultado.data)
+        if (!atividade) return reply.status(404).send('Atividade personalizada não encontrada.')
+        return reply.status(200).send(atividade)
     } catch (error) {
         if (error instanceof ModalidadeDaAtividadeNaoEncontradaError) {
             return reply.status(400).send(error.message)
