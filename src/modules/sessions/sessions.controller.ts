@@ -1,6 +1,6 @@
 import { dataPath } from '../../config/data.js'
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaAtividadeRepository, PrismaConfiguracaoRepository, PrismaModalidadeRepository, PrismaProgramRepository, PrismaSessionRepository } from '../../shared/database/repositories.js'
+import { PrismaAtividadeRepository, PrismaConfiguracaoRepository, PrismaModalidadeRepository, PrismaProgramCatalogRepository, PrismaProgramRepository, PrismaSessionRepository } from '../../shared/database/repositories.js'
 import { SessionsService } from './sessions.service.js'
 import {
     evolutionQuerySchema,
@@ -29,7 +29,8 @@ export const sessionsService = new SessionsService(
     sessionRepository,
     configuracaoRepository,
     atividadeRepository,
-    modalidadeRepository
+    modalidadeRepository,
+    new PrismaProgramCatalogRepository()
 )
 
 export function getProfessionalStudentEvolutionController(service: SessionsService) {

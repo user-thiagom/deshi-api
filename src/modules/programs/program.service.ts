@@ -209,7 +209,15 @@ export class ProgramService {
 
         let programs: Program[]
         if (user.profile === 'STUDENT') {
-            programs = await this.programRepository.findByStudentId(userId)
+            if (this.programRepository.findByStudentIdWithActiveProfessional) {
+                programs = await this.programRepository.findByStudentIdWithActiveProfessional(userId)
+            } else {
+                const studentPrograms = await this.programRepository.findByStudentId(userId)
+                const activeLinks = await Promise.all(studentPrograms.map((program) =>
+                    this.catalogRepository.isStudentLinkedToProfessional(program.professionalId, userId)
+                ))
+                programs = studentPrograms.filter((_, index) => activeLinks[index])
+            }
         } else if (user.profile === 'PROFESSIONAL' && this.programRepository.findByProfessionalId) {
             programs = await this.programRepository.findByProfessionalId(userId)
         } else {
@@ -230,6 +238,10 @@ export class ProgramService {
             ? program.studentId === userId
             : user.profile === 'PROFESSIONAL' && program.professionalId === userId
         if (!ownsProgram) {
+            throw new ProgramResourceNotFoundError('Programa não encontrado.')
+        }
+
+        if (user.profile === 'STUDENT' && !await this.catalogRepository.isStudentLinkedToProfessional(program.professionalId, userId)) {
             throw new ProgramResourceNotFoundError('Programa não encontrado.')
         }
 

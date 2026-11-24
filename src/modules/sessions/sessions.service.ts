@@ -11,6 +11,7 @@ import {
 } from './sessions.errors.js'
 
 import type { ProgramRepository } from '../programs/repositories/program.repository.js'
+import type { ProgramCatalogRepository } from '../programs/repositories/program-catalog.repository.js'
 import type { SessionRepository } from './repositories/session.repository.js'
 import type { ConfiguracaoRepository } from '../configuracoes-atividades/repositories/configuracao.repository.js'
 import type { AtividadeRepository } from '../atividades/repositories/atividade.repository.js'
@@ -28,7 +29,8 @@ export class SessionsService {
         private readonly sessionRepository: SessionRepository,
         private readonly configuracaoRepository: ConfiguracaoRepository,
         private readonly atividadeRepository?: Pick<AtividadeRepository, 'listar'>,
-        private readonly modalidadeRepository?: Pick<ModalidadeRepository, 'listarCatalogo'>
+        private readonly modalidadeRepository?: Pick<ModalidadeRepository, 'listarCatalogo'>,
+        private readonly programCatalogRepository?: Pick<ProgramCatalogRepository, 'isStudentLinkedToProfessional'>
     ) { }
 
     private async addActivityNames(session: Session): Promise<Session> {
@@ -64,6 +66,10 @@ export class SessionsService {
         }
 
         if (program.studentId !== studentId) {
+            throw new ProgramNotOwnedByStudentError()
+        }
+
+        if (this.programCatalogRepository && !await this.programCatalogRepository.isStudentLinkedToProfessional(program.professionalId, studentId)) {
             throw new ProgramNotOwnedByStudentError()
         }
 

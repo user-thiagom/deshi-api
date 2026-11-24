@@ -125,6 +125,13 @@ export class PrismaProgramRepository implements ProgramRepository {
   }
   async findById(id: string): Promise<Program | null> { const r = await db.program.findUnique({ where: { id }, include: this.include }); return r ? programMap(r) : null }
   async findByStudentId(studentId: string): Promise<Program[]> { return (await db.program.findMany({ where: { studentId }, include: this.include, orderBy: { createdAt: 'desc' } })).map(programMap) }
+  async findByStudentIdWithActiveProfessional(studentId: string): Promise<Program[]> {
+    return (await db.program.findMany({
+      where: { studentId, professional: { professionalLinks: { some: { studentId, status: 'ATIVO' } } } },
+      include: this.include,
+      orderBy: { createdAt: 'desc' }
+    })).map(programMap)
+  }
   async findByProfessionalId(professionalId: string): Promise<Program[]> { return (await db.program.findMany({ where: { professionalId }, include: this.include, orderBy: { createdAt: 'desc' } })).map(programMap) }
   async update(updated: Program): Promise<Program> {
     return db.$transaction(async (tx: any) => {
