@@ -1,5 +1,6 @@
 import fastify from 'fastify'
 import cors from '@fastify/cors'
+import './shared/auth/request-user.js'
 import { userRoutes } from './modules/users/users.routes.js'
 import { sessionRoutes } from './modules/sessions/sessions.routes.js'
 import { modalidadeRoutes } from './modules/modalidades/modalidades.routes.js'
