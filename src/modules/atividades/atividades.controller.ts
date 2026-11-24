@@ -1,14 +1,13 @@
 import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { JsonModalidadeRepository } from '../modalidades/repositories/json-modalidade.repository.js'
-import { JsonAtividadeRepository } from './repositories/json-atividade.repository.js'
+import { PrismaAtividadeRepository, PrismaModalidadeRepository } from '../../shared/database/repositories.js'
 import { AtividadeService } from './atividades.service.js'
 import { ModalidadeDaAtividadeNaoEncontradaError } from './atividades.errors.js'
 import { AtualizarAtividadeBody, CriarAtividadeBody, ListarAtividadesQuery, atualizarAtividadeSchema, criarAtividadeSchema, listarAtividadesSchema } from './atividades.schema.js'
 
 const atividadeService = new AtividadeService(
-    new JsonAtividadeRepository(dataPath('atividades.json'), dataPath('atividades-personalizadas.json')),
-    new JsonModalidadeRepository(dataPath('modalidades.json'), dataPath('profissional-modalidades.json'))
+    new PrismaAtividadeRepository(),
+    new PrismaModalidadeRepository()
 )
 
 export async function listarAtividadesController(request: FastifyRequest<{ Querystring: ListarAtividadesQuery }>, reply: FastifyReply) {

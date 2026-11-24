@@ -2,11 +2,9 @@ import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
 import jwt from 'jsonwebtoken'
 import { env } from '../../config/env.js'
-import { JsonTokenRevocationRepository } from './repositories/json-token-revocation.repository.js'
+import { PrismaTokenRevocationRepository } from '../database/repositories.js'
 
-const tokenRevocationRepository = new JsonTokenRevocationRepository(
-    dataPath('revoked-tokens.json')
-)
+const tokenRevocationRepository = new PrismaTokenRevocationRepository()
 
 export async function authenticate(request: FastifyRequest, reply: FastifyReply) {
     const authorization = request.headers.authorization

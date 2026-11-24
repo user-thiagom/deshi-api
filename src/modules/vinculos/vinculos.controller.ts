@@ -1,7 +1,6 @@
 import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { JsonUserRepository } from '../users/repositories/json-user.repository.js'
-import { JsonVinculoRepository } from './repositories/json-vinculo.repository.js'
+import { PrismaUserRepository, PrismaVinculoRepository } from '../../shared/database/repositories.js'
 import {
     AlunoNaoEncontradoError,
     SolicitacaoNaoPertenceAoAlunoError,
@@ -15,8 +14,8 @@ import { paraRespostaVinculo } from './vinculos.mapper.js'
 import { CriarVinculoBody, criarVinculoSchema, ParametrosVinculo, parametrosVinculoSchema } from './vinculos.schema.js'
 import { VinculoService } from './vinculos.service.js'
 
-const vinculoRepository = new JsonVinculoRepository(dataPath('vinculos.json'))
-const userRepository = new JsonUserRepository(dataPath('users.json'))
+const vinculoRepository = new PrismaVinculoRepository()
+const userRepository = new PrismaUserRepository()
 const vinculoService = new VinculoService(vinculoRepository, userRepository)
 
 function responderErroVinculo(error: unknown, reply: FastifyReply) {

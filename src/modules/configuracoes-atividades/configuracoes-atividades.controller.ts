@@ -1,16 +1,14 @@
 import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { JsonAtividadeRepository } from '../atividades/repositories/json-atividade.repository.js'
-import { JsonCamposRepository } from './repositories/json-campos.repository.js'
-import { JsonConfiguracaoRepository } from './repositories/json-configuracao.repository.js'
+import { PrismaAtividadeRepository, PrismaCamposRepository, PrismaConfiguracaoRepository } from '../../shared/database/repositories.js'
 import { ConfiguracaoAtividadeService } from './configuracoes-atividades.service.js'
 import { ConfiguracaoError } from './configuracoes-atividades.errors.js'
 import { CriarConfiguracaoBody, DefinirCamposBody, IdParams, criarConfiguracaoSchema, definirCamposSchema, idSchema } from './configuracoes-atividades.schema.js'
 
 const service = new ConfiguracaoAtividadeService(
-    new JsonAtividadeRepository(dataPath('atividades.json'), dataPath('atividades-personalizadas.json')),
-    new JsonCamposRepository(dataPath('campos-configuracao-atividades.json'), dataPath('campos-configuracao-personalizadas.json')),
-    new JsonConfiguracaoRepository(dataPath('configuracoes-atividades.json'))
+    new PrismaAtividadeRepository(),
+    new PrismaCamposRepository(),
+    new PrismaConfiguracaoRepository()
 )
 
 function tratarErro(error: unknown, reply: FastifyReply) {
