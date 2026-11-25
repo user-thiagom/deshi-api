@@ -1,6 +1,6 @@
 import { dataPath } from '../../config/data.js'
 import type { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaAtividadeRepository, PrismaConfiguracaoRepository, PrismaModalidadeRepository, PrismaProgramCatalogRepository, PrismaProgramRepository, PrismaSessionRepository } from '../../shared/database/repositories.js'
+import { PrismaAtividadeRepository, PrismaConfiguracaoRepository, PrismaModalidadeRepository, PrismaProgramCatalogRepository, PrismaProgramRepository, PrismaSessionRepository, PrismaUserRepository } from '../../shared/database/repositories.js'
 import { SessionsService } from './sessions.service.js'
 import {
     evolutionQuerySchema,
@@ -23,6 +23,7 @@ const sessionRepository = new PrismaSessionRepository()
 const configuracaoRepository = new PrismaConfiguracaoRepository()
 const atividadeRepository = new PrismaAtividadeRepository()
 const modalidadeRepository = new PrismaModalidadeRepository()
+const userRepository = new PrismaUserRepository()
 
 export const sessionsService = new SessionsService(
     programRepository,
@@ -79,7 +80,16 @@ export function getSessionResultController(service: SessionsService) {
                 request.user.userId
             )
 
-            return reply.code(200).send(toSessionResult(session))
+            const [student, program] = await Promise.all([
+                userRepository.findById(session.studentId),
+                programRepository.findById(session.programId)
+            ])
+
+            return reply.code(200).send({
+                ...toSessionResult(session),
+                studentName: student?.name ?? null,
+                programName: program?.name ?? null
+            })
         } catch (error) {
             if (error instanceof SessionNotFoundError) {
                 return reply.code(404).send({
