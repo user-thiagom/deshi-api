@@ -99,6 +99,13 @@ export class JsonConviteRepository implements ConviteRepository {
         ) ?? null
     }
 
+    async buscarAceitoEntreProfissionalEAluno(profissionalId: string, alunoId: string): Promise<Convite | null> {
+        const convites = await this.lerArquivo()
+        return convites
+            .filter((convite) => convite.profissionalId === profissionalId && convite.alunoId === alunoId && convite.status === 'ACEITO')
+            .sort((a, b) => b.criadoEm.getTime() - a.criadoEm.getTime())[0] ?? null
+    }
+
     async listarPendentesAtivosPorProfissional(profissionalId: string): Promise<Convite[]> {
         const convites = await this.lerArquivo()
         const agora = Date.now()

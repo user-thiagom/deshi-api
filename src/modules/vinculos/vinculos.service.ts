@@ -3,6 +3,7 @@ import { UserRepository } from '../users/repositories/user.repository.js'
 import { toUserResponse } from '../users/users.mapper.js'
 import { UserResponse } from '../users/users.types.js'
 import { VinculoRepository } from './repositories/vinculo.repository.js'
+import type { ConviteRepository } from './repositories/convite.repository.js'
 import {
     AlunoNaoEncontradoError,
     SolicitacaoNaoPertenceAoAlunoError,
@@ -18,7 +19,8 @@ import { Vinculo } from './vinculos.types.js'
 export class VinculoService {
     constructor(
         private readonly vinculoRepository: VinculoRepository,
-        private readonly userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly conviteRepository?: Pick<ConviteRepository, 'buscarAceitoEntreProfissionalEAluno'>
     ) { }
 
     async listarAlunosVinculados(profissionalId: string): Promise<UserResponse[]> {
@@ -52,17 +54,19 @@ export class VinculoService {
     async listarProfissionaisVinculados(alunoId: string): Promise<UserResponse[]> {
         return executarOperacaoVinculo(async () => {
             const vinculos = await this.vinculoRepository.buscarAtivosPorAluno(alunoId)
-            const profissionais: UserResponse[] = []
-
-            for (const vinculo of vinculos) {
-                const profissional = await this.userRepository.findById(vinculo.profissionalId)
-
-                if (profissional?.profile === 'PROFESSIONAL') {
-                    profissionais.push(toUserResponse(profissional))
+            const profissionais = await Promise.all(vinculos.map(async (vinculo) => {
+                const [profissional, convite] = await Promise.all([
+                    this.userRepository.findById(vinculo.profissionalId),
+                    this.conviteRepository?.buscarAceitoEntreProfissionalEAluno(vinculo.profissionalId, alunoId)
+                ])
+                if (profissional?.profile !== 'PROFESSIONAL') return null
+                return {
+                    ...toUserResponse(profissional),
+                    ...(convite ? { codigoConvite: convite.codigo } : {})
                 }
-            }
+            }))
 
-            return profissionais
+            return profissionais.filter((profissional): profissional is NonNullable<typeof profissional> => profissional !== null)
         })
     }
 

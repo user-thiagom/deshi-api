@@ -1,6 +1,6 @@
 import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from 'fastify'
-import { PrismaUserRepository, PrismaVinculoRepository } from '../../shared/database/repositories.js'
+import { PrismaConviteRepository, PrismaUserRepository, PrismaVinculoRepository } from '../../shared/database/repositories.js'
 import {
     AlunoNaoEncontradoError,
     SolicitacaoNaoPertenceAoAlunoError,
@@ -16,7 +16,8 @@ import { VinculoService } from './vinculos.service.js'
 
 const vinculoRepository = new PrismaVinculoRepository()
 const userRepository = new PrismaUserRepository()
-const vinculoService = new VinculoService(vinculoRepository, userRepository)
+const conviteRepository = new PrismaConviteRepository()
+const vinculoService = new VinculoService(vinculoRepository, userRepository, conviteRepository)
 
 function responderErroVinculo(error: unknown, reply: FastifyReply) {
     if (error instanceof AlunoNaoEncontradoError || error instanceof VinculoNaoEncontradoError) {
