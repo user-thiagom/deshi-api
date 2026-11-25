@@ -2,7 +2,7 @@ import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from "fastify";
 import { CreateUserBody, createUserSchema, LoginBody, loginSchema, StudentBodyMetricsBody, studentBodyMetricsSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
-import { PrismaUserRepository, PrismaTokenRevocationRepository } from "../../shared/database/repositories.js";
+import { PrismaUserRepository, PrismaTokenRevocationRepository, PrismaVinculoRepository } from "../../shared/database/repositories.js";
 import { EmailAlreadyExistsError, InvalidCredentialsError } from "./users.errors.js";
 import { toLoginResponse, toUserResponse } from "./users.mapper.js";
 import { env } from "../../config/env.js";
@@ -10,6 +10,7 @@ import { env } from "../../config/env.js";
 const jsonUserRepository = new PrismaUserRepository()
 const userService = new UserService(jsonUserRepository, env.jwtSecret)
 const tokenRevocationRepository = new PrismaTokenRevocationRepository()
+const vinculoRepository = new PrismaVinculoRepository()
 
 export async function createUserController(request: FastifyRequest<{ Body: CreateUserBody }>, reply: FastifyReply) {
     const result = createUserSchema.safeParse(request.body)
@@ -59,6 +60,26 @@ export async function logoutController(request: FastifyRequest, reply: FastifyRe
 export async function getStudentBodyMetricsController(request: FastifyRequest, reply: FastifyReply) {
     const metrics = await jsonUserRepository.findBodyMetricsByStudentId(request.user.userId)
     return reply.status(200).send(metrics)
+}
+
+export async function getProfessionalStudentBodyMetricsController(
+    request: FastifyRequest<{ Params: { studentId: string } }>,
+    reply: FastifyReply
+) {
+    const links = await vinculoRepository.buscarEntreProfissionalEAluno(request.user.userId, request.params.studentId)
+    if (!links.some((link) => link.status === 'ATIVO')) {
+        return reply.status(404).send({ message: 'Aluno não encontrado ou sem vínculo ativo.' })
+    }
+
+    const metrics = await jsonUserRepository.findBodyMetricsByStudentId(request.params.studentId)
+    if (!metrics) return reply.status(200).send(null)
+    return reply.status(200).send({
+        weightKg: metrics.weightKg,
+        heightCm: metrics.heightCm,
+        bmi: metrics.bmi,
+        updatedAt: metrics.updatedAt,
+        history: metrics.history.map(({ id, weightKg, recordedAt }) => ({ id, weightKg, recordedAt })),
+    })
 }
 
 export async function updateStudentBodyMetricsController(request: FastifyRequest<{ Body: StudentBodyMetricsBody }>, reply: FastifyReply) {
