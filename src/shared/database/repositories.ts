@@ -2,7 +2,8 @@ import { randomUUID } from 'node:crypto'
 import { isDeepStrictEqual } from 'node:util'
 import { prisma } from './prisma.js'
 import type { UserRepository } from '../../modules/users/repositories/user.repository.js'
-import type { CreateUserData, User } from '../../modules/users/users.types.js'
+import type { CreateUserData, StudentBodyMetrics, StudentBodyMetricsInput, User } from '../../modules/users/users.types.js'
+import type { StudentBodyMetricsRepository } from '../../modules/users/repositories/user.repository.js'
 import type { TokenRevocationRepository } from '../auth/repositories/token-revocation.repository.js'
 import type { ModalidadeRepository } from '../../modules/modalidades/repositories/modalidade.repository.js'
 import type { Modalidade } from '../../modules/modalidades/modalidades.types.js'
@@ -24,10 +25,53 @@ import type { Session } from '../../modules/sessions/sessions.types.js'
 const db = prisma as any
 const asJson = <T>(value: unknown): T => value as T
 
-export class PrismaUserRepository implements UserRepository {
+export class PrismaUserRepository implements UserRepository, StudentBodyMetricsRepository {
   create(data: CreateUserData): Promise<User> { return db.user.create({ data: { id: randomUUID(), ...data } }) }
   findByEmail(email: string): Promise<User | null> { return db.user.findUnique({ where: { email } }) }
   findById(id: string): Promise<User | null> { return db.user.findUnique({ where: { id } }) }
+  async findBodyMetricsByStudentId(studentId: string): Promise<StudentBodyMetrics | null> {
+    const user = await db.user.findFirst({ where: { id: studentId, profile: 'STUDENT' }, select: { weightKg: true, heightCm: true, bodyMetricsUpdatedAt: true, weightHistory: { orderBy: { recordedAt: 'asc' } } } })
+    return user?.weightKg == null || user.heightCm == null || user.bodyMetricsUpdatedAt == null
+      ? null
+      : {
+          weightKg: user.weightKg,
+          heightCm: user.heightCm,
+          bmi: Number((user.weightKg / ((user.heightCm / 100) ** 2)).toFixed(2)),
+          updatedAt: user.bodyMetricsUpdatedAt,
+          history: user.weightHistory.length
+            ? user.weightHistory
+            : [{ id: 'current', weightKg: user.weightKg, heightCm: user.heightCm, bmi: Number((user.weightKg / ((user.heightCm / 100) ** 2)).toFixed(2)), recordedAt: user.bodyMetricsUpdatedAt }],
+        }
+  }
+  async updateBodyMetricsByStudentId(studentId: string, metrics: StudentBodyMetricsInput): Promise<StudentBodyMetrics | null> {
+    const updatedAt = new Date()
+    const bmi = Number((metrics.weightKg / ((metrics.heightCm / 100) ** 2)).toFixed(2))
+    return db.$transaction(async (tx: any) => {
+      const previous = await tx.user.findFirst({
+        where: { id: studentId, profile: 'STUDENT' },
+        select: { weightKg: true, heightCm: true, bodyMetricsUpdatedAt: true },
+      })
+      if (!previous) return null
+      const existingHistory = await tx.studentWeightRecord.count({ where: { studentId } })
+      if (!existingHistory && previous.weightKg != null && previous.heightCm != null && previous.bodyMetricsUpdatedAt != null) {
+        await tx.studentWeightRecord.create({
+          data: {
+            id: randomUUID(),
+            studentId,
+            weightKg: previous.weightKg,
+            heightCm: previous.heightCm,
+            bmi: Number((previous.weightKg / ((previous.heightCm / 100) ** 2)).toFixed(2)),
+            recordedAt: previous.bodyMetricsUpdatedAt,
+          },
+        })
+      }
+      const result = await tx.user.updateMany({ where: { id: studentId, profile: 'STUDENT' }, data: { weightKg: metrics.weightKg, heightCm: metrics.heightCm, bodyMetricsUpdatedAt: updatedAt } })
+      if (result.count === 0) return null
+      await tx.studentWeightRecord.create({ data: { id: randomUUID(), studentId, ...metrics, bmi, recordedAt: updatedAt } })
+      const history = await tx.studentWeightRecord.findMany({ where: { studentId }, orderBy: { recordedAt: 'asc' } })
+      return { ...metrics, bmi, updatedAt, history }
+    })
+  }
 }
 
 export class PrismaTokenRevocationRepository implements TokenRevocationRepository {

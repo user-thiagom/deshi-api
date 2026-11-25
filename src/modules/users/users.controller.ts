@@ -1,6 +1,6 @@
 import { dataPath } from '../../config/data.js'
 import { FastifyReply, FastifyRequest } from "fastify";
-import { CreateUserBody, createUserSchema, LoginBody, loginSchema } from "./users.schema.js";
+import { CreateUserBody, createUserSchema, LoginBody, loginSchema, StudentBodyMetricsBody, studentBodyMetricsSchema } from "./users.schema.js";
 import { UserService } from "./users.service.js";
 import { PrismaUserRepository, PrismaTokenRevocationRepository } from "../../shared/database/repositories.js";
 import { EmailAlreadyExistsError, InvalidCredentialsError } from "./users.errors.js";
@@ -54,4 +54,18 @@ export async function logoutController(request: FastifyRequest, reply: FastifyRe
     )
 
     return reply.status(204).send()
+}
+
+export async function getStudentBodyMetricsController(request: FastifyRequest, reply: FastifyReply) {
+    const metrics = await jsonUserRepository.findBodyMetricsByStudentId(request.user.userId)
+    return reply.status(200).send(metrics)
+}
+
+export async function updateStudentBodyMetricsController(request: FastifyRequest<{ Body: StudentBodyMetricsBody }>, reply: FastifyReply) {
+    const result = studentBodyMetricsSchema.safeParse(request.body)
+    if (!result.success) return reply.status(400).send({ message: 'Informe peso e altura dentro dos limites permitidos.' })
+
+    const metrics = await jsonUserRepository.updateBodyMetricsByStudentId(request.user.userId, result.data)
+    if (!metrics) return reply.status(404).send({ message: 'Perfil de aluno não encontrado.' })
+    return reply.status(200).send(metrics)
 }

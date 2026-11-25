@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { createUserController, loginController, logoutController } from './users.controller.js'
+import { createUserController, getStudentBodyMetricsController, loginController, logoutController, updateStudentBodyMetricsController } from './users.controller.js'
 import { authenticate } from '../../shared/auth/authenticate.js'
 import { authorizeProfile } from '../../shared/auth/authorize-profile.js'
 
@@ -7,6 +7,8 @@ export async function userRoutes(server: FastifyInstance) {
     server.post('/users', createUserController)
     server.post('/login', loginController)
     server.post('/logout', { preHandler: authenticate }, logoutController)
+    server.get('/users/me/body-metrics', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, getStudentBodyMetricsController)
+    server.put<{ Body: import('./users.schema.js').StudentBodyMetricsBody }>('/users/me/body-metrics', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, updateStudentBodyMetricsController)
 
     //ROTAS DE TESTES DE AUTENTICAÇÃO E AUTORIZAÇÃO
     server.get('/professional-test',{ preHandler: [authenticate, authorizeProfile('PROFESSIONAL')]},

@@ -53,6 +53,10 @@ model User {
   email                  String                  @unique
   passwordHash           String
   profile                UserProfile
+  weightKg               Float?
+  heightCm               Float?
+  bodyMetricsUpdatedAt   DateTime?
+  weightHistory          StudentWeightRecord[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   professionalLinks      Link[]                  @relation("ProfessionalLinks")
@@ -66,6 +70,18 @@ model User {
   programsAsStudent      Program[]               @relation("ProgramStudent")
   sessionsAsProfessional WorkoutSession[]        @relation("SessionProfessional")
   sessionsAsStudent      WorkoutSession[]        @relation("SessionStudent")
+}
+
+model StudentWeightRecord {
+  id         String   @id
+  studentId  String
+  weightKg   Float
+  heightCm   Float
+  bmi        Float
+  recordedAt DateTime @default(now())
+  student    User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId, recordedAt])
 }
 
 model Modality {
