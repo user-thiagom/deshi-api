@@ -1,5 +1,5 @@
 import { FastifyInstance } from 'fastify'
-import { createUserController, getProfessionalStudentBodyMetricsController, getStudentBodyMetricsController, loginController, logoutController, updateStudentBodyMetricsController } from './users.controller.js'
+import { changeStudentPasswordController, createUserController, getProfessionalStudentBodyMetricsController, getStudentBodyMetricsController, loginController, logoutController, updateStudentBodyMetricsController, updateStudentProfileController } from './users.controller.js'
 import { authenticate } from '../../shared/auth/authenticate.js'
 import { authorizeProfile } from '../../shared/auth/authorize-profile.js'
 
@@ -9,6 +9,8 @@ export async function userRoutes(server: FastifyInstance) {
     server.post('/logout', { preHandler: authenticate }, logoutController)
     server.get('/users/me/body-metrics', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, getStudentBodyMetricsController)
     server.put<{ Body: import('./users.schema.js').StudentBodyMetricsBody }>('/users/me/body-metrics', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, updateStudentBodyMetricsController)
+    server.put<{ Body: import('./users.schema.js').UpdateStudentProfileBody }>('/users/me/profile', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, updateStudentProfileController)
+    server.put<{ Body: import('./users.schema.js').ChangeStudentPasswordBody }>('/users/me/password', { preHandler: [authenticate, authorizeProfile('STUDENT')] }, changeStudentPasswordController)
     server.get<{ Params: { studentId: string } }>('/students/:studentId/body-metrics', { preHandler: [authenticate, authorizeProfile('PROFESSIONAL')] }, getProfessionalStudentBodyMetricsController)
 
     //ROTAS DE TESTES DE AUTENTICAÇÃO E AUTORIZAÇÃO

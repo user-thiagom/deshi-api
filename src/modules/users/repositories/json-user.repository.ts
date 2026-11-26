@@ -1,6 +1,6 @@
 import { promises as fs } from 'node:fs'
 import { UserRepository } from './user.repository.js'
-import { CreateUserData, User } from '../users.types.js'
+import { CreateUserData, StudentProfileUpdate, User } from '../users.types.js'
 import { randomUUID } from 'node:crypto'
 
 export class JsonUserRepository implements UserRepository {
@@ -44,5 +44,24 @@ export class JsonUserRepository implements UserRepository {
         const users = await this.readUsers()
         const user = users.find((user) => user.id === id)
         return user ?? null
+    }
+
+    async updateStudentProfile(id: string, data: StudentProfileUpdate): Promise<User | null> {
+        const users = await this.readUsers()
+        const user = users.find((entry) => entry.id === id && entry.profile === 'STUDENT')
+        if (!user) return null
+        Object.assign(user, data, { updatedAt: new Date() })
+        await this.writeUsers(users)
+        return user
+    }
+
+    async updatePasswordHash(id: string, passwordHash: string): Promise<boolean> {
+        const users = await this.readUsers()
+        const user = users.find((entry) => entry.id === id && entry.profile === 'STUDENT')
+        if (!user) return false
+        user.passwordHash = passwordHash
+        user.updatedAt = new Date()
+        await this.writeUsers(users)
+        return true
     }
 }

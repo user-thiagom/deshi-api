@@ -1,4 +1,5 @@
 export type UserProfile = 'PROFESSIONAL' | 'STUDENT'
+export type UserGender = 'MALE' | 'FEMALE'
 
 export interface User {
     id: string
@@ -6,6 +7,8 @@ export interface User {
     email: string
     passwordHash: string
     profile: UserProfile
+    birthDate?: Date | null
+    gender?: UserGender | null
     weightKg?: number | null
     heightCm?: number | null
     bodyMetricsUpdatedAt?: Date | null
@@ -18,9 +21,17 @@ export type StudentBodyMetricsInput = {
     heightCm: number
 }
 
+export type StudentProfileUpdate = {
+    name?: string
+    birthDate?: Date
+    gender?: UserGender
+}
+
 export type StudentBodyMetrics = StudentBodyMetricsInput & {
     bmi: number
     updatedAt: Date
+    birthDate?: Date | null
+    gender?: UserGender | null
     history: StudentWeightRecord[]
 }
 
@@ -35,6 +46,8 @@ export type CreateUserData = {
     email: string
     passwordHash: string
     profile: UserProfile
+    birthDate: Date
+    gender: UserGender
 }
 
 export type UserResponse = {
@@ -53,5 +66,7 @@ export type LoginResponse = {
         name: string
         email: string
         profile: UserProfile
+        birthDate: string | null
+        gender: UserGender | null
     }
 }

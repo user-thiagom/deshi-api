@@ -20,7 +20,9 @@ export function toLoginResponse(user: User, token: string): LoginResponse {
             id: user.id,
             name: user.name,
             email: user.email,
-            profile: user.profile
+            profile: user.profile,
+            birthDate: user.birthDate?.toISOString().slice(0, 10) ?? null,
+            gender: user.gender ?? null
         }
     }
 }

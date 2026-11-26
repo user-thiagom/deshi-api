@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  engineType = "client"
 }
 
 datasource db {
@@ -11,6 +12,11 @@ datasource db {
 enum UserProfile {
   PROFESSIONAL
   STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
 }
 
 enum LinkStatus {
@@ -53,6 +59,8 @@ model User {
   email                  String                  @unique
   passwordHash           String
   profile                UserProfile
+  birthDate              DateTime?
+  gender                 Gender?
   weightKg               Float?
   heightCm               Float?
   bodyMetricsUpdatedAt   DateTime?
