@@ -1,261 +1,227 @@
 # DESHI API
 
-Backend da plataforma **DESHI**, desenvolvido com **Fastify** e **TypeScript** durante a Residência de Software.
-
-A API oferece cadastro e autenticação, vínculos entre profissionais e alunos, biblioteca de atividades, programas de treino e sessões. A persistência de produção usa PostgreSQL no Neon, acessado por Prisma ORM.
+API da plataforma DESHI para profissionais independentes de atividades físicas e seus alunos. Ela fornece autenticação, vínculos, convites, atividades, programas de treino, sessões, histórico, evolução e medidas corporais.
 
 ## Tecnologias
 
-- Node.js 22
-- TypeScript
-- Fastify e `@fastify/cors`
-- Zod
-- bcryptjs
-- jsonwebtoken
-- dotenv
-- Prisma ORM e adapter Neon
-- PostgreSQL (Neon)
+- Node.js 22 LTS e TypeScript
+- Fastify 5 e `@fastify/cors`
+- Zod para validação de entrada
+- Prisma ORM com PostgreSQL hospedado no Neon
+- `@prisma/adapter-neon` para conectar a API ao Neon
+- JWT e bcryptjs para autenticação e senhas
 
-## Pré-requisitos
+## Requisitos
 
-- [Node.js](https://nodejs.org/) 22 ou compatível
+- Node.js 22 LTS
 - npm
+- Banco PostgreSQL no Neon ou PostgreSQL local
 
-## Instalação e configuração
-
-Instale as dependências:
+## Instalação e execução local
 
 ```bash
 npm install
+Copy-Item .env.example .env
 ```
 
-Crie o arquivo `.env` a partir de `.env.example`. Configure uma chave de assinatura e as duas URLs do Neon:
+Configure o `.env` antes de iniciar a aplicação. As variáveis necessárias são:
+
+| Variável | Uso |
+| --- | --- |
+| `JWT_SECRET` | Chave privada usada para assinar os tokens. Defina um valor longo e aleatório. |
+| `DATABASE_URL` | URL PostgreSQL usada pela aplicação. No Neon, use de preferência a conexão pooled. |
+| `DIRECT_URL` | URL direta do Neon usada pelo Prisma Migrate. |
+| `FRONTEND_ORIGINS` | Origens publicadas autorizadas pelo CORS, separadas por vírgulas. |
+| `NODE_ENV` | Ambiente Node; assume `development` quando omitido. |
+
+Exemplo de configuração, substituindo os valores pelas URLs fornecidas pelo Neon:
 
 ```env
-JWT_SECRET=uma_chave_secreta_longa_e_aleatoria
-DATABASE_URL=postgresql://...pooler.../deshi?sslmode=require
-DIRECT_URL=postgresql://.../deshi?sslmode=require
+JWT_SECRET=gere-uma-chave-longa-e-aleatoria
+FRONTEND_ORIGINS=http://localhost:5173
+DATABASE_URL=postgresql://usuario:senha@host-pooler.neon.tech/deshi?sslmode=require
+DIRECT_URL=postgresql://usuario:senha@host.neon.tech/deshi?sslmode=require
 ```
 
-`DATABASE_URL` deve ser a URL pooled do Neon usada pela API. `DIRECT_URL` deve ser a conexão direta sem pooler, usada por Prisma Migrate. Não publique essas URLs no frontend nem no repositório.
+Não versione `.env`, não envie as URLs do banco ao frontend e não compartilhe `JWT_SECRET`. O arquivo `.env.example` contém apenas valores ilustrativos.
 
-## Execução
-
-### Desenvolvimento
+Instale/aplique as migrações e inicie a API:
 
 ```bash
+npm run db:migrate:dev
 npm run dev
 ```
 
-O servidor inicia na porta `3030` e é reiniciado automaticamente quando arquivos TypeScript são alterados.
+Em desenvolvimento, a API escuta na porta `3030` e em `0.0.0.0`, para permitir chamadas de dispositivos na mesma rede local. A rota `GET /` retorna `API do DESHI funcionando!`.
 
-```text
-http://localhost:3030
-```
+## Scripts
 
-A rota `GET /` retorna `API do DESHI funcionando!`.
+| Comando | Descrição |
+| --- | --- |
+| `npm run dev` | Gera o Prisma Client e executa `src/server.ts` com recarga automática. |
+| `npm run build` | Gera o Prisma Client e compila TypeScript para `dist/`. |
+| `npm start` | Inicia `dist/server.js`. |
+| `npm test` | Compila a API e executa os testes em `tests/`. |
+| `npm run db:generate` | Gera o Prisma Client. |
+| `npm run db:migrate:dev` | Cria/aplica migrações no banco de desenvolvimento. |
+| `npm run db:migrate:deploy` | Aplica migrações existentes no banco de destino. |
+| `npm run db:seed:check` | Valida os arquivos de importação sem gravar dados. |
+| `npm run db:seed` | Importa os dados JSON legados para o banco relacional. |
+| `npm run db:check` | Testa a conexão e executa consultas de leitura no banco. |
 
-### Build e produção
+Para criar uma migração durante o desenvolvimento, use `npm run db:migrate:dev -- --name nome_da_mudanca`. Versione a migração criada em `prisma/migrations/` e aplique-a em produção com `npm run db:migrate:deploy`. Não use `prisma db push` para substituir migrações versionadas.
 
-```bash
-npm run build
-npm start
-```
+## PostgreSQL, Prisma e dados legados
 
-O build compila `src/` para `dist/`. O comando `npm start` executa `dist/server.js`.
+O schema relacional está em `prisma/schema.prisma`; as migrações versionadas estão em `prisma/migrations/`. A aplicação usa Prisma como camada de persistência. O `DATABASE_URL` é usado pelo adapter Neon em runtime, enquanto `DIRECT_URL` permite ao Prisma Migrate acessar o banco diretamente.
 
-## Funcionalidades disponíveis
-
-- Cadastro e login de usuários com perfil `PROFESSIONAL` ou `STUDENT`.
-- Autenticação JWT, logout com revogação do token e autorização por perfil.
-- Solicitações diretas de vínculo entre profissional e aluno, com aceite ou recusa pelo aluno.
-- Convites de vínculo com código de oito caracteres e validade de sete dias.
-- Consulta de alunos e profissionais ligados por vínculos ativos.
-- Catálogo de modalidades e seleção de uma ou mais modalidades pelo profissional.
-- Biblioteca de atividades padrão e atividades personalizadas do profissional, com busca por nome e filtro por modalidade.
-
-As operações de programas, sessões, resultados e histórico não fazem parte das rotas atualmente disponíveis nesta API.
-
-## Banco de dados e migração
-
-O schema relacional está em `prisma/schema.prisma`; a migração inicial versionada está em `prisma/migrations/`. Usuários, modalidades, vínculos, convites, atividades, programas e sessões são tabelas relacionais com chaves estrangeiras, índices e restrições. Prescrições, métricas de execução e intervalos de tempo usam JSONB porque seus campos variam por modalidade e tipo de exercício. Os arquivos em `data/*.json` ficam como fonte histórica para a importação, e não são lidos pela API em produção.
-
-Para criar ou atualizar o banco Neon:
-
-1. Crie um projeto e um banco no Neon. Copie a URL pooled para `DATABASE_URL` e a URL direta para `DIRECT_URL`.
-2. Configure ambas as variáveis no `.env` local. Faça backup dos arquivos `data/*.json` antes da primeira importação.
-3. Confira os arquivos locais, aplique o schema versionado e importe os dados legados:
+Os arquivos em `data/*.json` são dados legados/de demonstração e servem como origem da importação feita por `prisma/seed.ts`; eles não substituem o banco PostgreSQL como persistência principal. A importação valida referências e duplicidades antes de gravar e executa a carga em transação. Antes de importar para um banco, confira os dados que serão carregados:
 
 ```bash
 npm run db:seed:check
-npm run db:migrate:deploy
 npm run db:seed
+npm run db:check
 ```
 
-Para testar conexão e consultas de leitura depois da carga, rode `npm run db:check`. O comando usa o mesmo adapter e a `DATABASE_URL` da API, faz um `SELECT 1` e conta registros das tabelas principais.
-
-O importador valida as referências antes de gravar e executa a carga em uma transação. Ele preserva IDs e sessões históricas, é seguro para repetir e corrige um único typo conhecido de modalidade em quatro programas de demonstração. Uma sessão antiga que aponta para `program-001`, ausente dos dados, mantém esse valor no campo legado sem criar um programa falso.
-
-Para desenvolvimento local após configurar um banco vazio, `npm run db:migrate:dev` cria/aplica migrações. Para produção, gere uma nova migração durante o desenvolvimento e aplique-a com `npm run db:migrate:deploy`; não use `prisma db push` como substituto das migrações.
-
-No projeto da Vercel, adicione `DATABASE_URL` (pooled) e `DIRECT_URL` (direct) como variáveis de ambiente. A API usa o adapter Neon para as conexões serverless. Execute `npm run db:migrate:deploy` uma vez para cada ambiente antes de publicar a versão que depende da migração. O `postinstall` gera o Prisma Client durante a instalação.
-
-Os JSON antigos não são apagados automaticamente. Depois de confirmar a importação e manter um backup fora do repositório, eles podem ser removidos em uma etapa posterior.
+O primeiro comando não altera o banco. O segundo importa o conjunto de dados mantido em `data/`; faça backup e confira esses arquivos antes de executá-lo em um ambiente que já contenha dados.
 
 ## Autenticação e perfis
 
-O login produz um JWT válido por uma hora, associado a um `jti` único. Rotas autenticadas exigem o cabeçalho:
+As rotas autenticadas recebem:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-A autenticação valida a assinatura e a expiração do token, verifica sua revogação no PostgreSQL e identifica o usuário. Os perfis aceitos são `PROFESSIONAL` e `STUDENT`; as rotas de vínculos e convites também restringem as operações ao perfil correspondente.
+O login retorna um JWT. A API valida sua assinatura, validade e revogação; `/logout` revoga o token apresentado. Os perfis são `PROFESSIONAL` e `STUDENT`. Rotas protegidas retornam `401` quando a autenticação falha e `403` quando o perfil não tem permissão.
 
 ## Rotas
 
-### Usuários
+Todas as rotas abaixo partem da origem da API, por exemplo `http://localhost:3030`. Rotas não marcadas como públicas exigem JWT. As verificações por perfil indicadas também são aplicadas pelo servidor.
+
+### Autenticação e conta
 
 | Método | Rota | Acesso | Descrição |
 | --- | --- | --- | --- |
-| `POST` | `/users` | Público | Cadastra usuário com nome, e-mail, senha e perfil. |
-| `POST` | `/login` | Público | Autentica por e-mail e senha e retorna token e usuário. |
-| `POST` | `/logout` | Autenticado | Revoga o token apresentado; retorna `204 No Content`. |
+| `POST` | `/users` | Público | Cadastra uma conta. |
+| `POST` | `/login` | Público | Autentica e retorna token e perfil do usuário. |
+| `POST` | `/logout` | Autenticado | Revoga o token atual. |
+| `GET` | `/users/me/body-metrics` | Aluno | Lê as próprias medidas corporais. |
+| `PUT` | `/users/me/body-metrics` | Aluno | Registra peso e altura. |
+| `PUT` | `/users/me/profile` | Aluno | Atualiza dados do perfil do aluno. |
+| `PUT` | `/users/me/password` | Aluno | Altera a senha. |
+| `GET` | `/students/:studentId/body-metrics` | Profissional | Consulta medidas de aluno vinculado. |
 
-Regras do cadastro: nome com pelo menos 3 caracteres, e-mail válido, senha com pelo menos 8 caracteres e perfil `PROFESSIONAL` ou `STUDENT`. E-mail já cadastrado retorna `409`.
+### Vínculos e convites
 
-### Solicitações diretas e vínculos
-
-| Método | Rota | Perfil exigido | Descrição |
+| Método | Rota | Acesso | Descrição |
 | --- | --- | --- | --- |
-| `POST` | `/vinculos` | `PROFESSIONAL` | Cria uma solicitação pendente para o aluno informado em `alunoId`. |
-| `PATCH` | `/vinculos/:id/aceitar` | `STUDENT` | O aluno destinatário aceita a solicitação pendente, ativando o vínculo. |
-| `PATCH` | `/vinculos/:id/recusar` | `STUDENT` | O aluno destinatário recusa a solicitação pendente. |
-| `GET` | `/vinculos/alunos` | `PROFESSIONAL` | Lista os alunos com vínculo ativo do profissional autenticado. |
-| `GET` | `/vinculos/profissionais` | `STUDENT` | Lista os profissionais com vínculo ativo do aluno autenticado. |
+| `GET` | `/vinculos/alunos` | Profissional | Lista alunos com vínculo ativo. |
+| `DELETE` | `/vinculos/alunos/:studentId` | Profissional | Remove um vínculo ativo sem apagar programas ou sessões históricos. |
+| `POST` | `/vinculos` | Profissional | Solicita vínculo direto com um aluno. |
+| `PATCH` | `/vinculos/:id/aceitar` | Aluno | Aceita uma solicitação de vínculo. |
+| `PATCH` | `/vinculos/:id/recusar` | Aluno | Recusa uma solicitação de vínculo. |
+| `GET` | `/vinculos/profissionais` | Aluno | Lista profissionais com vínculo ativo. |
+| `GET` | `/vinculos/convites` | Profissional | Lista convites pendentes. |
+| `POST` | `/vinculos/convites` | Profissional | Cria convite por identificador do aluno. |
+| `POST` | `/vinculos/convites/email` | Profissional | Cria convite por e-mail. |
+| `GET` | `/vinculos/convites/:codigo` | Aluno | Consulta convite destinado ao aluno autenticado. |
+| `POST` | `/vinculos/convites/:codigo/aceitar` | Aluno | Aceita convite válido. |
+| `POST` | `/vinculos/convites/:codigo/recusar` | Aluno | Recusa convite válido. |
 
-Exemplo de corpo para criar solicitação:
+Os convites usam código e expiração; somente o aluno destinatário pode consultá-los ou responder. Consulte as validações dos módulos de vínculos e convites para os campos obrigatórios e estados de erro.
 
-```json
-{
-  "alunoId": "uuid-do-aluno"
-}
+### Modalidades, atividades e programas
+
+| Método | Rota | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `GET` | `/modalidades` | Profissional | Lista o catálogo de modalidades. |
+| `GET` | `/modalidades/minhas` | Profissional | Lista as modalidades selecionadas pelo profissional. |
+| `PUT` | `/modalidades/minhas` | Profissional | Atualiza a seleção de modalidades. |
+| `GET` | `/atividades` | Profissional | Lista exercícios; aceita filtros de busca e modalidade. |
+| `POST` | `/atividades` | Profissional | Cria uma atividade personalizada. |
+| `PUT` | `/atividades/:id` | Profissional | Atualiza uma atividade personalizada própria. |
+| `GET` | `/atividades/:id/campos-configuracao` | Profissional | Lista os campos usados na prescrição da atividade. |
+| `POST` | `/atividades/:id/campos-configuracao` | Profissional | Define campos de configuração. |
+| `POST` | `/atividades/:id/configuracoes` | Profissional | Cria uma configuração de atividade. |
+| `GET` | `/configuracoes-atividades/:id` | Profissional | Consulta uma configuração. |
+| `POST` | `/programas` | Profissional | Cria programa de treino para aluno vinculado. |
+| `GET` | `/programas` | Autenticado | Lista programas visíveis para o usuário. |
+| `GET` | `/programas/:id` | Autenticado | Consulta um programa autorizado. |
+| `PUT` | `/programas/:id` | Profissional | Atualiza programa próprio. |
+
+### Sessões e evolução
+
+| Método | Rota | Acesso | Descrição |
+| --- | --- | --- | --- |
+| `POST` | `/sessions` | Aluno | Inicia sessão de um programa disponível. |
+| `GET` | `/sessions/history` | Aluno | Lista histórico e sessões ativas do aluno. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/start` | Aluno | Inicia atividade. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/pause` | Aluno | Pausa atividade. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/resume` | Aluno | Retoma atividade. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/rest/start` | Aluno | Inicia descanso. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/rest/end` | Aluno | Encerra descanso. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/complete` | Aluno | Conclui atividade. |
+| `POST` | `/sessions/:sessionId/executions` | Aluno | Registra dados de execução de série ou round. |
+| `POST` | `/sessions/:sessionId/activities/:activityId/observations` | Aluno | Registra comentário sobre a atividade. |
+| `POST` | `/sessions/:sessionId/pause` | Aluno | Pausa sessão. |
+| `POST` | `/sessions/:sessionId/resume` | Aluno | Retoma sessão. |
+| `POST` | `/sessions/:sessionId/finish` | Aluno | Finaliza sessão. |
+| `POST` | `/sessions/:sessionId/interrupt` | Aluno | Interrompe sessão. |
+| `GET` | `/students/:studentId/sessions/history` | Profissional | Consulta sessões de aluno vinculado. |
+| `GET` | `/sessions/:sessionId` | Profissional | Consulta o resultado detalhado da sessão. |
+| `GET` | `/sessions/:sessionId/result` | Profissional | Consulta resultado da sessão. |
+| `GET` | `/students/:studentId/evolution` | Profissional | Consulta evolução de aluno vinculado. |
+| `GET` | `/professional/home` | Profissional | Retorna indicadores, sessões ativas e atividade recente. |
+
+As rotas de sessão verificam a propriedade e o estado atual da sessão antes de alterar ou retornar dados.
+
+## CORS e frontend
+
+Em desenvolvimento, a API permite automaticamente origens locais do Vite nas portas `5173` a `5180`, incluindo endereços da rede privada. Para produção, configure `FRONTEND_ORIGINS` com a origem exata do frontend publicado, sem caminho, por exemplo:
+
+```env
+FRONTEND_ORIGINS=https://seu-frontend.vercel.app
 ```
 
-As respostas de listagem contêm dados públicos dos usuários, sem o hash da senha. Solicitações pendentes ou recusadas não aparecem como vínculos ativos.
+Para mais de uma origem, separe por vírgula. O frontend deve configurar `VITE_API_URL` com a origem desta API.
 
-### Convites
+## Publicar na Vercel
 
-| Método | Rota | Perfil exigido | Descrição |
-| --- | --- | --- | --- |
-| `POST` | `/vinculos/convites` | `PROFESSIONAL` | Cria convite para o aluno indicado em `alunoId` e retorna um código. |
-| `GET` | `/vinculos/convites/:codigo` | `STUDENT` | Consulta convite destinado ao aluno autenticado. |
-| `POST` | `/vinculos/convites/:codigo/aceitar` | `STUDENT` | Aceita convite válido do aluno autenticado e cria vínculo ativo. |
-| `POST` | `/vinculos/convites/:codigo/recusar` | `STUDENT` | Recusa convite válido do aluno autenticado. |
+O repositório da API deve ser configurado como um projeto separado do frontend, com a raiz do projeto apontando para este repositório. Configure no projeto Vercel:
 
-O código do convite tem oito caracteres. Convites expiram após sete dias e somente o aluno destinatário pode consultá-los ou responder. Códigos inválidos retornam `400`, convites inexistentes retornam `404` e convites expirados retornam `410`.
+- `JWT_SECRET`
+- `DATABASE_URL` (Neon pooled)
+- `DIRECT_URL` (Neon direct)
+- `FRONTEND_ORIGINS` (origem publicada do frontend)
 
-### Modalidades
-
-| Método | Rota | Acesso | Descrição |
-| --- | --- | --- | --- |
-| `GET` | `/modalidades` | `PROFESSIONAL` | Lista o catálogo de modalidades. |
-| `GET` | `/modalidades/minhas` | `PROFESSIONAL` | Lista as modalidades associadas ao profissional autenticado. |
-| `PUT` | `/modalidades/minhas` | `PROFESSIONAL` | Substitui sua seleção de modalidades. |
-
-O corpo do `PUT` contém `modalidadeIds`, uma lista não vazia de UUIDs sem repetição, todos existentes no catálogo. Exemplo:
-
-```json
-{
-  "modalidadeIds": ["uuid-da-modalidade"]
-}
-```
-
-### Biblioteca de atividades
-
-| Método | Rota | Acesso | Descrição |
-| --- | --- | --- | --- |
-| `GET` | `/atividades` | `PROFESSIONAL` | Lista atividades padrão e as personalizadas do profissional autenticado. |
-| `POST` | `/atividades` | `PROFESSIONAL` | Cria uma atividade personalizada associada a uma modalidade existente. |
-
-O `GET` aceita `busca` (busca parcial pelo nome) e `modalidadeId` (UUID da modalidade) como filtros opcionais. Os filtros podem ser combinados. Atividades personalizadas de outros profissionais não são retornadas.
-
-O `POST` exige `nome` e `modalidadeId`; `descricao` e `midiaUrl` são opcionais. A mídia deve ser uma URL HTTP ou HTTPS. O proprietário e a origem da atividade são determinados pelo servidor.
-### Programas
-
-| Método | Rota | Perfil exigido | Descrição |
-| --- | --- | --- | --- |
-| `POST` | `/programas` | `PROFESSIONAL` | Cria um programa para o aluno informado. |
-| `GET` | `/programas` | `STUDENT` | Lista os programas do aluno autenticado. |
-
-O corpo de criação usa os campos `alunoId`, `nome`, `modalidadeId` e `atividades` (lista de UUIDs de atividades). O programa persistido mantém os campos internos do domínio e inicia com `version: 1`.
-
-### Rotas de teste de perfil
-
-Estas rotas existem para demonstrar autenticação e autorização e não são funcionalidades de negócio:
-
-| Método | Rota | Requisito | Resposta de sucesso |
-| --- | --- | --- | --- |
-| `GET` | `/professional-test` | JWT de usuário `PROFESSIONAL` | `{ "message": "Acesso profissional autorizado!" }` |
-| `GET` | `/student-test` | JWT de usuário `STUDENT` | `{ "message": "Acesso estudante autorizado!" }` |
-
-Em rotas autenticadas, a API pode responder com `401` para token ausente, inválido, expirado ou revogado, ou usuário não encontrado; `403` indica perfil sem autorização para a operação.
-
-### Sessões e histórico
-
-| Método | Rota | Perfil exigido | Descrição |
-| --- | --- | --- | --- |
-| `GET` | `/sessions/history` | `STUDENT` | Lista as sessões do aluno autenticado, da mais recente para a mais antiga. |
-| `GET` | `/students/:studentId/sessions/history` | `PROFESSIONAL` | Lista somente as sessões do aluno associadas ao profissional autenticado, da mais recente para a mais antiga. |
-| `GET` | `/sessions/:sessionId` | `PROFESSIONAL` | Abre os dados e resultados da sessão se ela pertencer ao profissional autenticado. |
-| `GET` | `/sessions/:sessionId/result` | `PROFESSIONAL` | Retorna os resultados da sessão se ela pertencer ao profissional autenticado. |
-
-Cada sessão persiste suas referências ao programa, à versão do programa, ao aluno e ao profissional, além das datas de início e término. Programas novos começam na versão 1, programas legados sem versão são lidos como versão 1 e alterações efetivas incrementam a versão. As atividades e os valores prescritos são copiados no início da sessão para manter o registro histórico mesmo que o programa seja alterado depois.
-
-## Testes
-
-Execute a suíte automatizada com:
+O `postinstall` e o `prebuild` geram o Prisma Client. `vercel.json` inclui o artefato WebAssembly do Prisma Client na função. Aplique as migrações no banco de destino antes de publicar código que dependa delas:
 
 ```bash
-npm test
+npm run db:migrate:deploy
 ```
 
-O script compila o projeto e executa os arquivos `tests/*.test.mjs` em sequência. Os testes cobrem a biblioteca de atividades e os fluxos de convites e vínculos. As verificações específicas de seleção e persistência das modalidades ficam em `tests/modalidades.test.mjs`.
-
-## Scripts
-
-| Script | Função |
-| --- | --- |
-| `npm run dev` | Executa `tsx watch src/server.ts` em desenvolvimento. |
-| `npm run build` | Compila o projeto com `tsc`. |
-| `npm start` | Executa a versão compilada com Node.js. |
-| `npm test` | Compila o projeto e executa todos os testes automatizados em sequência. |
+Não inclua credenciais em variáveis `VITE_*`, no código do frontend ou no Git. A API usa a porta `3030` no desenvolvimento local; o domínio publicado da Vercel é a origem que o frontend deve consumir.
 
 ## Estrutura principal
 
 ```text
 src/
-├── config/
-│   └── env.ts
-├── modules/
-│   ├── atividades/
-│   │   ├── repositories/
-│   │   └── atividades.*
-│   ├── modalidades/
-│   │   ├── repositories/
-│   │   └── modalidades.*
-│   ├── users/
-│   │   ├── repositories/
-│   │   └── users.*
-│   └── vinculos/
-│       ├── repositories/
-│       ├── convite.*
-│       └── vinculos.*
-├── shared/auth/
-│   ├── repositories/
-│   ├── authenticate.ts
-│   └── authorize-profile.ts
-└── server.ts
+├── config/              # Ambiente e compatibilidade com dados legados
+├── modules/             # users, vinculos, modalidades, atividades,
+│                        # programas, sessões e home profissional
+├── shared/auth/         # Autenticação, autorização e revogação de tokens
+├── shared/database/     # Prisma Client e repositórios PostgreSQL
+└── server.ts            # Fastify, CORS e registro dos módulos
+
+prisma/
+├── migrations/          # Histórico versionado do schema
+├── schema.prisma        # Modelos e relações PostgreSQL
+└── seed.ts              # Importação validada dos JSON legados
+
+data/                    # Arquivos históricos/de demonstração usados pelo seed
+tests/                   # Testes dos módulos e fluxos da API
+scripts/                 # Verificações auxiliares, incluindo conexão com Neon
 ```
 
-O fluxo de cada operação segue a separação `Route → Controller → Service → Repository → Persistência`.
+Os módulos organizam rotas, controllers, serviços, schemas e repositórios. O fluxo padrão é `Route → Controller → Service → Repository → Prisma/PostgreSQL`.
